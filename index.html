@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
 <title>AI PRO SIGNAL TERMINAL</title>
@@ -33,12 +33,33 @@ display:flex;
 align-items:center;
 justify-content:space-between;
 padding:0 20px;
+position:relative;
 }
 
 .logo{
 font-size:22px;
 font-weight:bold;
 color:#22c55e;
+}
+
+/* MOBILE PAIR SELECT */
+
+.mobilePairBar{
+display:none;
+position:absolute;
+right:15px;
+top:12px;
+z-index:999;
+}
+
+.mobilePairBar select{
+background:#111827;
+color:white;
+border:none;
+padding:10px 14px;
+border-radius:10px;
+outline:none;
+font-size:14px;
 }
 
 /* MAIN */
@@ -102,7 +123,7 @@ border-color:#22c55e;
 background:#162033;
 }
 
-/* SIGNAL BOX */
+/* SIGNAL */
 
 .signal{
 padding:18px;
@@ -195,7 +216,7 @@ justify-content:space-between;
 margin:12px 0;
 }
 
-/* BAR */
+/* CONFIDENCE BAR */
 
 .barWrap{
 width:100%;
@@ -257,20 +278,37 @@ transform:scale(1.05);
 
 @media(max-width:900px){
 
-.main{
-flex-direction:column;
+body{
 overflow:auto;
-height:auto;
 }
 
-.left,
-.center,
+.main{
+flex-direction:column;
+height:auto;
+overflow:auto;
+}
+
+/* HIDE LEFT */
+
+.left{
+display:none;
+}
+
+/* FULL WIDTH */
+
+.center{
+width:100%;
+height:500px;
+}
+
 .right{
 width:100%;
 }
 
-.center{
-height:500px;
+/* MOBILE DROPDOWN */
+
+.mobilePairBar{
+display:block;
 }
 
 }
@@ -290,6 +328,26 @@ AI SIGNAL TERMINAL
 
 <div id="currentPair">
 BTCUSDT
+</div>
+
+<!-- MOBILE SELECT -->
+
+<div class="mobilePairBar">
+
+<select id="mobilePairSelect" onchange="mobilePairChange(this.value)">
+
+<option value="BTCUSDT">BTCUSDT</option>
+
+<option value="ETHUSDT">ETHUSDT</option>
+
+<option value="SOLUSDT">SOLUSDT</option>
+
+<option value="XRPUSDT">XRPUSDT</option>
+
+<option value="SUIUSDT">SUIUSDT</option>
+
+</select>
+
 </div>
 
 </div>
@@ -332,7 +390,7 @@ SUIUSDT
 
 <div class="center">
 
-<!-- BUY SELL OVERLAY -->
+<!-- OVERLAY -->
 
 <div id="overlaySignal" class="overlaySignal">
 <span id="overlayText"></span>
@@ -492,7 +550,7 @@ save_image:false
 
 loadChart(currentPair);
 
-/* CHANGE PAIR */
+/* DESKTOP CHANGE */
 
 function changePair(pair,el){
 
@@ -500,7 +558,7 @@ currentPair=pair;
 
 document.getElementById("currentPair").innerText=pair;
 
-/* ACTIVE */
+document.getElementById("mobilePairSelect").value=pair;
 
 document.querySelectorAll(".pair").forEach(p=>{
 
@@ -510,7 +568,19 @@ p.classList.remove("activePair");
 
 el.classList.add("activePair");
 
-/* LOAD */
+loadChart(pair);
+
+update();
+
+}
+
+/* MOBILE CHANGE */
+
+function mobilePairChange(pair){
+
+currentPair=pair;
+
+document.getElementById("currentPair").innerText=pair;
 
 loadChart(pair);
 
@@ -603,7 +673,7 @@ el.classList.add("yellow");
 
 }
 
-/* AUDIO */
+/* SOUND */
 
 function playAlert(){
 
@@ -614,8 +684,6 @@ document.getElementById("alertSound").play();
 /* UI */
 
 function updateUI(signal,price,rsi){
-
-/* MAIN SIGNAL */
 
 let box=document.getElementById("mainSignal");
 
@@ -693,7 +761,7 @@ let ovText=document.getElementById("overlayText");
 
 ov.style.display="none";
 
-/* ONLY BUY SELL */
+/* ONLY BUY / SELL */
 
 if(signal=="LONG"){
 
@@ -724,8 +792,6 @@ playAlert();
 /* UPDATE */
 
 async function update(){
-
-/* DATA */
 
 let d15=await getData("15m");
 
@@ -773,7 +839,7 @@ setLight("l4h",s4);
 
 setLight("l1d",sD);
 
-/* MAIN = 4H */
+/* MAIN */
 
 let price=d4[d4.length-1];
 
@@ -785,7 +851,7 @@ updateUI(s4,price,r4);
 
 update();
 
-/* REALTIME */
+/* REFRESH */
 
 setInterval(update,10000);
 
