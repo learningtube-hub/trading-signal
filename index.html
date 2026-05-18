@@ -16,8 +16,8 @@
 
     <div class="space-x-4">
       <a href="#" class="hover:text-green-400">Home</a>
-      <a href="#" class="hover:text-green-400">Signals</a>
-      <a href="#" class="hover:text-green-400">AI</a>
+      <a href="#signals" class="hover:text-green-400">Signals</a>
+      <a href="#ai" class="hover:text-green-400">AI</a>
     </div>
   </nav>
 
@@ -31,37 +31,81 @@
       Your smart AI trading assistant is ready 🚀
     </p>
 
-    <button onclick="document.getElementById('signals').scrollIntoView({behavior:'smooth'})"
-class="mt-6 px-6 py-2 bg-green-500 rounded-xl">
-  View Signals
-</button>
+    <a href="#signals" class="mt-6 inline-block px-6 py-2 bg-green-500 rounded-xl">
+      View Signals
+    </a>
   </section>
 
   <!-- SIGNALS SECTION -->
-<section id="signals" class="mt-20 px-6 text-center">
-  <h2 class="text-3xl font-bold mb-8">Live Trading Signals</h2>
+  <section id="signals" class="mt-20 px-6 text-center">
 
-  <div class="grid md:grid-cols-3 gap-6">
+    <h2 class="text-3xl font-bold mb-8">Live Trading Signals</h2>
 
-    <div class="bg-gray-800 p-6 rounded-xl hover:bg-gray-700 transition">
-      <h3 class="text-green-400 font-bold text-xl">BUY BTC</h3>
-      <p class="text-gray-300 mt-2">High Confidence Signal</p>
+    <div class="grid md:grid-cols-3 gap-6">
+
+      <div class="bg-gray-800 p-6 rounded-xl hover:bg-gray-700 transition">
+        <h3 class="text-green-400 font-bold text-xl">BUY BTC</h3>
+        <p class="text-gray-300 mt-2">Strong Signal</p>
+      </div>
+
+      <div class="bg-gray-800 p-6 rounded-xl hover:bg-gray-700 transition">
+        <h3 class="text-red-400 font-bold text-xl">SELL ETH</h3>
+        <p class="text-gray-300 mt-2">Medium Signal</p>
+      </div>
+
+      <div class="bg-gray-800 p-6 rounded-xl hover:bg-gray-700 transition">
+        <h3 class="text-green-400 font-bold text-xl">BUY BNB</h3>
+        <p class="text-gray-300 mt-2">Strong Signal</p>
+      </div>
+
     </div>
 
-    <div class="bg-gray-800 p-6 rounded-xl hover:bg-gray-700 transition">
-      <h3 class="text-red-400 font-bold text-xl">SELL ETH</h3>
-      <p class="text-gray-300 mt-2">Medium Confidence Signal</p>
-    </div>
-
-    <div class="bg-gray-800 p-6 rounded-xl hover:bg-gray-700 transition">
-      <h3 class="text-green-400 font-bold text-xl">BUY BNB</h3>
-      <p class="text-gray-300 mt-2">Strong Signal</p>
-    </div>
-
-  </div>
-
-</section>
   </section>
+
+  <!-- AI SECTION -->
+  <section id="ai" class="mt-20 px-6 text-center">
+
+    <h2 class="text-3xl font-bold mb-6">AI Trading Assistant 🤖</h2>
+
+    <div class="bg-gray-800 p-6 rounded-xl max-w-xl mx-auto">
+
+      <input id="userInput"
+        type="text"
+        placeholder="Ask: BTC will go up?"
+        class="w-full p-3 rounded-lg text-black"
+      />
+
+      <button onclick="getResponse()"
+        class="mt-4 px-6 py-2 bg-blue-500 rounded-xl">
+        Ask AI
+      </button>
+
+      <p id="response" class="mt-4 text-green-400"></p>
+
+    </div>
+
+  </section>
+
+  <!-- SCRIPT -->
+  <script>
+    function getResponse() {
+      let input = document.getElementById("userInput").value.toLowerCase();
+      let output = document.getElementById("response");
+
+      if(input.includes("btc")) {
+        output.innerText = "AI: BTC signal looks STRONG 📈";
+      }
+      else if(input.includes("eth")) {
+        output.innerText = "AI: ETH is currently WEAK 📉";
+      }
+      else if(input.includes("bnb")) {
+        output.innerText = "AI: BNB shows MODERATE growth ⚡";
+      }
+      else {
+        output.innerText = "AI: I need more market data 🤖";
+      }
+    }
+  </script>
 
 </body>
 </html>
