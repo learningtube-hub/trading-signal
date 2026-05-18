@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>REAL RSI TRADING DASHBOARD</title>
+<title>LIGHT SIGNAL SYSTEM v2</title>
 
 <script src="https://s3.tradingview.com/tv.js"></script>
 
@@ -11,13 +11,13 @@ body{
 margin:0;
 font-family:Arial;
 background:#0b1220;
-color:#fff;
+color:white;
 display:flex;
 height:100vh;
 }
 
 .left{
-width:200px;
+width:220px;
 background:#111827;
 padding:10px;
 }
@@ -29,7 +29,7 @@ flex-direction:column;
 }
 
 .right{
-width:320px;
+width:340px;
 background:#111827;
 padding:10px;
 overflow:auto;
@@ -42,71 +42,76 @@ margin:8px 0;
 border-radius:10px;
 }
 
-.signal{
-padding:12px;
-font-size:20px;
-text-align:center;
-border-radius:10px;
-font-weight:bold;
-}
-
-.green{background:#16a34a;}
-.red{background:#dc2626;}
-.yellow{background:#f59e0b;color:black;}
-
-button{
+.rsiBox{
+display:flex;
+justify-content:space-between;
 padding:8px;
-margin:5px;
-cursor:pointer;
+margin:6px 0;
+background:#111827;
+border-radius:8px;
 }
 
-#chart{
-flex:1;
+/* LIGHT STYLE */
+.light{
+width:18px;
+height:18px;
+border-radius:50%;
+display:inline-block;
+margin-right:8px;
+background:#555;
+}
+
+.green{background:#22c55e; animation:blink 1s infinite;}
+.red{background:#ef4444; animation:blink 1s infinite;}
+.yellow{background:#facc15; animation:blink 1s infinite;}
+
+@keyframes blink{
+50%{opacity:0.3;}
 }
 </style>
 </head>
 
 <body>
 
+<!-- LEFT -->
 <div class="left">
 <h3>MARKET</h3>
-<button onclick="setSymbol('BINANCE:BTCUSDT')">BTC</button>
-<button onclick="setSymbol('BINANCE:ETHUSDT')">ETH</button>
-<button onclick="setSymbol('BINANCE:SOLUSDT')">SOL</button>
-
-<div class="box">
-Signal: <div id="signal" class="signal yellow">WAIT</div>
+<div class="box">BTC</div>
+<div class="box">ETH</div>
+<div class="box">SOL</div>
 </div>
 
-<div class="box">
-Price: <span id="price">--</span>
-</div>
-
-</div>
-
+<!-- CENTER -->
 <div class="center">
 <div id="chart"></div>
 </div>
 
+<!-- RIGHT -->
 <div class="right">
 
-<h3>RSI MULTI TF</h3>
+<h3>RSI STATUS</h3>
 
-<div class="box">30M: <span id="r30">--</span></div>
-<div class="box">1H: <span id="r1h">--</span></div>
-<div class="box">4H: <span id="r4h">--</span></div>
-<div class="box">1D: <span id="r1d">--</span></div>
-<div class="box">1W: <span id="r1w">--</span></div>
+<div class="rsiBox">30M <span id="r30">--</span></div>
+<div class="rsiBox">1H <span id="r1h">--</span></div>
+<div class="rsiBox">4H <span id="r4h">--</span></div>
+<div class="rsiBox">1D <span id="r1d">--</span></div>
+
+<hr>
+
+<h3>SIGNAL LIGHT</h3>
+
+<div class="box">
+<span id="light" class="light"></span>
+<span id="signalText">WAIT</span>
+</div>
 
 </div>
 
 <script>
 
 let symbol="BINANCE:BTCUSDT";
-let price=0;
 
 // ---------------- CHART ----------------
-
 function loadChart(sym){
 document.getElementById("chart").innerHTML="";
 new TradingView.widget({
@@ -120,12 +125,10 @@ style:"1"
 });
 }
 
-// ---------------- REAL RSI (NO RANDOM) ----------------
-
-async function getKlines(tf){
+// ---------------- RSI ----------------
+async function getCloses(tf){
 let res=await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol.replace("BINANCE:","")}&interval=${tf}&limit=50`);
 let data=await res.json();
-
 return data.map(x=>parseFloat(x[4]));
 }
 
@@ -142,82 +145,66 @@ let rs=gain/(loss||1);
 return 100-(100/(1+rs));
 }
 
-function state(r){
-if(r<30) return "OVERSOLD";
-if(r>70) return "OVERBOUGHT";
-return "NEUTRAL";
+// ---------------- SIGNAL ENGINE ----------------
+function getSignal(rsi){
+if(rsi<30) return "GREEN";   // BUY
+if(rsi>70) return "RED";     // SELL
+return "YELLOW";             // NEUTRAL
 }
 
-// ---------------- UPDATE ENGINE ----------------
+function updateLight(signal,rsi4h){
 
+let light=document.getElementById("light");
+let text=document.getElementById("signalText");
+
+// reset
+light.className="light";
+
+if(signal=="GREEN"){
+light.classList.add("green");
+text.innerText="BUY SIGNAL";
+}
+else if(signal=="RED"){
+light.classList.add("red");
+text.innerText="SELL SIGNAL";
+}
+else{
+light.classList.add("yellow");
+text.innerText="NEUTRAL";
+}
+
+}
+
+// ---------------- UPDATE ----------------
 async function update(){
 
-let c30=await getKlines("30m");
-let c1h=await getKlines("1h");
-let c4h=await getKlines("4h");
-let c1d=await getKlines("1d");
-let c1w=await getKlines("1w");
+let c30=await getCloses("30m");
+let c1h=await getCloses("1h");
+let c4h=await getCloses("4h");
+let c1d=await getCloses("1d");
 
 let r30=calcRSI(c30);
 let r1h=calcRSI(c1h);
 let r4h=calcRSI(c4h);
 let r1d=calcRSI(c1d);
-let r1w=calcRSI(c1w);
 
-document.getElementById("r30").innerText=r30.toFixed(2)+" ("+state(r30)+")";
-document.getElementById("r1h").innerText=r1h.toFixed(2)+" ("+state(r1h)+")";
-document.getElementById("r4h").innerText=r4h.toFixed(2)+" ("+state(r4h)+")";
-document.getElementById("r1d").innerText=r1d.toFixed(2)+" ("+state(r1d)+")";
-document.getElementById("r1w").innerText=r1w.toFixed(2)+" ("+state(r1w)+")";
+// RSI UI
+document.getElementById("r30").innerText=r30.toFixed(2);
+document.getElementById("r1h").innerText=r1h.toFixed(2);
+document.getElementById("r4h").innerText=r4h.toFixed(2);
+document.getElementById("r1d").innerText=r1d.toFixed(2);
 
-// ---------------- SIGNAL ENGINE ----------------
+// MAIN SIGNAL (4H BASED)
+let signal=getSignal(r4h);
 
-let score=0;
-
-if(r4h<30) score++;
-if(r1h<30) score++;
-
-if(r4h>70) score--;
-if(r1h>70) score--;
-
-let signal="WAIT";
-let color="yellow";
-
-if(score>=2){
-signal="BUY";
-color="green";
-}
-if(score<=-2){
-signal="SELL";
-color="red";
-}
-
-let box=document.getElementById("signal");
-box.innerText=signal;
-box.className="signal "+color;
+// LIGHT UPDATE
+updateLight(signal,r4h);
 
 }
 
-// ---------------- PRICE ----------------
-
-async function getPrice(){
-let r=await fetch("https://api.binance.com/api/v3/ticker/price?symbol="+symbol.replace("BINANCE:",""));
-let d=await r.json();
-price=parseFloat(d.price);
-document.getElementById("price").innerText=price;
-}
-
-function setSymbol(s){
-symbol=s;
+// INIT
 loadChart(symbol);
-}
-
-// ---------------- INIT ----------------
-
-loadChart(symbol);
-
 setInterval(update,10000);
-setInterval(getPrice,3000);
 
 </script>
 
