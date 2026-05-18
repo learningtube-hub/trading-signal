@@ -30,6 +30,40 @@ body{
   color:#00ffcc;
 }
 
+/* NEWS BAR */
+.newsbar{
+  display:flex;
+  align-items:center;
+  background:#0b1220;
+  padding:10px 15px;
+  border-bottom:1px solid #1f2937;
+  overflow:hidden;
+}
+
+.newsicon{margin-right:10px;font-size:20px;}
+.newslabel{
+  font-weight:bold;
+  color:#00ffcc;
+  margin-right:15px;
+}
+
+.marquee{
+  white-space:nowrap;
+  overflow:hidden;
+  flex:1;
+}
+
+.marquee span{
+  display:inline-block;
+  padding-left:100%;
+  animation: scroll 20s linear infinite;
+}
+
+@keyframes scroll{
+  0% {transform:translateX(0);}
+  100% {transform:translateX(-100%);}
+}
+
 /* LAYOUT */
 .container{
   display:flex;
@@ -51,7 +85,6 @@ body{
   cursor:pointer;
   border-radius:6px;
 }
-.pair:hover{background:#334155}
 
 /* CENTER */
 .center{
@@ -67,7 +100,6 @@ body{
   border-left:1px solid #1f2937;
 }
 
-/* CARD */
 .card{
   background:#111827;
   padding:10px;
@@ -81,8 +113,8 @@ body{
 .status{
   padding:6px;
   background:orange;
-  border-radius:5px;
   display:inline-block;
+  border-radius:5px;
 }
 
 button{
@@ -91,9 +123,9 @@ button{
   cursor:pointer;
   border:none;
   border-radius:5px;
+  background:#2563eb;
+  color:white;
 }
-.primary{background:#2563eb;color:white}
-.danger{background:#ef4444;color:white}
 </style>
 </head>
 
@@ -102,10 +134,21 @@ button{
 <!-- TOP BAR -->
 <div class="topbar">
   <div class="logo">⚡ MAGIC TRADE AI</div>
-
   <div>
-    <button class="primary" onclick="showLogin()">Login</button>
-    <button class="primary" onclick="showRegister()">Register</button>
+    <button onclick="alert('Login system later')">Login</button>
+    <button onclick="alert('Register system later')">Register</button>
+  </div>
+</div>
+
+<!-- NEWS BAR -->
+<div class="newsbar">
+  <div class="newsicon">🧠</div>
+  <div class="newslabel">UPDATE NEWS</div>
+
+  <div class="marquee">
+    <span id="newsText">
+      BTC showing volatility | ETH breakout incoming | Institutional flow detected | Market reacting to global news |
+    </span>
   </div>
 </div>
 
@@ -118,14 +161,12 @@ button{
 <div class="pair" onclick="setPair('BTCUSDT')">BTCUSDT</div>
 <div class="pair" onclick="setPair('ETHUSDT')">ETHUSDT</div>
 <div class="pair" onclick="setPair('BNBUSDT')">BNBUSDT</div>
-<div class="pair" onclick="setPair('XRPUSDT')">XRPUSDT</div>
 
 <hr>
 
-<h4>PLAN</h4>
 <div class="card">
 <p id="plan">FREE USER</p>
-<button class="primary" onclick="upgrade()">Upgrade to PRO</button>
+<button onclick="upgrade()">Upgrade PRO</button>
 </div>
 
 </div>
@@ -145,12 +186,9 @@ button{
 <div class="card">
 <div id="signal">Signal: -</div>
 <div id="rsi">RSI: -</div>
-<div id="trend">Trend: -</div>
 </div>
 
-<div class="card">
-<button class="primary" onclick="generateSignal()">Scan Market</button>
-</div>
+<button onclick="generateSignal()">SCAN MARKET</button>
 
 </div>
 
@@ -158,26 +196,11 @@ button{
 
 <script>
 
-let pair = "BTCUSDT";
-let prices = [];
-let userPlan = "FREE";
+let pair="BTCUSDT";
+let prices=[];
+let plan="FREE";
 
-// ===== LOGIN UI (frontend only) =====
-function showLogin(){
-  alert("LOGIN UI (backend will be added later)");
-}
-
-function showRegister(){
-  alert("REGISTER UI (backend will be added later)");
-}
-
-// ===== UPGRADE =====
-function upgrade(){
-  userPlan = "PRO";
-  document.getElementById("plan").innerText = "PRO USER 🔥";
-}
-
-// ===== CHART =====
+// chart
 function loadChart(symbol){
   new TradingView.widget({
     "container_id":"chart",
@@ -189,70 +212,87 @@ function loadChart(symbol){
   });
 }
 
-// ===== CHANGE PAIR =====
+// change pair
 function setPair(p){
-  pair = p;
-  prices = [];
+  pair=p;
+  prices=[];
   loadChart(pair);
 }
 
-// ===== PRICE =====
+// price
 async function getPrice(){
-  let res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${pair}`);
-  let data = await res.json();
+  let res=await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${pair}`);
+  let data=await res.json();
   return parseFloat(data.price);
 }
 
-// ===== RSI =====
+// RSI
 function RSI(arr){
   if(arr.length<14) return 50;
-
-  let gain=0,loss=0;
+  let g=0,l=0;
   for(let i=arr.length-14;i<arr.length;i++){
-    let diff = arr[i]-arr[i-1];
-    if(diff>0) gain+=diff;
-    else loss+=Math.abs(diff);
+    let d=arr[i]-arr[i-1];
+    if(d>0)g+=d; else l+=Math.abs(d);
   }
-
-  let rs = gain/(loss||1);
+  let rs=g/(l||1);
   return 100-(100/(1+rs));
 }
 
-// ===== INSTITUTIONAL SIGNAL ENGINE =====
-function signalEngine(rsi){
-
-  if(rsi < 30) return "LONG";
-  if(rsi > 70) return "SHORT";
+// signal
+function signal(rsi){
+  if(rsi<30) return "LONG";
+  if(rsi>70) return "SHORT";
   return "WAIT";
 }
 
-// ===== MAIN =====
+// main
 async function generateSignal(){
-
-  let price = await getPrice();
+  let price=await getPrice();
   prices.push(price);
   if(prices.length>50) prices.shift();
 
-  let rsi = RSI(prices);
-  let signal = signalEngine(rsi);
+  let rsi=RSI(prices);
+  let sig=signal(rsi);
 
-  document.getElementById("rsi").innerText = "RSI: "+rsi.toFixed(2);
+  document.getElementById("rsi").innerText="RSI: "+rsi.toFixed(2);
 
-  if(signal==="LONG"){
-    document.getElementById("signal").innerHTML = "<span class='buy'>INSTITUTIONAL LONG</span>";
-    document.getElementById("status").innerText = "BUY ZONE DETECTED";
+  if(sig==="LONG"){
+    document.getElementById("signal").innerHTML="<span class='buy'>LONG</span>";
+    document.getElementById("status").innerText="BUY ZONE";
   }
-  else if(signal==="SHORT"){
-    document.getElementById("signal").innerHTML = "<span class='sell'>INSTITUTIONAL SHORT</span>";
-    document.getElementById("status").innerText = "SELL ZONE DETECTED";
+  else if(sig==="SHORT"){
+    document.getElementById("signal").innerHTML="<span class='sell'>SHORT</span>";
+    document.getElementById("status").innerText="SELL ZONE";
   }
   else{
-    document.getElementById("signal").innerText = "NO CLEAR ENTRY";
-    document.getElementById("status").innerText = "WAITING SMART MONEY SETUP";
+    document.getElementById("signal").innerText="WAIT";
+    document.getElementById("status").innerText="NO TRADE";
   }
 }
 
-// INIT
+// upgrade
+function upgrade(){
+  plan="PRO";
+  document.getElementById("plan").innerText="PRO USER 🔥";
+}
+
+// news auto rotate
+const news=[
+ "BTC volatility increasing",
+ "ETH breakout watch",
+ "Institutional buying BTC",
+ "Market liquidity shift",
+ "Global crypto news impact"
+];
+
+let i=0;
+setInterval(()=>{
+  document.getElementById("newsText").innerText=
+  news[i]+" | "+news[(i+1)%news.length]+" | "+news[(i+2)%news.length];
+  i++;
+  if(i>=news.length) i=0;
+},5000);
+
 loadChart(pair);
 
 </script>
