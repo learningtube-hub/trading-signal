@@ -1,1 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Trading Indicator Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+.blink-green {
+  animation: blinkGreen 1s infinite;
+}
+.blink-red {
+  animation: blinkRed 1s infinite;
+}
+
+@keyframes blinkGreen {
+  0%,100% {opacity:1; box-shadow:0 0 10px green;}
+  50% {opacity:0.3;}
+}
+
+@keyframes blinkRed {
+  0%,100% {opacity:1; box-shadow:0 0 10px red;}
+  50% {opacity:0.3;}
+}
+</style>
+
+</head>
+
+<body class="bg-gray-900 text-white">
+
+<!-- HEADER -->
+<section class="text-center mt-10">
+<h1 class="text-3xl font-bold text-green-400">Live Indicator Dashboard</h1>
+<p class="text-gray-400">BUY = Green | SELL = Red | HOLD = Neutral</p>
+</section>
+
+<!-- COIN GRID -->
+<section class="mt-10 px-4">
+
+<div class="grid md:grid-cols-3 gap-4 max-w-6xl mx-auto">
+
+<!-- BTC -->
+<div class="bg-gray-800 p-4 rounded-xl text-center">
+<h2 class="font-bold text-green-400">BTC</h2>
+<div class="blink-green w-4 h-4 rounded-full mx-auto mt-2"></div>
+<p class="mt-2">BUY SIGNAL 📈</p>
+</div>
+
+<!-- ETH -->
+<div class="bg-gray-800 p-4 rounded-xl text-center">
+<h2 class="font-bold text-red-400">ETH</h2>
+<div class="blink-red w-4 h-4 rounded-full mx-auto mt-2"></div>
+<p class="mt-2">SELL SIGNAL 📉</p>
+</div>
+
+<!-- BNB -->
+<div class="bg-gray-800 p-4 rounded-xl text-center">
+<h2 class="font-bold text-green-400">BNB</h2>
+<div class="blink-green w-4 h-4 rounded-full mx-auto mt-2"></div>
+<p class="mt-2">BUY SIGNAL 📈</p>
+</div>
+
+<!-- SOL -->
+<div class="bg-gray-800 p-4 rounded-xl text-center">
+<h2 class="font-bold text-red-400">SOL</h2>
+<div class="blink-red w-4 h-4 rounded-full mx-auto mt-2"></div>
+<p class="mt-2">SELL SIGNAL 📉</p>
+</div>
+
+<!-- XRP -->
+<div class="bg-gray-800 p-4 rounded-xl text-center">
+<h2 class="font-bold text-green-400">XRP</h2>
+<div class="blink-green w-4 h-4 rounded-full mx-auto mt-2"></div>
+<p class="mt-2">BUY SIGNAL 📈</p>
+</div>
+
+<!-- SUI -->
+<div class="bg-gray-800 p-4 rounded-xl text-center">
+<h2 class="font-bold text-red-400">SUI</h2>
+<div class="blink-red w-4 h-4 rounded-full mx-auto mt-2"></div>
+<p class="mt-2">SELL SIGNAL 📉</p>
+</div>
+
+</div>
+
+</section>
+
+</body>
+</html>
