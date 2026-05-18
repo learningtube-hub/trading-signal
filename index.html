@@ -1,185 +1,219 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Pro Trading Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crypto Trading Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
 
-<style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:#0b0f1a;
-  color:white;
-}
+    body {
+      background: #0f172a;
+      color: #e2e8f0;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-/* TOP BAR */
-.topbar{
-  height:60px;
-  background:#0f172a;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 20px;
-  border-bottom:1px solid #1f2937;
-}
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background: #111827;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
 
-.logo{
-  font-weight:bold;
-  color:#00ffcc;
-  font-size:18px;
-}
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+      color: #38bdf8;
+      margin-bottom: 20px;
+    }
 
-/* LAYOUT */
-.container{
-  display:flex;
-  height:calc(100vh - 60px);
-}
+    .menu-item {
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #1f2937;
+    }
 
-/* LEFT PANEL */
-.left{
-  width:220px;
-  background:#0f172a;
-  padding:10px;
-  border-right:1px solid #1f2937;
-}
+    .menu-item:hover {
+      background: #334155;
+    }
 
-.asset{
-  padding:10px;
-  margin:5px 0;
-  background:#1e293b;
-  border-radius:6px;
-  cursor:pointer;
-}
+    /* Main */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
 
-.asset:hover{
-  background:#334155;
-}
+    /* Topbar */
+    .topbar {
+      height: 60px;
+      background: #111827;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
 
-/* CENTER */
-.center{
-  flex:1;
-  padding:10px;
-}
+    .search {
+      background: #1f2937;
+      padding: 8px 12px;
+      border-radius: 8px;
+      width: 300px;
+      border: none;
+      color: white;
+    }
 
-.chart{
-  height:100%;
-  background:#111827;
-  border-radius:10px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#888;
-  font-size:18px;
-}
+    .btn {
+      background: #38bdf8;
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
-/* RIGHT */
-.right{
-  width:320px;
-  background:#0f172a;
-  padding:10px;
-  border-left:1px solid #1f2937;
-}
+    /* Content */
+    .content {
+      display: flex;
+      flex: 1;
+      padding: 20px;
+      gap: 20px;
+      overflow: hidden;
+    }
 
-.card{
-  background:#111827;
-  padding:12px;
-  margin-bottom:10px;
-  border-radius:10px;
-}
+    .chart-box {
+      flex: 2;
+      background: #111827;
+      padding: 20px;
+      border-radius: 12px;
+    }
 
-.green{color:#00ff88;font-weight:bold;}
-.red{color:#ff4d4d;font-weight:bold;}
-.yellow{color:#facc15;font-weight:bold;}
+    .panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
 
-.status{
-  padding:6px 10px;
-  background:#f59e0b;
-  border-radius:6px;
-  display:inline-block;
-}
+    .card {
+      background: #111827;
+      padding: 15px;
+      border-radius: 12px;
+    }
 
-/* BUTTON */
-button{
-  width:100%;
-  padding:10px;
-  margin-top:8px;
-  background:#2563eb;
-  border:none;
-  color:white;
-  border-radius:6px;
-  cursor:pointer;
-}
+    .signal-buy {
+      color: #22c55e;
+      font-weight: bold;
+    }
 
-button:hover{
-  background:#1d4ed8;
-}
-</style>
+    .signal-sell {
+      color: #ef4444;
+      font-weight: bold;
+    }
+
+    .market-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 5px 0;
+    }
+  </style>
 </head>
-
 <body>
 
-<!-- TOP -->
-<div class="topbar">
-  <div class="logo">⚡ MAGIC TRADE AI</div>
-  <div>
-    <button style="width:auto;padding:8px 12px;">Login</button>
-    <button style="width:auto;padding:8px 12px;background:#10b981;">Register</button>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">TRADE PRO</div>
+    <div class="menu-item">Dashboard</div>
+    <div class="menu-item">Market</div>
+    <div class="menu-item">Signals</div>
+    <div class="menu-item">Charts</div>
+    <div class="menu-item">Upgrade</div>
+    <div class="menu-item">Profile</div>
   </div>
-</div>
 
-<!-- BODY -->
-<div class="container">
+  <!-- Main -->
+  <div class="main">
 
-<!-- LEFT -->
-<div class="left">
-<h3>MARKETS</h3>
+    <!-- Topbar -->
+    <div class="topbar">
+      <input class="search" placeholder="Search coin..." />
+      <div class="btn">Upgrade Pro</div>
+    </div>
 
-<div class="asset">BTCUSDT</div>
-<div class="asset">ETHUSDT</div>
-<div class="asset">BNBUSDT</div>
-<div class="asset">XRPUSDT</div>
+    <!-- Content -->
+    <div class="content">
 
-</div>
+      <!-- Chart -->
+      <div class="chart-box">
+        <h3>BTC / USDT Live Chart</h3>
+        <canvas id="chart"></canvas>
+      </div>
 
-<!-- CENTER -->
-<div class="center">
-<div class="chart">
-📊 TradingView Chart Area (Live Chart Here)
-</div>
-</div>
+      <!-- Right Panel -->
+      <div class="panel">
 
-<!-- RIGHT -->
-<div class="right">
+        <div class="card">
+          <h4>Signals</h4>
+          <p class="signal-buy">BUY BTC +12%</p>
+          <p class="signal-sell">SELL ETH -4%</p>
+          <p class="signal-buy">BUY SOL +7%</p>
+        </div>
 
-<div class="card">
-<div class="status">WAITING FOR SIGNAL</div>
-</div>
+        <div class="card">
+          <h4>Market</h4>
+          <div class="market-item"><span>BTC</span><span>$68,000</span></div>
+          <div class="market-item"><span>ETH</span><span>$3,500</span></div>
+          <div class="market-item"><span>SOL</span><span>$140</span></div>
+        </div>
 
-<div class="card">
-<p>Signal: <span class="yellow">NEUTRAL</span></p>
-<p>RSI: 52.10</p>
-<p>Trend: SIDEWAYS</p>
-</div>
+        <div class="card">
+          <h4>Upgrade</h4>
+          <p>Unlock Pro signals & AI tools</p>
+          <button class="btn">Go Pro</button>
+        </div>
 
-<div class="card">
-<p class="green">LONG ZONE</p>
-<p>Entry: ----</p>
-<p>TP: ----</p>
-<p>SL: ----</p>
-</div>
+      </div>
+    </div>
+  </div>
 
-<div class="card">
-<p class="red">SHORT ZONE</p>
-<p>Entry: ----</p>
-<p>TP: ----</p>
-<p>SL: ----</p>
-</div>
+  <script>
+    const ctx = document.getElementById('chart');
 
-<button>SCAN MARKET</button>
-
-</div>
-
-</div>
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+        datasets: [{
+          label: 'BTC Price',
+          data: [65000, 66000, 64000, 67000, 69000, 68000, 70000],
+          borderColor: '#38bdf8',
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { labels: { color: 'white' } }
+        },
+        scales: {
+          x: { ticks: { color: 'white' } },
+          y: { ticks: { color: 'white' } }
+        }
+      }
+    });
+  </script>
 
 </body>
 </html>
