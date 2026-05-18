@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>PRO AI SIGNAL TERMINAL</title>
+<title>AI PRO SIGNAL TERMINAL</title>
 
 <script src="https://s3.tradingview.com/tv.js"></script>
 
@@ -14,13 +14,13 @@
 margin:0;
 padding:0;
 box-sizing:border-box;
+font-family:Arial;
 }
 
 body{
 background:#081018;
-font-family:Arial;
-color:white;
 overflow:hidden;
+color:white;
 }
 
 /* TOPBAR */
@@ -28,15 +28,15 @@ overflow:hidden;
 .topbar{
 height:60px;
 background:#0f172a;
+border-bottom:1px solid #1e293b;
 display:flex;
 align-items:center;
 justify-content:space-between;
 padding:0 20px;
-border-bottom:1px solid #1f2937;
 }
 
 .logo{
-font-size:20px;
+font-size:22px;
 font-weight:bold;
 color:#22c55e;
 }
@@ -46,16 +46,16 @@ color:#22c55e;
 .main{
 display:flex;
 height:calc(100vh - 60px);
-padding:12px;
-gap:12px;
+padding:10px;
+gap:10px;
 }
 
-/* LEFT PANEL */
+/* LEFT */
 
 .left{
 width:20%;
 background:#0f172a;
-border-radius:12px;
+border-radius:14px;
 padding:12px;
 overflow:auto;
 }
@@ -66,16 +66,16 @@ overflow:auto;
 width:40%;
 background:#111827;
 border-radius:14px;
-overflow:hidden;
 position:relative;
+overflow:hidden;
 }
 
-/* RIGHT PANEL */
+/* RIGHT */
 
 .right{
 width:20%;
 background:#0f172a;
-border-radius:12px;
+border-radius:14px;
 padding:12px;
 overflow:auto;
 }
@@ -85,16 +85,16 @@ overflow:auto;
 .pair{
 background:#111827;
 padding:14px;
-border-radius:10px;
 margin-bottom:10px;
+border-radius:12px;
 cursor:pointer;
 transition:0.3s;
 border:1px solid transparent;
 }
 
 .pair:hover{
+transform:scale(1.03);
 border-color:#22c55e;
-transform:scale(1.02);
 }
 
 .activePair{
@@ -102,15 +102,15 @@ border-color:#22c55e;
 background:#162033;
 }
 
-/* SIGNAL */
+/* SIGNAL BOX */
 
 .signal{
 padding:18px;
-text-align:center;
-border-radius:12px;
+border-radius:14px;
 font-size:24px;
 font-weight:bold;
-margin-bottom:14px;
+text-align:center;
+margin-bottom:15px;
 }
 
 .long{
@@ -130,36 +130,38 @@ color:black;
 
 .lightBox{
 background:#111827;
-padding:12px;
+padding:14px;
 border-radius:12px;
-margin-bottom:12px;
+margin-bottom:14px;
 }
 
 .lightRow{
 display:flex;
 justify-content:space-between;
 align-items:center;
-margin:10px 0;
+margin:12px 0;
 }
 
 .light{
 width:18px;
 height:18px;
 border-radius:50%;
-background:#555;
 animation:blink 1s infinite;
 }
 
 .green{
 background:#22c55e;
+box-shadow:0 0 12px #22c55e;
 }
 
 .red{
 background:#ef4444;
+box-shadow:0 0 12px #ef4444;
 }
 
 .yellow{
 background:#facc15;
+box-shadow:0 0 12px #facc15;
 }
 
 @keyframes blink{
@@ -182,15 +184,15 @@ opacity:1;
 
 .info{
 background:#111827;
-padding:12px;
+padding:14px;
 border-radius:12px;
-margin-bottom:12px;
+margin-bottom:14px;
 }
 
 .row{
 display:flex;
 justify-content:space-between;
-margin:10px 0;
+margin:12px 0;
 }
 
 /* BAR */
@@ -201,7 +203,7 @@ height:18px;
 background:#222;
 border-radius:10px;
 overflow:hidden;
-margin-top:10px;
+margin-top:12px;
 }
 
 .bar{
@@ -211,31 +213,44 @@ background:#22c55e;
 transition:0.4s;
 }
 
-/* CHART OVERLAY */
+/* OVERLAY */
 
 .overlaySignal{
 position:absolute;
-top:20px;
-left:20px;
+top:18px;
+left:18px;
 z-index:99;
-padding:10px 16px;
+padding:8px 14px;
 border-radius:10px;
+font-size:13px;
 font-weight:bold;
-font-size:18px;
+display:none;
 backdrop-filter:blur(6px);
+animation:fadeSignal 1s infinite alternate;
 }
 
-.ovLong{
+.buyOverlay{
 background:#16a34acc;
+box-shadow:0 0 12px #16a34a;
 }
 
-.ovShort{
+.sellOverlay{
 background:#dc2626cc;
+box-shadow:0 0 12px #dc2626;
 }
 
-.ovNeutral{
-background:#facc15cc;
-color:black;
+@keyframes fadeSignal{
+
+0%{
+opacity:1;
+transform:scale(1);
+}
+
+100%{
+opacity:0.7;
+transform:scale(1.05);
+}
+
 }
 
 /* MOBILE */
@@ -252,8 +267,6 @@ height:auto;
 .center,
 .right{
 width:100%;
-height:auto;
-min-height:300px;
 }
 
 .center{
@@ -267,17 +280,21 @@ height:500px;
 
 <body>
 
+<!-- TOPBAR -->
+
 <div class="topbar">
 
 <div class="logo">
 AI SIGNAL TERMINAL
 </div>
 
-<div id="topPair">
+<div id="currentPair">
 BTCUSDT
 </div>
 
 </div>
+
+<!-- MAIN -->
 
 <div class="main">
 
@@ -315,9 +332,13 @@ SUIUSDT
 
 <div class="center">
 
-<div id="overlaySignal" class="overlaySignal ovNeutral">
-NEUTRAL
+<!-- BUY SELL OVERLAY -->
+
+<div id="overlaySignal" class="overlaySignal">
+<span id="overlayText"></span>
 </div>
+
+<!-- CHART -->
 
 <div id="tvchart" style="width:100%;height:100%;"></div>
 
@@ -326,6 +347,8 @@ NEUTRAL
 <!-- RIGHT -->
 
 <div class="right">
+
+<!-- MAIN SIGNAL -->
 
 <div id="mainSignal" class="signal neutral">
 NEUTRAL
@@ -336,6 +359,16 @@ NEUTRAL
 <div class="lightBox">
 
 <h3>MULTI TF SIGNALS</h3>
+
+<div class="lightRow">
+<span>15M</span>
+<div id="l15m" class="light yellow"></div>
+</div>
+
+<div class="lightRow">
+<span>30M</span>
+<div id="l30m" class="light yellow"></div>
+</div>
 
 <div class="lightRow">
 <span>1H</span>
@@ -404,18 +437,27 @@ NEUTRAL
 
 </div>
 
+<!-- AUDIO -->
+
+<audio id="alertSound">
+<source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
+</audio>
+
 <script>
 
-let currentPair = "BTCUSDT";
+/* CURRENT PAIR */
+
+let currentPair="BTCUSDT";
+
 let widget;
 
-/* CREATE CHART */
+/* LOAD CHART */
 
 function loadChart(pair){
 
 document.getElementById("tvchart").innerHTML="";
 
-widget = new TradingView.widget({
+widget=new TradingView.widget({
 
 container_id:"tvchart",
 
@@ -430,9 +472,15 @@ theme:"dark",
 
 style:"1",
 
+locale:"en",
+
+toolbar_bg:"#111827",
+
+enable_publishing:false,
+
 hide_top_toolbar:false,
 
-hide_legend:false,
+allow_symbol_change:false,
 
 save_image:false
 
@@ -448,9 +496,11 @@ loadChart(currentPair);
 
 function changePair(pair,el){
 
-currentPair = pair;
+currentPair=pair;
 
-document.getElementById("topPair").innerText = pair;
+document.getElementById("currentPair").innerText=pair;
+
+/* ACTIVE */
 
 document.querySelectorAll(".pair").forEach(p=>{
 
@@ -459,6 +509,8 @@ p.classList.remove("activePair");
 });
 
 el.classList.add("activePair");
+
+/* LOAD */
 
 loadChart(pair);
 
@@ -470,13 +522,13 @@ update();
 
 async function getData(tf){
 
-let r = await fetch(
+let r=await fetch(
 
-`https://api.binance.com/api/v3/klines?symbol=${currentPair}&interval=${tf}&limit=60`
+`https://api.binance.com/api/v3/klines?symbol=${currentPair}&interval=${tf}&limit=80`
 
 );
 
-let d = await r.json();
+let d=await r.json();
 
 return d.map(x=>parseFloat(x[4]));
 
@@ -486,24 +538,28 @@ return d.map(x=>parseFloat(x[4]));
 
 function calcRSI(data){
 
-let gains = 0;
-let losses = 0;
+let gains=0;
+let losses=0;
 
 for(let i=1;i<data.length;i++){
 
-let diff = data[i]-data[i-1];
+let diff=data[i]-data[i-1];
 
 if(diff>0){
-gains += diff;
+
+gains+=diff;
+
 }else{
-losses += Math.abs(diff);
-}
+
+losses+=Math.abs(diff);
 
 }
 
-let rs = gains/(losses || 1);
+}
 
-return 100 - (100/(1+rs));
+let rs=gains/(losses || 1);
+
+return 100-(100/(1+rs));
 
 }
 
@@ -511,9 +567,9 @@ return 100 - (100/(1+rs));
 
 function getSignal(rsi){
 
-if(rsi<35) return "LONG";
+if(rsi>=70) return "SHORT";
 
-if(rsi>65) return "SHORT";
+if(rsi<=35) return "LONG";
 
 return "NEUTRAL";
 
@@ -528,62 +584,64 @@ let el=document.getElementById(id);
 el.className="light";
 
 if(signal=="LONG"){
+
 el.classList.add("green");
+
 }
 
 else if(signal=="SHORT"){
+
 el.classList.add("red");
+
 }
 
 else{
+
 el.classList.add("yellow");
-}
 
 }
 
-/* MAIN UI */
+}
+
+/* AUDIO */
+
+function playAlert(){
+
+document.getElementById("alertSound").play();
+
+}
+
+/* UI */
 
 function updateUI(signal,price,rsi){
+
+/* MAIN SIGNAL */
 
 let box=document.getElementById("mainSignal");
 
 box.className="signal";
 
 if(signal=="LONG"){
+
 box.classList.add("long");
+
 }
 
 else if(signal=="SHORT"){
+
 box.classList.add("short");
+
 }
 
 else{
+
 box.classList.add("neutral");
+
 }
 
 box.innerText=signal;
 
-/* OVERLAY */
-
-let ov=document.getElementById("overlaySignal");
-
-ov.className="overlaySignal";
-
-if(signal=="LONG"){
-ov.classList.add("ovLong");
-}
-
-else if(signal=="SHORT"){
-ov.classList.add("ovShort");
-}
-
-else{
-ov.classList.add("ovNeutral");
-}
-
-ov.innerText=signal;
-
-/* PRICE */
+/* ENTRY */
 
 document.getElementById("entry").innerText=price.toFixed(2);
 
@@ -627,25 +685,87 @@ document.getElementById("confText").innerText=Math.floor(conf)+"%";
 
 document.getElementById("bar").style.width=conf+"%";
 
+/* OVERLAY */
+
+let ov=document.getElementById("overlaySignal");
+
+let ovText=document.getElementById("overlayText");
+
+ov.style.display="none";
+
+/* ONLY BUY SELL */
+
+if(signal=="LONG"){
+
+ov.style.display="block";
+
+ov.className="overlaySignal buyOverlay";
+
+ovText.innerText="BUY • "+price.toFixed(2);
+
+playAlert();
+
+}
+
+else if(signal=="SHORT"){
+
+ov.style.display="block";
+
+ov.className="overlaySignal sellOverlay";
+
+ovText.innerText="SELL • "+price.toFixed(2);
+
+playAlert();
+
+}
+
 }
 
 /* UPDATE */
 
 async function update(){
 
-let d1 = await getData("1h");
-let d4 = await getData("4h");
-let dD = await getData("1d");
+/* DATA */
 
-let r1 = calcRSI(d1);
-let r4 = calcRSI(d4);
-let rD = calcRSI(dD);
+let d15=await getData("15m");
 
-let s1 = getSignal(r1);
-let s4 = getSignal(r4);
-let sD = getSignal(rD);
+let d30=await getData("30m");
+
+let d1=await getData("1h");
+
+let d4=await getData("4h");
+
+let dD=await getData("1d");
+
+/* RSI */
+
+let r15=calcRSI(d15);
+
+let r30=calcRSI(d30);
+
+let r1=calcRSI(d1);
+
+let r4=calcRSI(d4);
+
+let rD=calcRSI(dD);
+
+/* SIGNAL */
+
+let s15=getSignal(r15);
+
+let s30=getSignal(r30);
+
+let s1=getSignal(r1);
+
+let s4=getSignal(r4);
+
+let sD=getSignal(rD);
 
 /* LIGHTS */
+
+setLight("l15m",s15);
+
+setLight("l30m",s30);
 
 setLight("l1h",s1);
 
@@ -664,6 +784,8 @@ updateUI(s4,price,r4);
 /* START */
 
 update();
+
+/* REALTIME */
 
 setInterval(update,10000);
 
