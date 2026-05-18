@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Live Crypto Signal Engine</title>
+<title>Magic Trade AI</title>
 
 <script src="https://s3.tradingview.com/tv.js"></script>
 
@@ -10,56 +10,123 @@
 body{
   margin:0;
   font-family:Arial;
-  background:#0b1220;
+  background:#0b0f1a;
   color:white;
+}
+
+/* TOP BAR */
+.topbar{
   display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 20px;
+  background:#0f172a;
+  border-bottom:1px solid #1f2937;
 }
 
+.logo{
+  font-size:18px;
+  font-weight:bold;
+  color:#00ffcc;
+}
+
+/* LAYOUT */
+.container{
+  display:flex;
+  height:100vh;
+}
+
+/* LEFT */
 .left{
-  width:250px;
-  background:#111827;
+  width:240px;
+  background:#0f172a;
   padding:10px;
+  border-right:1px solid #1f2937;
 }
 
+.pair{
+  padding:10px;
+  margin:6px 0;
+  background:#1e293b;
+  cursor:pointer;
+  border-radius:6px;
+}
+.pair:hover{background:#334155}
+
+/* CENTER */
 .center{
   flex:1;
   padding:10px;
 }
 
+/* RIGHT */
 .right{
-  width:300px;
-  background:#111827;
+  width:320px;
+  background:#0f172a;
   padding:10px;
+  border-left:1px solid #1f2937;
 }
 
+/* CARD */
 .card{
-  background:#1f2937;
+  background:#111827;
   padding:10px;
   margin-bottom:10px;
   border-radius:8px;
 }
 
-.buy{color:#00ff88;}
-.sell{color:#ff4d4d;}
+.buy{color:#00ff88;font-weight:bold;}
+.sell{color:#ff4d4d;font-weight:bold;}
 
 .status{
   padding:6px;
   background:orange;
+  border-radius:5px;
   display:inline-block;
+}
+
+button{
+  padding:8px;
+  margin-top:5px;
+  cursor:pointer;
+  border:none;
   border-radius:5px;
 }
+.primary{background:#2563eb;color:white}
+.danger{background:#ef4444;color:white}
 </style>
 </head>
 
 <body>
 
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="logo">⚡ MAGIC TRADE AI</div>
+
+  <div>
+    <button class="primary" onclick="showLogin()">Login</button>
+    <button class="primary" onclick="showRegister()">Register</button>
+  </div>
+</div>
+
+<div class="container">
+
 <!-- LEFT -->
 <div class="left">
-<h3>PAIRS</h3>
+<h3>MARKETS</h3>
 
-<div onclick="setPair('BTCUSDT')">BTCUSDT</div>
-<div onclick="setPair('ETHUSDT')">ETHUSDT</div>
-<div onclick="setPair('BNBUSDT')">BNBUSDT</div>
+<div class="pair" onclick="setPair('BTCUSDT')">BTCUSDT</div>
+<div class="pair" onclick="setPair('ETHUSDT')">ETHUSDT</div>
+<div class="pair" onclick="setPair('BNBUSDT')">BNBUSDT</div>
+<div class="pair" onclick="setPair('XRPUSDT')">XRPUSDT</div>
+
+<hr>
+
+<h4>PLAN</h4>
+<div class="card">
+<p id="plan">FREE USER</p>
+<button class="primary" onclick="upgrade()">Upgrade to PRO</button>
+</div>
 
 </div>
 
@@ -72,13 +139,19 @@ body{
 <div class="right">
 
 <div class="card">
-<div class="status" id="status">WAITING...</div>
+<div class="status" id="status">WAITING FOR SIGNAL</div>
 </div>
 
 <div class="card">
 <div id="signal">Signal: -</div>
-<div id="price">Price: -</div>
 <div id="rsi">RSI: -</div>
+<div id="trend">Trend: -</div>
+</div>
+
+<div class="card">
+<button class="primary" onclick="generateSignal()">Scan Market</button>
+</div>
+
 </div>
 
 </div>
@@ -87,16 +160,32 @@ body{
 
 let pair = "BTCUSDT";
 let prices = [];
+let userPlan = "FREE";
 
-// ===== TradingView =====
+// ===== LOGIN UI (frontend only) =====
+function showLogin(){
+  alert("LOGIN UI (backend will be added later)");
+}
+
+function showRegister(){
+  alert("REGISTER UI (backend will be added later)");
+}
+
+// ===== UPGRADE =====
+function upgrade(){
+  userPlan = "PRO";
+  document.getElementById("plan").innerText = "PRO USER 🔥";
+}
+
+// ===== CHART =====
 function loadChart(symbol){
   new TradingView.widget({
-    "container_id": "chart",
-    "width": "100%",
-    "height": 700,
-    "symbol": "BINANCE:"+symbol,
-    "interval": "30",
-    "theme": "dark"
+    "container_id":"chart",
+    "width":"100%",
+    "height":720,
+    "symbol":"BINANCE:"+symbol,
+    "interval":"30",
+    "theme":"dark"
   });
 }
 
@@ -107,70 +196,64 @@ function setPair(p){
   loadChart(pair);
 }
 
-// ===== FETCH BINANCE PRICE =====
+// ===== PRICE =====
 async function getPrice(){
   let res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${pair}`);
   let data = await res.json();
   return parseFloat(data.price);
 }
 
-// ===== RSI CALC =====
-function calculateRSI(arr){
-  if(arr.length < 14) return 50;
+// ===== RSI =====
+function RSI(arr){
+  if(arr.length<14) return 50;
 
-  let gains = 0;
-  let losses = 0;
-
-  for(let i=1;i<14;i++){
-    let diff = arr[i] - arr[i-1];
-    if(diff >= 0) gains += diff;
-    else losses += Math.abs(diff);
+  let gain=0,loss=0;
+  for(let i=arr.length-14;i<arr.length;i++){
+    let diff = arr[i]-arr[i-1];
+    if(diff>0) gain+=diff;
+    else loss+=Math.abs(diff);
   }
 
-  let rs = gains / (losses || 1);
-  return 100 - (100 / (1 + rs));
+  let rs = gain/(loss||1);
+  return 100-(100/(1+rs));
 }
 
-// ===== SIGNAL ENGINE =====
-function getSignal(rsi, price){
-  
-  // SIMPLE MARKET LOGIC
+// ===== INSTITUTIONAL SIGNAL ENGINE =====
+function signalEngine(rsi){
+
   if(rsi < 30) return "LONG";
   if(rsi > 70) return "SHORT";
   return "WAIT";
 }
 
-// ===== MAIN LOOP =====
-async function update(){
+// ===== MAIN =====
+async function generateSignal(){
 
   let price = await getPrice();
   prices.push(price);
+  if(prices.length>50) prices.shift();
 
-  if(prices.length > 20) prices.shift();
+  let rsi = RSI(prices);
+  let signal = signalEngine(rsi);
 
-  let rsi = calculateRSI(prices);
-  let signal = getSignal(rsi, price);
-
-  document.getElementById("price").innerText = "Price: "+price;
   document.getElementById("rsi").innerText = "RSI: "+rsi.toFixed(2);
 
-  if(signal === "LONG"){
-    document.getElementById("signal").innerHTML = "<span class='buy'>LONG SIGNAL</span>";
-    document.getElementById("status").innerText = "BUY CONDITION ACTIVE";
+  if(signal==="LONG"){
+    document.getElementById("signal").innerHTML = "<span class='buy'>INSTITUTIONAL LONG</span>";
+    document.getElementById("status").innerText = "BUY ZONE DETECTED";
   }
-  else if(signal === "SHORT"){
-    document.getElementById("signal").innerHTML = "<span class='sell'>SHORT SIGNAL</span>";
-    document.getElementById("status").innerText = "SELL CONDITION ACTIVE";
+  else if(signal==="SHORT"){
+    document.getElementById("signal").innerHTML = "<span class='sell'>INSTITUTIONAL SHORT</span>";
+    document.getElementById("status").innerText = "SELL ZONE DETECTED";
   }
-  else {
-    document.getElementById("signal").innerText = "WAITING...";
-    document.getElementById("status").innerText = "NO TRADE";
+  else{
+    document.getElementById("signal").innerText = "NO CLEAR ENTRY";
+    document.getElementById("status").innerText = "WAITING SMART MONEY SETUP";
   }
 }
 
-// ===== INIT =====
+// INIT
 loadChart(pair);
-setInterval(update, 3000);
 
 </script>
 
