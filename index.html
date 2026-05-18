@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>SMART TRADING SYSTEM v7</title>
+<title>CENTER TRADING VIEW LAYOUT</title>
 
 <script src="https://s3.tradingview.com/tv.js"></script>
 
@@ -14,93 +14,103 @@ background:#0b1220;
 color:white;
 }
 
-.container{
+/* TOP BAR */
+.top{
+height:55px;
+background:#111827;
 display:flex;
-height:100vh;
+align-items:center;
+justify-content:space-between;
+padding:0 15px;
 }
 
-/* LEFT */
+/* MAIN WRAPPER (CENTER FOCUS) */
+.main{
+height:calc(100vh - 55px);
+display:flex;
+justify-content:center;   /* 👈 CENTER FIX */
+align-items:center;
+gap:2%;                  /* 👈 2% SPACE BOTH SIDE */
+padding:0 2%;
+}
+
+/* LEFT PANEL */
 .left{
-width:55%;
-border-right:1px solid #1f2937;
+width:20%;
+height:85%;
+background:#0f172a;
+border-radius:10px;
+padding:10px;
+overflow:auto;
 }
 
-/* RIGHT */
+/* CENTER CHART */
+.center{
+width:40%;
+height:85%;
+background:#0b1220;
+border-radius:12px;
+overflow:hidden;
+box-shadow:0 0 20px rgba(0,0,0,0.5);
+}
+
+/* RIGHT PANEL */
 .right{
-width:45%;
-padding:12px;
+width:20%;
+height:85%;
 background:#0f172a;
+border-radius:10px;
+padding:10px;
 overflow:auto;
 }
 
 /* SIGNAL */
 .signal{
-padding:18px;
+padding:16px;
 text-align:center;
-font-size:24px;
+font-size:20px;
 font-weight:bold;
-border-radius:12px;
-margin-bottom:10px;
+border-radius:10px;
 }
 
 .long{background:#16a34a;}
 .short{background:#dc2626;}
 .neutral{background:#facc15;color:black;}
-
-/* BOX */
-.box{
-background:#111827;
-padding:10px;
-border-radius:10px;
-margin-bottom:10px;
-}
-
-.row{
-display:flex;
-justify-content:space-between;
-margin:6px 0;
-}
-
-/* LIGHT */
-.light{
-width:12px;
-height:12px;
-border-radius:50%;
-display:inline-block;
-background:#555;
-}
-
-.g{background:#22c55e;}
-.r{background:#ef4444;}
-.y{background:#facc15;}
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="top">
+<b>PRO CENTER TRADER</b>
+<span>BTC / REAL TIME DASHBOARD</span>
+</div>
 
+<div class="main">
+
+<!-- LEFT -->
 <div class="left">
+<h3>COINS</h3>
+<div>BTCUSDT</div>
+<div>ETHUSDT</div>
+<div>SOLUSDT</div>
+</div>
+
+<!-- CENTER -->
+<div class="center">
 <div id="chart"></div>
 </div>
 
+<!-- RIGHT -->
 <div class="right">
-
-<h2>SMART ENGINE v7</h2>
 
 <div id="signal" class="signal neutral">NEUTRAL</div>
 
-<div class="box">
-<div class="row"><span>Entry</span><span id="entry">--</span></div>
-<div class="row"><span>TP</span><span id="tp">--</span></div>
-<div class="row"><span>SL</span><span id="sl">--</span></div>
-</div>
+<p>Entry: <span id="entry">--</span></p>
+<p>TP: <span id="tp">--</span></p>
+<p>SL: <span id="sl">--</span></p>
 
-<div class="box">
-<div class="row"><span>RSI</span><span id="rsi">--</span></div>
-<div class="row"><span>EMA Trend</span><span id="trend">--</span></div>
-<div class="row"><span>Score</span><span id="score">--</span></div>
-</div>
+<p>RSI: <span id="rsi">--</span></p>
 
 </div>
 
@@ -108,31 +118,26 @@ background:#555;
 
 <script>
 
-let symbol="BINANCE:BTCUSDT";
-
-/* CHART */
 new TradingView.widget({
 container_id:"chart",
 width:"100%",
 height:"100%",
-symbol:symbol,
+symbol:"BINANCE:BTCUSDT",
 interval:"30",
 theme:"dark",
 style:"1"
 });
 
-/* DATA */
-async function getCloses(tf){
-let r=await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol.replace("BINANCE:","")}&interval=${tf}&limit=50`);
+async function getData(){
+let r=await fetch("https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=4h&limit=50");
 let d=await r.json();
 return d.map(x=>parseFloat(x[4]));
 }
 
-/* RSI */
-function rsi(c){
+function rsi(data){
 let g=0,l=0;
-for(let i=1;i<c.length;i++){
-let d=c[i]-c[i-1];
+for(let i=1;i<data.length;i++){
+let d=data[i]-data[i-1];
 if(d>0) g+=d;
 else l+=Math.abs(d);
 }
@@ -140,39 +145,15 @@ let rs=g/(l||1);
 return 100-(100/(1+rs));
 }
 
-/* EMA */
-function ema(c){
-let short=c.slice(-10).reduce((a,b)=>a+b)/10;
-let long=c.slice(-30).reduce((a,b)=>a+b)/30;
-return short>long ? "BULL" : "BEAR";
-}
-
-/* SCORE ENGINE */
-function score(rsiVal,trend){
-
-let score=0;
-
-if(rsiVal<35) score++;
-if(rsiVal>65) score--;
-
-if(trend=="BULL") score++;
-if(trend=="BEAR") score--;
-
-return score;
-}
-
-/* SIGNAL */
-function signal(score){
-if(score>=2) return "LONG";
-if(score<=-2) return "SHORT";
+function signal(r){
+if(r<35) return "LONG";
+if(r>65) return "SHORT";
 return "NEUTRAL";
 }
 
-/* UI */
-function ui(sig,price,rsiVal,tr,sc){
+function ui(sig,price,r){
 
 let box=document.getElementById("signal");
-
 box.className="signal";
 
 if(sig=="LONG") box.classList.add("long");
@@ -196,26 +177,17 @@ document.getElementById("tp").innerText="--";
 document.getElementById("sl").innerText="--";
 }
 
-document.getElementById("rsi").innerText=rsiVal.toFixed(2);
-document.getElementById("trend").innerText=tr;
-document.getElementById("score").innerText=sc;
-
+document.getElementById("rsi").innerText=r.toFixed(2);
 }
 
-/* LOOP */
 async function update(){
 
-let c=await getCloses("4h");
+let data=await getData();
+let price=data[data.length-1];
+let r=rsi(data);
+let sig=signal(r);
 
-let r=rsi(c);
-let tr=ema(c);
-let sc=score(r,tr);
-
-let sig=signal(sc);
-
-let price=c[c.length-1];
-
-ui(sig,price,r,tr,sc);
+ui(sig,price,r);
 
 }
 
