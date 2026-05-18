@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MAGIC PRO TRADE SIGNAL</title>
+<title>SMART TRADING SYSTEM v7</title>
 
 <script src="https://s3.tradingview.com/tv.js"></script>
 
@@ -14,91 +14,38 @@ background:#0b1220;
 color:white;
 }
 
-/* TOP NAV */
-.topbar{
-height:30px;
-background:#111827;
+.container{
 display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 15px;
+height:100vh;
 }
 
-.topbar a{
-color:white;
-margin:0 10px;
-text-decoration:none;
-font-size:14px;
-opacity:0.8;
-}
-
-.topbar a:hover{opacity:1}
-
-/* MAIN WRAPPER */
-.main{
-display:flex;
-height:calc(100vh - 55px);
-justify-content:space-between;
-align-items:center; /* 👈 CENTER VERTICAL */
-}
-
-/* LEFT SIDEBAR */
+/* LEFT */
 .left{
-width:20%;
-background:#0f172a;
-padding:10px;
-height:90%;
-overflow:auto;
+width:55%;
 border-right:1px solid #1f2937;
 }
 
-.coin{
-padding:10px;
-margin:6px 0;
-background:#111827;
-border-radius:8px;
-cursor:pointer;
-}
-
-/* CENTER CHART (40%) */
-.center{
-width:40%;
-height:85%;
-display:flex;
-align-items:center;
-justify-content:center;
-}
-
-.chartBox{
-width:100%;
-height:100%;
-border-radius:12px;
-overflow:hidden;
-}
-
-/* RIGHT SIDEBAR */
+/* RIGHT */
 .right{
-width:20%;
+width:45%;
+padding:12px;
 background:#0f172a;
-padding:10px;
-height:90%;
 overflow:auto;
-border-left:1px solid #1f2937;
 }
 
-/* SIGNAL BOX */
+/* SIGNAL */
 .signal{
-padding:16px;
-font-size:22px;
-font-weight:bold;
+padding:18px;
 text-align:center;
-border-radius:10px;
+font-size:24px;
+font-weight:bold;
+border-radius:12px;
 margin-bottom:10px;
 }
 
-.buy{background:#16a34a;}
-.sell{background:#dc2626;}
-.wait{background:#facc15;color:black;}
+.long{background:#16a34a;}
+.short{background:#dc2626;}
+.neutral{background:#facc15;color:black;}
 
 /* BOX */
 .box{
@@ -112,54 +59,36 @@ margin-bottom:10px;
 display:flex;
 justify-content:space-between;
 margin:6px 0;
-font-size:13px;
 }
 
-/* MOBILE */
-@media(max-width:900px){
-.main{flex-direction:column;}
-.left,.center,.right{
-width:100%;
-height:33%;
+/* LIGHT */
+.light{
+width:12px;
+height:12px;
+border-radius:50%;
+display:inline-block;
+background:#555;
 }
-}
+
+.g{background:#22c55e;}
+.r{background:#ef4444;}
+.y{background:#facc15;}
 </style>
 </head>
 
 <body>
 
-<!-- TOP BAR -->
-<div class="topbar">
-<div><b>PRO TRADER CENTER v6</b></div>
-<div>
-<a href="#">Home</a>
-<a href="#">Signals</a>
-<a href="#">Profile</a>
-<a href="#">Login</a>
-</div>
-</div>
+<div class="container">
 
-<!-- MAIN -->
-<div class="main">
-
-<!-- LEFT -->
 <div class="left">
-<h3>COINS</h3>
-<div class="coin">BTCUSDT</div>
-<div class="coin">ETHUSDT</div>
-<div class="coin">SOLUSDT</div>
-<div class="coin">BNBUSDT</div>
+<div id="chart"></div>
 </div>
 
-<!-- CENTER CHART -->
-<div class="center">
-<div id="chart" class="chartBox"></div>
-</div>
-
-<!-- RIGHT -->
 <div class="right">
 
-<div id="signal" class="signal wait">WAIT</div>
+<h2>SMART ENGINE v7</h2>
+
+<div id="signal" class="signal neutral">NEUTRAL</div>
 
 <div class="box">
 <div class="row"><span>Entry</span><span id="entry">--</span></div>
@@ -169,7 +98,8 @@ height:33%;
 
 <div class="box">
 <div class="row"><span>RSI</span><span id="rsi">--</span></div>
-<div class="row"><span>Trend</span><span id="trend">--</span></div>
+<div class="row"><span>EMA Trend</span><span id="trend">--</span></div>
+<div class="row"><span>Score</span><span id="score">--</span></div>
 </div>
 
 </div>
@@ -210,32 +140,54 @@ let rs=g/(l||1);
 return 100-(100/(1+rs));
 }
 
+/* EMA */
+function ema(c){
+let short=c.slice(-10).reduce((a,b)=>a+b)/10;
+let long=c.slice(-30).reduce((a,b)=>a+b)/30;
+return short>long ? "BULL" : "BEAR";
+}
+
+/* SCORE ENGINE */
+function score(rsiVal,trend){
+
+let score=0;
+
+if(rsiVal<35) score++;
+if(rsiVal>65) score--;
+
+if(trend=="BULL") score++;
+if(trend=="BEAR") score--;
+
+return score;
+}
+
 /* SIGNAL */
-function signal(r){
-if(r<35) return "BUY";
-if(r>65) return "SELL";
-return "WAIT";
+function signal(score){
+if(score>=2) return "LONG";
+if(score<=-2) return "SHORT";
+return "NEUTRAL";
 }
 
 /* UI */
-function updateUI(sig,price,r){
+function ui(sig,price,rsiVal,tr,sc){
 
-let s=document.getElementById("signal");
-s.className="signal";
+let box=document.getElementById("signal");
 
-if(sig=="BUY") s.classList.add("buy");
-if(sig=="SELL") s.classList.add("sell");
-if(sig=="WAIT") s.classList.add("wait");
+box.className="signal";
 
-s.innerText=sig;
+if(sig=="LONG") box.classList.add("long");
+if(sig=="SHORT") box.classList.add("short");
+if(sig=="NEUTRAL") box.classList.add("neutral");
+
+box.innerText=sig;
 
 document.getElementById("entry").innerText=price.toFixed(2);
 
-if(sig=="BUY"){
+if(sig=="LONG"){
 document.getElementById("tp").innerText=(price*1.02).toFixed(2);
 document.getElementById("sl").innerText=(price*0.99).toFixed(2);
 }
-else if(sig=="SELL"){
+else if(sig=="SHORT"){
 document.getElementById("tp").innerText=(price*0.98).toFixed(2);
 document.getElementById("sl").innerText=(price*1.01).toFixed(2);
 }
@@ -244,19 +196,26 @@ document.getElementById("tp").innerText="--";
 document.getElementById("sl").innerText="--";
 }
 
-document.getElementById("rsi").innerText=r.toFixed(2);
-document.getElementById("trend").innerText=r>50?"BULL":"BEAR";
+document.getElementById("rsi").innerText=rsiVal.toFixed(2);
+document.getElementById("trend").innerText=tr;
+document.getElementById("score").innerText=sc;
+
 }
 
 /* LOOP */
 async function update(){
 
 let c=await getCloses("4h");
-let price=c[c.length-1];
-let r=rsi(c);
-let sig=signal(r);
 
-updateUI(sig,price,r);
+let r=rsi(c);
+let tr=ema(c);
+let sc=score(r,tr);
+
+let sig=signal(sc);
+
+let price=c[c.length-1];
+
+ui(sig,price,r,tr,sc);
 
 }
 
