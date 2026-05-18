@@ -27,46 +27,57 @@
 <a href="#signals" class="mt-6 inline-block px-6 py-2 bg-green-500 rounded-xl">View Signals</a>
 </section>
 
-<section id="signals" class="mt-20 px-6 text-center">
-
-<h2 class="text-3xl font-bold mb-8">Live Trading Signals</h2>
-
-<div class="grid md:grid-cols-3 gap-6">
-
-<div class="bg-gray-800 p-6 rounded-xl hover:scale-105 transition">
-<h3 class="text-green-400 text-xl font-bold">BUY BTC</h3>
-<p class="text-gray-300 mt-2">Strong momentum</p>
-</div>
-
-<div class="bg-gray-800 p-6 rounded-xl hover:scale-105 transition">
-<h3 class="text-red-400 text-xl font-bold">SELL ETH</h3>
-<p class="text-gray-300 mt-2">Weak trend</p>
-</div>
-
-<div class="bg-gray-800 p-6 rounded-xl hover:scale-105 transition">
-<h3 class="text-green-400 text-xl font-bold">BUY BNB</h3>
-<p class="text-gray-300 mt-2">Stable growth</p>
-</div>
-
-</div>
-
-</section>
-
 <section id="chart" class="mt-20 px-6 text-center">
 
-<h2 class="text-3xl font-bold mb-6">Live BTC Chart 📊</h2>
+  <h2 class="text-3xl font-bold mb-6">Crypto Market Overview 📊</h2>
 
-<div class="max-w-5xl mx-auto">
+  <p class="text-gray-400 mb-10">Live charts for top crypto assets</p>
 
-<iframe
-src="https://s.tradingview.com/widgetembed/?symbol=BINANCE:BTCUSDT&interval=1&theme=dark"
-width="100%"
-height="500"
-frameborder="0"
-scrolling="no">
-</iframe>
+  <div class="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
 
-</div>
+    <!-- BTC -->
+    <div class="bg-gray-800 p-2 rounded-xl">
+      <h3 class="text-green-400 font-bold mb-2">BTC / USDT</h3>
+      <iframe src="https://s.tradingview.com/widgetembed/?symbol=BINANCE:BTCUSDT&theme=dark"
+      width="100%" height="300" frameborder="0" scrolling="no"></iframe>
+    </div>
+
+    <!-- ETH -->
+    <div class="bg-gray-800 p-2 rounded-xl">
+      <h3 class="text-blue-400 font-bold mb-2">ETH / USDT</h3>
+      <iframe src="https://s.tradingview.com/widgetembed/?symbol=BINANCE:ETHUSDT&theme=dark"
+      width="100%" height="300" frameborder="0" scrolling="no"></iframe>
+    </div>
+
+    <!-- BNB -->
+    <div class="bg-gray-800 p-2 rounded-xl">
+      <h3 class="text-yellow-400 font-bold mb-2">BNB / USDT</h3>
+      <iframe src="https://s.tradingview.com/widgetembed/?symbol=BINANCE:BNBUSDT&theme=dark"
+      width="100%" height="300" frameborder="0" scrolling="no"></iframe>
+    </div>
+
+    <!-- SOL -->
+    <div class="bg-gray-800 p-2 rounded-xl">
+      <h3 class="text-purple-400 font-bold mb-2">SOL / USDT</h3>
+      <iframe src="https://s.tradingview.com/widgetembed/?symbol=BINANCE:SOLUSDT&theme=dark"
+      width="100%" height="300" frameborder="0" scrolling="no"></iframe>
+    </div>
+
+    <!-- XRP -->
+    <div class="bg-gray-800 p-2 rounded-xl">
+      <h3 class="text-pink-400 font-bold mb-2">XRP / USDT</h3>
+      <iframe src="https://s.tradingview.com/widgetembed/?symbol=BINANCE:XRPUSDT&theme=dark"
+      width="100%" height="300" frameborder="0" scrolling="no"></iframe>
+    </div>
+
+    <!-- SUI -->
+    <div class="bg-gray-800 p-2 rounded-xl">
+      <h3 class="text-cyan-400 font-bold mb-2">SUI / USDT</h3>
+      <iframe src="https://s.tradingview.com/widgetembed/?symbol=BINANCE:SUIUSDT&theme=dark"
+      width="100%" height="300" frameborder="0" scrolling="no"></iframe>
+    </div>
+
+  </div>
 
 </section>
 
