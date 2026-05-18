@@ -1,1 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Trading Pro Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
 
+<style>
+.blink-green { animation: blinkG 1s infinite; }
+.blink-red { animation: blinkR 1s infinite; }
+
+@keyframes blinkG {
+0%,100% {opacity:1; box-shadow:0 0 12px green;}
+50% {opacity:0.3;}
+}
+
+@keyframes blinkR {
+0%,100% {opacity:1; box-shadow:0 0 12px red;}
+50% {opacity:0.3;}
+}
+</style>
+
+</head>
+
+<body class="bg-gray-900 text-white">
+
+<!-- NAV -->
+<nav class="bg-gray-800 p-4 flex justify-between">
+<h1 class="text-green-400 font-bold">Trading AI Pro</h1>
+<div>
+<a href="#signals">Signals</a> |
+<a href="#indicators">Indicators</a> |
+<a href="#charts">Charts</a>
+</div>
+</nav>
+
+<!-- HERO -->
+<section class="text-center mt-10">
+<h1 class="text-3xl font-bold text-green-400">Full AI Trading Dashboard</h1>
+<p class="text-gray-400">Signals + Charts + Indicators</p>
+</section>
+
+<!-- SIGNALS -->
+<section id="signals" class="mt-10 px-4">
+
+<h2 class="text-2xl text-center mb-6">Live Signals</h2>
+
+<div class="grid md:grid-cols-3 gap-4 max-w-6xl mx-auto">
+
+<div class="bg-gray-800 p-4 rounded text-center">
+BTC<br>
+<div class="blink-green w-4 h-4 mx-auto mt-2 rounded-full"></div>
+<p>BUY</p>
+</div>
+
+<div class="bg-gray-800 p-4 rounded text-center">
+ETH<br>
+<div class="blink-red w-4 h-4 mx-auto mt-2 rounded-full"></div>
+<p>SELL</p>
+</div>
+
+<div class="bg-gray-800 p-4 rounded text-center">
+BNB<br>
+<div class="blink-green w-4 h-4 mx-auto mt-2 rounded-full"></div>
+<p>BUY</p>
+</div>
+
+</div>
+
+</section>
+
+<!-- INDICATORS -->
+<section id="indicators" class="mt-10 px-4 text-center">
+
+<h2 class="text-2xl mb-6">Indicators Panel</h2>
+
+<div class="grid md:grid-cols-3 gap-4 max-w-6xl mx-auto">
+
+<div class="bg-gray-800 p-4 rounded">
+RSI: BTC Overbought ⚠️
+</div>
+
+<div class="bg-gray-800 p-4 rounded">
+MACD: Mixed Signal
+</div>
+
+<div class="bg-gray-800 p-4 rounded">
+Trend: Bullish 🟢
+</div>
+
+</div>
+
+</section>
+
+<!-- CHARTS -->
+<section id="charts" class="mt-10 px-4 text-center">
+
+<h2 class="text-2xl mb-6">Market Charts</h2>
+
+<div class="grid md:grid-cols-2 gap-4 max-w-6xl mx-auto">
+
+<iframe src="https://s.tradingview.com/widgetembed/?symbol=BINANCE:BTCUSDT&theme=dark&style=1"
+height="300" width="100%"></iframe>
+
+<iframe src="https://s.tradingview.com/widgetembed/?symbol=BINANCE:ETHUSDT&theme=dark&style=1"
+height="300" width="100%"></iframe>
+
+<iframe src="https://s.tradingview.com/widgetembed/?symbol=BINANCE:BNBUSDT&theme=dark&style=1"
+height="300" width="100%"></iframe>
+
+<iframe src="https://s.tradingview.com/widgetembed/?symbol=BINANCE:SOLUSDT&theme=dark&style=1"
+height="300" width="100%"></iframe>
+
+<iframe src="https://s.tradingview.com/widgetembed/?symbol=BINANCE:XRPUSDT&theme=dark&style=1"
+height="300" width="100%"></iframe>
+
+<iframe src="https://s.tradingview.com/widgetembed/?symbol=BINANCE:SUIUSDT&theme=dark&style=1"
+height="300" width="100%"></iframe>
+
+</div>
+
+</section>
+
+</body>
+</html>
