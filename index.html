@@ -2,9 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Magic Trade AI</title>
-
-<script src="https://s3.tradingview.com/tv.js"></script>
+<title>Pro Trading Dashboard</title>
 
 <style>
 body{
@@ -16,80 +14,62 @@ body{
 
 /* TOP BAR */
 .topbar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:12px 20px;
+  height:60px;
   background:#0f172a;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 20px;
   border-bottom:1px solid #1f2937;
 }
 
 .logo{
+  font-weight:bold;
+  color:#00ffcc;
   font-size:18px;
-  font-weight:bold;
-  color:#00ffcc;
-}
-
-/* NEWS BAR */
-.newsbar{
-  display:flex;
-  align-items:center;
-  background:#0b1220;
-  padding:10px 15px;
-  border-bottom:1px solid #1f2937;
-  overflow:hidden;
-}
-
-.newsicon{margin-right:10px;font-size:20px;}
-.newslabel{
-  font-weight:bold;
-  color:#00ffcc;
-  margin-right:15px;
-}
-
-.marquee{
-  white-space:nowrap;
-  overflow:hidden;
-  flex:1;
-}
-
-.marquee span{
-  display:inline-block;
-  padding-left:100%;
-  animation: scroll 20s linear infinite;
-}
-
-@keyframes scroll{
-  0% {transform:translateX(0);}
-  100% {transform:translateX(-100%);}
 }
 
 /* LAYOUT */
 .container{
   display:flex;
-  height:100vh;
+  height:calc(100vh - 60px);
 }
 
-/* LEFT */
+/* LEFT PANEL */
 .left{
-  width:240px;
+  width:220px;
   background:#0f172a;
   padding:10px;
   border-right:1px solid #1f2937;
 }
 
-.pair{
+.asset{
   padding:10px;
-  margin:6px 0;
+  margin:5px 0;
   background:#1e293b;
-  cursor:pointer;
   border-radius:6px;
+  cursor:pointer;
+}
+
+.asset:hover{
+  background:#334155;
 }
 
 /* CENTER */
 .center{
   flex:1;
   padding:10px;
+}
+
+.chart{
+  height:100%;
+  background:#111827;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#888;
+  font-size:18px;
 }
 
 /* RIGHT */
@@ -102,200 +82,104 @@ body{
 
 .card{
   background:#111827;
-  padding:10px;
+  padding:12px;
   margin-bottom:10px;
-  border-radius:8px;
+  border-radius:10px;
 }
 
-.buy{color:#00ff88;font-weight:bold;}
-.sell{color:#ff4d4d;font-weight:bold;}
+.green{color:#00ff88;font-weight:bold;}
+.red{color:#ff4d4d;font-weight:bold;}
+.yellow{color:#facc15;font-weight:bold;}
 
 .status{
-  padding:6px;
-  background:orange;
+  padding:6px 10px;
+  background:#f59e0b;
+  border-radius:6px;
   display:inline-block;
-  border-radius:5px;
 }
 
+/* BUTTON */
 button{
-  padding:8px;
-  margin-top:5px;
-  cursor:pointer;
-  border:none;
-  border-radius:5px;
+  width:100%;
+  padding:10px;
+  margin-top:8px;
   background:#2563eb;
+  border:none;
   color:white;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#1d4ed8;
 }
 </style>
 </head>
 
 <body>
 
-<!-- TOP BAR -->
+<!-- TOP -->
 <div class="topbar">
   <div class="logo">⚡ MAGIC TRADE AI</div>
   <div>
-    <button onclick="alert('Login system later')">Login</button>
-    <button onclick="alert('Register system later')">Register</button>
+    <button style="width:auto;padding:8px 12px;">Login</button>
+    <button style="width:auto;padding:8px 12px;background:#10b981;">Register</button>
   </div>
 </div>
 
-<!-- NEWS BAR -->
-<div class="newsbar">
-  <div class="newsicon">🧠</div>
-  <div class="newslabel">UPDATE NEWS</div>
-
-  <div class="marquee">
-    <span id="newsText">
-      BTC showing volatility | ETH breakout incoming | Institutional flow detected | Market reacting to global news |
-    </span>
-  </div>
-</div>
-
+<!-- BODY -->
 <div class="container">
 
 <!-- LEFT -->
 <div class="left">
 <h3>MARKETS</h3>
 
-<div class="pair" onclick="setPair('BTCUSDT')">BTCUSDT</div>
-<div class="pair" onclick="setPair('ETHUSDT')">ETHUSDT</div>
-<div class="pair" onclick="setPair('BNBUSDT')">BNBUSDT</div>
-
-<hr>
-
-<div class="card">
-<p id="plan">FREE USER</p>
-<button onclick="upgrade()">Upgrade PRO</button>
-</div>
+<div class="asset">BTCUSDT</div>
+<div class="asset">ETHUSDT</div>
+<div class="asset">BNBUSDT</div>
+<div class="asset">XRPUSDT</div>
 
 </div>
 
 <!-- CENTER -->
 <div class="center">
-<div id="chart"></div>
+<div class="chart">
+📊 TradingView Chart Area (Live Chart Here)
+</div>
 </div>
 
 <!-- RIGHT -->
 <div class="right">
 
 <div class="card">
-<div class="status" id="status">WAITING FOR SIGNAL</div>
+<div class="status">WAITING FOR SIGNAL</div>
 </div>
 
 <div class="card">
-<div id="signal">Signal: -</div>
-<div id="rsi">RSI: -</div>
+<p>Signal: <span class="yellow">NEUTRAL</span></p>
+<p>RSI: 52.10</p>
+<p>Trend: SIDEWAYS</p>
 </div>
 
-<button onclick="generateSignal()">SCAN MARKET</button>
+<div class="card">
+<p class="green">LONG ZONE</p>
+<p>Entry: ----</p>
+<p>TP: ----</p>
+<p>SL: ----</p>
+</div>
+
+<div class="card">
+<p class="red">SHORT ZONE</p>
+<p>Entry: ----</p>
+<p>TP: ----</p>
+<p>SL: ----</p>
+</div>
+
+<button>SCAN MARKET</button>
 
 </div>
 
 </div>
-
-<script>
-
-let pair="BTCUSDT";
-let prices=[];
-let plan="FREE";
-
-// chart
-function loadChart(symbol){
-  new TradingView.widget({
-    "container_id":"chart",
-    "width":"100%",
-    "height":720,
-    "symbol":"BINANCE:"+symbol,
-    "interval":"30",
-    "theme":"dark"
-  });
-}
-
-// change pair
-function setPair(p){
-  pair=p;
-  prices=[];
-  loadChart(pair);
-}
-
-// price
-async function getPrice(){
-  let res=await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${pair}`);
-  let data=await res.json();
-  return parseFloat(data.price);
-}
-
-// RSI
-function RSI(arr){
-  if(arr.length<14) return 50;
-  let g=0,l=0;
-  for(let i=arr.length-14;i<arr.length;i++){
-    let d=arr[i]-arr[i-1];
-    if(d>0)g+=d; else l+=Math.abs(d);
-  }
-  let rs=g/(l||1);
-  return 100-(100/(1+rs));
-}
-
-// signal
-function signal(rsi){
-  if(rsi<30) return "LONG";
-  if(rsi>70) return "SHORT";
-  return "WAIT";
-}
-
-// main
-async function generateSignal(){
-  let price=await getPrice();
-  prices.push(price);
-  if(prices.length>50) prices.shift();
-
-  let rsi=RSI(prices);
-  let sig=signal(rsi);
-
-  document.getElementById("rsi").innerText="RSI: "+rsi.toFixed(2);
-
-  if(sig==="LONG"){
-    document.getElementById("signal").innerHTML="<span class='buy'>LONG</span>";
-    document.getElementById("status").innerText="BUY ZONE";
-  }
-  else if(sig==="SHORT"){
-    document.getElementById("signal").innerHTML="<span class='sell'>SHORT</span>";
-    document.getElementById("status").innerText="SELL ZONE";
-  }
-  else{
-    document.getElementById("signal").innerText="WAIT";
-    document.getElementById("status").innerText="NO TRADE";
-  }
-}
-
-// upgrade
-function upgrade(){
-  plan="PRO";
-  document.getElementById("plan").innerText="PRO USER 🔥";
-}
-
-// news auto rotate
-const news=[
- "BTC volatility increasing",
- "ETH breakout watch",
- "Institutional buying BTC",
- "Market liquidity shift",
- "Global crypto news impact"
-];
-
-let i=0;
-setInterval(()=>{
-  document.getElementById("newsText").innerText=
-  news[i]+" | "+news[(i+1)%news.length]+" | "+news[(i+2)%news.length];
-  i++;
-  if(i>=news.length) i=0;
-},5000);
-
-loadChart(pair);
-
-</script>
 
 </body>
 </html>
