@@ -44,15 +44,9 @@
       cursor:pointer;
     }
 
-    .menu:hover{
-      background:#1f2937;
-    }
+    .menu:hover{ background:#1f2937; }
 
-    .main{
-      flex:1;
-      display:flex;
-      flex-direction:column;
-    }
+    .main{ flex:1; display:flex; flex-direction:column; }
 
     .topbar{
       height:65px;
@@ -135,10 +129,10 @@
 
     .row{display:flex;justify-content:space-between;margin:6px 0;}
 
-    .controls{
-      display:flex;
-      gap:8px;
-      margin-bottom:10px;
+    .error{
+      color:#f87171;
+      font-size:12px;
+      margin-top:5px;
     }
   </style>
 </head>
@@ -171,8 +165,9 @@
   <div class="content">
 
     <div class="chartBox">
-      <h3 id="title">BTC Live Price</h3>
+      <h3>BTC Live Price</h3>
       <canvas id="chart"></canvas>
+      <div id="status" class="error"></div>
     </div>
 
     <div class="rightPanel">
@@ -184,7 +179,8 @@
 
       <div class="card">
         <h4>Market</h4>
-        <div id="market"></div>
+        <div id="market">Loading market data...</div>
+        <div id="marketError" class="error"></div>
       </div>
 
     </div>
@@ -201,11 +197,19 @@ function setMode(m){ mode = m; }
 function setTime(t){ timeframe = t; }
 
 async function fetchData(){
-  const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd");
-  return await res.json();
+  try{
+    const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd");
+    if(!res.ok) throw new Error("API failed");
+    return await res.json();
+  }catch(err){
+    document.getElementById("status").innerText = "Market data fetch failed. Check internet or API limit.";
+    console.error(err);
+    return null;
+  }
 }
 
 function updateTicker(data){
+  if(!data) return;
   document.getElementById("ticker").innerHTML = `
     <div class='coin'>BTC $${data.bitcoin.usd}</div>
     <div class='coin'>ETH $${data.ethereum.usd}</div>
@@ -214,7 +218,17 @@ function updateTicker(data){
 }
 
 function updateMarket(data){
-  document.getElementById("market").innerHTML = `
+  const el = document.getElementById("market");
+  const err = document.getElementById("marketError");
+
+  if(!data){
+    el.innerHTML = "No data";
+    err.innerText = "Market box not updating (API issue or blocked request).";
+    return;
+  }
+
+  err.innerText = "";
+  el.innerHTML = `
     <div class='row'><span>BTC</span><span>$${data.bitcoin.usd}</span></div>
     <div class='row'><span>ETH</span><span>$${data.ethereum.usd}</span></div>
     <div class='row'><span>SOL</span><span>$${data.solana.usd}</span></div>
@@ -222,6 +236,8 @@ function updateMarket(data){
 }
 
 function updateSignal(data){
+  if(!data) return;
+
   let btc = data.bitcoin.usd;
   let msg = "HOLD";
 
@@ -233,6 +249,7 @@ function updateSignal(data){
 
 function updateChart(price){
   const now = new Date().toLocaleTimeString();
+
   chart.data.labels.push(now);
   chart.data.datasets[0].data.push(price);
 
@@ -246,10 +263,12 @@ function updateChart(price){
 
 async function loop(){
   const data = await fetchData();
+
   updateTicker(data);
   updateMarket(data);
   updateSignal(data);
-  updateChart(data.bitcoin.usd);
+
+  if(data) updateChart(data.bitcoin.usd);
 }
 
 window.onload = () => {
