@@ -1,1 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trading AI Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
 
+<body class="bg-gray-900 text-white">
+
+<nav class="bg-gray-800 p-4 flex justify-between items-center">
+<h1 class="text-green-400 font-bold text-xl">Trading AI</h1>
+
+<div class="space-x-4">
+<a href="#home" class="hover:text-green-400">Home</a>
+<a href="#signals" class="hover:text-green-400">Signals</a>
+<a href="#chart" class="hover:text-green-400">Chart</a>
+<a href="#ai" class="hover:text-green-400">AI</a>
+</div>
+</nav>
+
+<section id="home" class="text-center mt-20 px-4">
+<h1 class="text-4xl font-bold text-green-400">Welcome to Trading Signal AI 🚀</h1>
+<p class="mt-4 text-gray-300">Live signals + AI assistant + chart analysis</p>
+
+<a href="#signals" class="mt-6 inline-block px-6 py-2 bg-green-500 rounded-xl">View Signals</a>
+</section>
+
+<section id="signals" class="mt-20 px-6 text-center">
+
+<h2 class="text-3xl font-bold mb-8">Live Trading Signals</h2>
+
+<div class="grid md:grid-cols-3 gap-6">
+
+<div class="bg-gray-800 p-6 rounded-xl hover:scale-105 transition">
+<h3 class="text-green-400 text-xl font-bold">BUY BTC</h3>
+<p class="text-gray-300 mt-2">Strong momentum</p>
+</div>
+
+<div class="bg-gray-800 p-6 rounded-xl hover:scale-105 transition">
+<h3 class="text-red-400 text-xl font-bold">SELL ETH</h3>
+<p class="text-gray-300 mt-2">Weak trend</p>
+</div>
+
+<div class="bg-gray-800 p-6 rounded-xl hover:scale-105 transition">
+<h3 class="text-green-400 text-xl font-bold">BUY BNB</h3>
+<p class="text-gray-300 mt-2">Stable growth</p>
+</div>
+
+</div>
+
+</section>
+
+<section id="chart" class="mt-20 px-6 text-center">
+
+<h2 class="text-3xl font-bold mb-6">Live BTC Chart 📊</h2>
+
+<div class="max-w-5xl mx-auto">
+
+<iframe
+src="https://s.tradingview.com/widgetembed/?symbol=BINANCE:BTCUSDT&interval=1&theme=dark"
+width="100%"
+height="500"
+frameborder="0"
+scrolling="no">
+</iframe>
+
+</div>
+
+</section>
+
+<section id="ai" class="mt-20 px-6 text-center">
+
+<h2 class="text-3xl font-bold mb-6">AI Trading Assistant 🤖</h2>
+
+<div class="bg-gray-800 p-6 rounded-xl max-w-xl mx-auto">
+
+<input id="userInput" type="text"
+placeholder="Ask BTC, ETH, BNB..."
+class="w-full p-3 rounded-lg text-black">
+
+<button onclick="getResponse()"
+class="mt-4 px-6 py-2 bg-blue-500 rounded-xl">
+Ask AI
+</button>
+
+<p id="response" class="mt-4 text-green-400"></p>
+
+</div>
+
+</section>
+
+<script>
+function getResponse(){
+let input=document.getElementById("userInput").value.toLowerCase();
+let output=document.getElementById("response");
+
+if(input.includes("btc")){
+output.innerText="AI: BTC STRONG 📈";
+}
+else if(input.includes("eth")){
+output.innerText="AI: ETH WEAK 📉";
+}
+else if(input.includes("bnb")){
+output.innerText="AI: BNB STABLE ⚡";
+}
+else{
+output.innerText="AI: Need more data 🤖";
+}
+}
+</script>
+
+</body>
+</html>
