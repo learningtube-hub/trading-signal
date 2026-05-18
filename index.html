@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,13 +10,19 @@
 
 <body class="bg-gray-900 text-white">
 
-  <!-- Header -->
-  <header class="p-4 bg-gray-800 text-center text-2xl font-bold">
-    Trading Signal AI
-  </header>
+  <!-- NAVBAR -->
+  <nav class="bg-gray-800 p-4 flex justify-between items-center">
+    <h1 class="text-green-400 font-bold text-xl">Trading AI</h1>
 
-  <!-- Hero Section -->
-  <section class="text-center mt-20">
+    <div class="space-x-4">
+      <a href="#" class="hover:text-green-400">Home</a>
+      <a href="#" class="hover:text-green-400">Signals</a>
+      <a href="#" class="hover:text-green-400">AI</a>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="text-center mt-20 px-4">
     <h1 class="text-4xl font-bold text-green-400">
       Welcome to Trading Signal AI
     </h1>
@@ -29,19 +36,29 @@
     </button>
   </section>
 
+  <!-- SIGNALS SECTION -->
+  <section class="mt-20 px-4 text-center">
+    <h2 class="text-3xl font-bold mb-8">Live Trading Signals</h2>
+
+    <div class="grid md:grid-cols-3 gap-6">
+
+      <div class="bg-gray-800 p-6 rounded-xl">
+        <h3 class="text-green-400 font-bold">BUY BTC</h3>
+        <p class="text-gray-300">Strong Signal</p>
+      </div>
+
+      <div class="bg-gray-800 p-6 rounded-xl">
+        <h3 class="text-red-400 font-bold">SELL ETH</h3>
+        <p class="text-gray-300">Medium Signal</p>
+      </div>
+
+      <div class="bg-gray-800 p-6 rounded-xl">
+        <h3 class="text-green-400 font-bold">BUY BNB</h3>
+        <p class="text-gray-300">Strong Signal</p>
+      </div>
+
+    </div>
+  </section>
+
 </body>
-  <!-- Navbar -->
-<nav class="bg-gray-800 p-4 flex justify-between items-center">
-
-  <h1 class="text-green-400 font-bold text-xl">
-    Trading AI
-  </h1>
-
-  <div class="space-x-4 text-white">
-    <a href="#" class="hover:text-green-400">Home</a>
-    <a href="#" class="hover:text-green-400">Signals</a>
-    <a href="#" class="hover:text-green-400">AI</a>
-  </div>
-
-</nav>
 </html>
