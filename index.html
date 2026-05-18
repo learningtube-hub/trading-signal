@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>LIGHT SIGNAL SYSTEM v2</title>
+<title>SMART CONFIRMATION ENGINE v2</title>
 
 <script src="https://s3.tradingview.com/tv.js"></script>
 
@@ -42,43 +42,52 @@ margin:8px 0;
 border-radius:10px;
 }
 
+.signal{
+padding:12px;
+text-align:center;
+font-size:20px;
+font-weight:bold;
+border-radius:10px;
+}
+
+.green{background:#16a34a;}
+.red{background:#dc2626;}
+.yellow{background:#facc15;color:black;}
+
 .rsiBox{
 display:flex;
 justify-content:space-between;
-padding:8px;
-margin:6px 0;
+padding:6px;
+margin:5px 0;
 background:#111827;
 border-radius:8px;
-}
-
-/* LIGHT STYLE */
-.light{
-width:18px;
-height:18px;
-border-radius:50%;
-display:inline-block;
-margin-right:8px;
-background:#555;
-}
-
-.green{background:#22c55e; animation:blink 1s infinite;}
-.red{background:#ef4444; animation:blink 1s infinite;}
-.yellow{background:#facc15; animation:blink 1s infinite;}
-
-@keyframes blink{
-50%{opacity:0.3;}
 }
 </style>
 </head>
 
 <body>
 
-<!-- LEFT -->
+<!-- LEFT PANEL -->
 <div class="left">
 <h3>MARKET</h3>
 <div class="box">BTC</div>
 <div class="box">ETH</div>
 <div class="box">SOL</div>
+
+<hr>
+
+<div class="box">
+ENTRY: <span id="entry">--</span>
+</div>
+
+<div class="box">
+TP: <span id="tp">--</span>
+</div>
+
+<div class="box">
+SL: <span id="sl">--</span>
+</div>
+
 </div>
 
 <!-- CENTER -->
@@ -86,30 +95,32 @@ background:#555;
 <div id="chart"></div>
 </div>
 
-<!-- RIGHT -->
+<!-- RIGHT PANEL -->
 <div class="right">
 
-<h3>RSI STATUS</h3>
+<h3>SMART SIGNAL ENGINE</h3>
+
+<div class="box signal yellow" id="signal">WAIT</div>
+
+<div class="box">
+Score: <span id="score">0</span>
+</div>
+
+<hr>
+
+<h3>RSI MULTI TF</h3>
 
 <div class="rsiBox">30M <span id="r30">--</span></div>
 <div class="rsiBox">1H <span id="r1h">--</span></div>
 <div class="rsiBox">4H <span id="r4h">--</span></div>
 <div class="rsiBox">1D <span id="r1d">--</span></div>
 
-<hr>
-
-<h3>SIGNAL LIGHT</h3>
-
-<div class="box">
-<span id="light" class="light"></span>
-<span id="signalText">WAIT</span>
-</div>
-
 </div>
 
 <script>
 
 let symbol="BINANCE:BTCUSDT";
+let price=0;
 
 // ---------------- CHART ----------------
 function loadChart(sym){
@@ -125,13 +136,14 @@ style:"1"
 });
 }
 
-// ---------------- RSI ----------------
+// ---------------- FETCH ----------------
 async function getCloses(tf){
 let res=await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol.replace("BINANCE:","")}&interval=${tf}&limit=50`);
 let data=await res.json();
 return data.map(x=>parseFloat(x[4]));
 }
 
+// ---------------- RSI ----------------
 function calcRSI(closes){
 let gain=0,loss=0;
 
@@ -145,34 +157,57 @@ let rs=gain/(loss||1);
 return 100-(100/(1+rs));
 }
 
+// ---------------- TREND ----------------
+function getTrend(closes){
+return closes[closes.length-1] > closes[0] ? "UP" : "DOWN";
+}
+
+// ---------------- MOMENTUM ----------------
+function getMomentum(closes){
+let mid=Math.floor(closes.length/2);
+let a1=closes.slice(0,mid);
+let a2=closes.slice(mid);
+
+let avg1=a1.reduce((a,b)=>a+b)/a1.length;
+let avg2=a2.reduce((a,b)=>a+b)/a2.length;
+
+return avg2>avg1 ? "UP" : "DOWN";
+}
+
 // ---------------- SIGNAL ENGINE ----------------
-function getSignal(rsi){
-if(rsi<30) return "GREEN";   // BUY
-if(rsi>70) return "RED";     // SELL
-return "YELLOW";             // NEUTRAL
+function smartSignal(rsi,trend,momentum){
+
+let score=0;
+
+if(rsi<35) score++;
+if(rsi>65) score--;
+
+if(trend=="UP") score++;
+if(trend=="DOWN") score--;
+
+if(momentum=="UP") score++;
+if(momentum=="DOWN") score--;
+
+return score;
 }
 
-function updateLight(signal,rsi4h){
+// ---------------- TP/SL CALC ----------------
+function setRisk(price,signal){
 
-let light=document.getElementById("light");
-let text=document.getElementById("signalText");
+let tp,sl;
 
-// reset
-light.className="light";
-
-if(signal=="GREEN"){
-light.classList.add("green");
-text.innerText="BUY SIGNAL";
-}
-else if(signal=="RED"){
-light.classList.add("red");
-text.innerText="SELL SIGNAL";
-}
-else{
-light.classList.add("yellow");
-text.innerText="NEUTRAL";
+if(signal=="BUY"){
+tp = price * 1.02;
+sl = price * 0.99;
 }
 
+if(signal=="SELL"){
+tp = price * 0.98;
+sl = price * 1.01;
+}
+
+document.getElementById("tp").innerText=tp.toFixed(2);
+document.getElementById("sl").innerText=sl.toFixed(2);
 }
 
 // ---------------- UPDATE ----------------
@@ -183,22 +218,50 @@ let c1h=await getCloses("1h");
 let c4h=await getCloses("4h");
 let c1d=await getCloses("1d");
 
+// RSI
 let r30=calcRSI(c30);
 let r1h=calcRSI(c1h);
 let r4h=calcRSI(c4h);
 let r1d=calcRSI(c1d);
 
-// RSI UI
+// UI RSI
 document.getElementById("r30").innerText=r30.toFixed(2);
 document.getElementById("r1h").innerText=r1h.toFixed(2);
 document.getElementById("r4h").innerText=r4h.toFixed(2);
 document.getElementById("r1d").innerText=r1d.toFixed(2);
 
-// MAIN SIGNAL (4H BASED)
-let signal=getSignal(r4h);
+// TREND + MOMENTUM (4H base)
+let trend=getTrend(c4h);
+let momentum=getMomentum(c4h);
 
-// LIGHT UPDATE
-updateLight(signal,r4h);
+// SCORE
+let score=smartSignal(r4h,trend,momentum);
+
+document.getElementById("score").innerText=score;
+
+// DECISION
+let signal="WAIT";
+let color="yellow";
+
+if(score>=2){
+signal="BUY";
+color="green";
+setRisk(c4h[c4h.length-1],signal);
+}
+
+if(score<=-2){
+signal="SELL";
+color="red";
+setRisk(c4h[c4h.length-1],signal);
+}
+
+// UI SIGNAL
+let box=document.getElementById("signal");
+box.innerText=signal;
+box.className="signal "+color;
+
+// ENTRY
+document.getElementById("entry").innerText=c4h[c4h.length-1].toFixed(2);
 
 }
 
