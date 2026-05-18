@@ -1,235 +1,226 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pro Trading Signal Dashboard V2</title>
-  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-  <style>
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-      font-family:Arial, sans-serif;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRO TRADING SIGNAL TERMINAL</title>
+<script src="https://s3.tradingview.com/tv.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
 
-    body{
-      background:#0b1220;
-      color:#e5e7eb;
-      height:100vh;
-      display:flex;
-      overflow:hidden;
-    }
+body{
+  background:#0b1220;
+  color:#e5e7eb;
+  height:100vh;
+  display:flex;
+}
 
-    /* LEFT PANEL */
-    .left{
-      width:230px;
-      background:#0f172a;
-      border-right:1px solid #1f2937;
-      padding:12px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      overflow:auto;
-    }
+/* LEFT PANEL */
+.left{
+  width:220px;
+  background:#0f172a;
+  border-right:1px solid #1f2937;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
 
-    .logo{
-      font-size:18px;
-      font-weight:bold;
-      color:#38bdf8;
-      margin-bottom:8px;
-    }
+.logo{
+  font-size:18px;
+  font-weight:bold;
+  color:#38bdf8;
+  padding:8px;
+}
 
-    .pair{
-      padding:10px;
-      border-radius:8px;
-      background:#111827;
-      cursor:pointer;
-      text-align:center;
-      transition:0.2s;
-    }
+.pair{
+  padding:10px;
+  background:#111827;
+  border-radius:8px;
+  cursor:pointer;
+  text-align:center;
+}
 
-    .pair:hover{
-      background:#1f2937;
-    }
+.pair:hover{background:#1f2937;}
 
-    /* CENTER */
-    .center{
-      flex:1;
-      display:flex;
-      flex-direction:column;
-    }
+/* CENTER */
+.center{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
 
-    .topbar{
-      height:55px;
-      background:#0f172a;
-      border-bottom:1px solid #1f2937;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:0 12px;
-    }
+.topbar{
+  height:55px;
+  background:#0f172a;
+  border-bottom:1px solid #1f2937;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 12px;
+}
 
-    .status{
-      font-size:13px;
-      opacity:0.8;
-    }
+.chartBox{
+  flex:1;
+  margin:10px;
+  border-radius:12px;
+  border:1px solid #1f2937;
+  overflow:hidden;
+}
 
-    .chartBox{
-      flex:1;
-      margin:10px;
-      border:1px solid #1f2937;
-      border-radius:12px;
-      overflow:hidden;
-    }
+/* RIGHT */
+.right{
+  width:280px;
+  background:#0f172a;
+  border-left:1px solid #1f2937;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
 
-    /* RIGHT */
-    .right{
-      width:270px;
-      background:#0f172a;
-      border-left:1px solid #1f2937;
-      padding:12px;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
+.card{
+  background:#111827;
+  padding:12px;
+  border-radius:12px;
+}
 
-    .card{
-      background:#111827;
-      padding:12px;
-      border-radius:12px;
-    }
+.btnRow{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+}
 
-    .btnRow{
-      display:flex;
-      gap:10px;
-      margin-top:10px;
-    }
+.btn{
+  flex:1;
+  padding:10px;
+  border:none;
+  border-radius:20px;
+  font-weight:bold;
+  cursor:pointer;
+  color:white;
+}
 
-    .btn{
-      flex:1;
-      padding:12px;
-      border:none;
-      border-radius:50px;
-      font-weight:bold;
-      cursor:pointer;
-      color:white;
-      transition:0.2s;
-    }
+.green{background:#22c55e;}
+.red{background:#ef4444;}
 
-    .green{background:#22c55e;}
-    .red{background:#ef4444;}
-
-    .signalText{
-      font-size:16px;
-      font-weight:bold;
-      margin-top:8px;
-    }
-
-    .small{
-      font-size:12px;
-      opacity:0.7;
-    }
-  </style>
+.tp{color:#22c55e;font-weight:bold;margin-top:5px;}
+.sl{color:#ef4444;font-weight:bold;}
+.entry{color:#38bdf8;font-weight:bold;}
+.status{margin-top:8px;}
+</style>
 </head>
+
 <body>
 
-<!-- LEFT PAIRS -->
+<!-- LEFT -->
 <div class="left">
-  <div class="logo">TRADE PRO LIVE</div>
-
-  <div class="pair" onclick="changePair('BINANCE:BTCUSDT')">BTC / USDT</div>
-  <div class="pair" onclick="changePair('BINANCE:ETHUSDT')">ETH / USDT</div>
-  <div class="pair" onclick="changePair('BINANCE:SOLUSDT')">SOL / USDT</div>
-  <div class="pair" onclick="changePair('BINANCE:BNBUSDT')">BNB / USDT</div>
-  <div class="pair" onclick="changePair('BINANCE:XRPUSDT')">XRP / USDT</div>
+  <div class="logo">TRADE TERMINAL PRO</div>
+  <div class="pair" onclick="setPair('BTCUSDT')">BTC/USDT</div>
+  <div class="pair" onclick="setPair('ETHUSDT')">ETH/USDT</div>
+  <div class="pair" onclick="setPair('SOLUSDT')">SOL/USDT</div>
+  <div class="pair" onclick="setPair('BNBUSDT')">BNB/USDT</div>
 </div>
 
 <!-- CENTER -->
 <div class="center">
   <div class="topbar">
-    <div>📊 PRO SIGNAL DASHBOARD</div>
-    <div class="status" id="pairName">BTCUSDT</div>
+    <div id="title">BTC/USDT LIVE TERMINAL</div>
+    <div id="livePrice">PRICE: --</div>
   </div>
-
-  <div class="chartBox" id="tv_chart"></div>
+  <div class="chartBox" id="tv"></div>
 </div>
 
 <!-- RIGHT -->
 <div class="right">
 
   <div class="card">
-    <div>LIVE SIGNAL</div>
-    <div id="signal" class="signalText">WAITING...</div>
-    <div class="small">Auto demo signal engine</div>
+    <h3>SIGNAL ENGINE</h3>
+    <div class="entry" id="entry">ENTRY: --</div>
+    <div class="tp" id="tp">TP: --</div>
+    <div class="sl" id="sl">SL: --</div>
 
     <div class="btnRow">
-      <button class="btn green" onclick="setSignal('LONG')">LONG</button>
-      <button class="btn red" onclick="setSignal('SHORT')">SHORT</button>
+      <button class="btn green" onclick="manual('LONG')">LONG</button>
+      <button class="btn red" onclick="manual('SHORT')">SHORT</button>
     </div>
-  </div>
 
-  <div class="card">
-    <div>MARKET MODE</div>
-    <div id="mode">NEUTRAL</div>
+    <div class="status" id="status">WAITING SIGNAL...</div>
   </div>
 
 </div>
 
 <script>
-let widget;
-let currentSymbol = "BINANCE:BTCUSDT";
+let symbol="BTCUSDT";
+let price=65000;
 
-function loadChart(symbol){
-  document.getElementById("tv_chart").innerHTML = "";
+function loadChart(sym){
+  document.getElementById("tv").innerHTML="";
 
-  widget = new TradingView.widget({
-    "width": "100%",
-    "height": "100%",
-    "symbol": symbol,
-    "interval": "1",
-    "timezone": "Asia/Dhaka",
-    "theme": "dark",
-    "style": "1",
-    "locale": "en",
-    "toolbar_bg": "#0f172a",
-    "enable_publishing": false,
-    "hide_top_toolbar": true,
-    "container_id": "tv_chart"
+  new TradingView.widget({
+    width:"100%",
+    height:"100%",
+    symbol:"BINANCE:"+sym,
+    interval:"1",
+    theme:"dark",
+    style:"1",
+    container_id:"tv"
   });
 
-  document.getElementById("pairName").innerText = symbol.replace("BINANCE:","");
+  document.getElementById("title").innerText=sym+" TERMINAL";
 }
 
-function changePair(symbol){
-  currentSymbol = symbol;
-  loadChart(symbol);
-  autoSignal();
+async function fetchPrice(){
+  try{
+    let res=await fetch("https://api.binance.com/api/v3/ticker/price?symbol="+symbol);
+    let data=await res.json();
+    price=parseFloat(data.price);
+
+    document.getElementById("livePrice").innerText="PRICE: "+price;
+  }catch(e){}
 }
 
-function setSignal(type){
-  let el = document.getElementById("signal");
-  el.innerText = type;
-  el.style.color = (type === "LONG") ? "#22c55e" : "#ef4444";
+function signal(type){
+  let entry=price;
+  let tp,sl;
+
+  if(type=="LONG"){
+    tp=entry+300;
+    sl=entry-200;
+  }else{
+    tp=entry-300;
+    sl=entry+200;
+  }
+
+  document.getElementById("entry").innerText="ENTRY: "+entry;
+  document.getElementById("tp").innerText="TP: "+tp;
+  document.getElementById("sl").innerText="SL: "+sl;
+
+  document.getElementById("status").innerText=type+" ACTIVE";
+  document.getElementById("status").style.color=type=="LONG"?"#22c55e":"#ef4444";
 }
 
 function autoSignal(){
-  // simple demo logic
-  let r = Math.random();
-  let sig = "HOLD";
-
-  if(r > 0.6) sig = "LONG ✔";
-  else if(r < 0.3) sig = "SHORT ✔";
-
-  let el = document.getElementById("signal");
-  el.innerText = sig;
-  el.style.color = sig.includes("LONG") ? "#22c55e" : sig.includes("SHORT") ? "#ef4444" : "#e5e7eb";
+  let r=Math.random();
+  if(r>0.5) signal("LONG"); else signal("SHORT");
 }
 
-window.onload = function(){
-  loadChart(currentSymbol);
+function setPair(p){
+  symbol=p;
+  loadChart(p);
+}
+
+function manual(t){
+  signal(t);
+}
+
+window.onload=function(){
+  loadChart(symbol);
+  fetchPrice();
   autoSignal();
-  setInterval(autoSignal, 4000);
+
+  setInterval(fetchPrice,3000);
+  setInterval(autoSignal,5000);
 };
 </script>
 
