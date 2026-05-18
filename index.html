@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pro Crypto Trading Dashboard</title>
+  <title>Real-Time Crypto Trading Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     *{
@@ -21,7 +21,6 @@
       overflow:hidden;
     }
 
-    /* Sidebar */
     .sidebar{
       width:260px;
       background:#0f172a;
@@ -36,7 +35,6 @@
       font-size:22px;
       font-weight:bold;
       color:#38bdf8;
-      margin-bottom:10px;
     }
 
     .menu{
@@ -44,21 +42,18 @@
       border-radius:10px;
       background:#111827;
       cursor:pointer;
-      transition:0.2s;
     }
 
     .menu:hover{
       background:#1f2937;
     }
 
-    /* Main */
     .main{
       flex:1;
       display:flex;
       flex-direction:column;
     }
 
-    /* Topbar */
     .topbar{
       height:65px;
       display:flex;
@@ -70,13 +65,12 @@
     }
 
     .search{
-      width:320px;
+      width:300px;
       padding:10px;
       border-radius:10px;
       border:none;
       background:#111827;
       color:white;
-      outline:none;
     }
 
     .btn{
@@ -86,19 +80,36 @@
       border-radius:10px;
       font-weight:bold;
       cursor:pointer;
+      margin-left:5px;
     }
 
-    /* Content */
+    .btn.red{background:#ef4444;color:white;}
+    .btn.green{background:#22c55e;color:white;}
+
+    .ticker{
+      display:flex;
+      gap:10px;
+      padding:10px;
+      overflow:auto;
+      background:#0f172a;
+      border-bottom:1px solid #1f2937;
+    }
+
+    .coin{
+      background:#111827;
+      padding:8px 12px;
+      border-radius:10px;
+      white-space:nowrap;
+    }
+
     .content{
       flex:1;
       display:grid;
       grid-template-columns:2fr 1fr;
       gap:15px;
       padding:15px;
-      overflow:hidden;
     }
 
-    /* Chart */
     .chartBox{
       background:#0f172a;
       border:1px solid #1f2937;
@@ -106,7 +117,6 @@
       padding:15px;
     }
 
-    /* Right panel */
     .rightPanel{
       display:flex;
       flex-direction:column;
@@ -123,116 +133,137 @@
     .buy{color:#22c55e;font-weight:bold;}
     .sell{color:#ef4444;font-weight:bold;}
 
-    .row{
+    .row{display:flex;justify-content:space-between;margin:6px 0;}
+
+    .controls{
       display:flex;
-      justify-content:space-between;
-      margin:6px 0;
+      gap:8px;
+      margin-bottom:10px;
     }
-
-    /* Market ticker top */
-    .ticker{
-      display:flex;
-      gap:15px;
-      padding:10px 15px;
-      background:#0f172a;
-      border-bottom:1px solid #1f2937;
-      overflow:auto;
-    }
-
-    .coin{
-      background:#111827;
-      padding:8px 12px;
-      border-radius:10px;
-      white-space:nowrap;
-    }
-
   </style>
 </head>
 <body>
 
-  <div class="sidebar">
-    <div class="logo">TRADE PRO+</div>
-    <div class="menu">Dashboard</div>
-    <div class="menu">Market</div>
-    <div class="menu">Signals</div>
-    <div class="menu">Charts</div>
-    <div class="menu">Portfolio</div>
-    <div class="menu">Upgrade Pro</div>
+<div class="sidebar">
+  <div class="logo">TRADE PRO LIVE</div>
+  <div class="menu">Dashboard</div>
+  <div class="menu">Market</div>
+  <div class="menu">Signals</div>
+  <div class="menu">Portfolio</div>
+  <div class="menu">Settings</div>
+</div>
+
+<div class="main">
+
+  <div class="topbar">
+    <input class="search" placeholder="Search BTC, ETH..." />
+    <div>
+      <button class="btn green" onclick="setMode('long')">LONG</button>
+      <button class="btn red" onclick="setMode('short')">SHORT</button>
+      <button class="btn" onclick="setTime('1m')">1m</button>
+      <button class="btn" onclick="setTime('5m')">5m</button>
+      <button class="btn" onclick="setTime('1h')">1h</button>
+    </div>
   </div>
 
-  <div class="main">
+  <div class="ticker" id="ticker"></div>
 
-    <div class="topbar">
-      <input class="search" placeholder="Search BTC, ETH, SOL..." />
-      <div class="btn">Upgrade</div>
+  <div class="content">
+
+    <div class="chartBox">
+      <h3 id="title">BTC Live Price</h3>
+      <canvas id="chart"></canvas>
     </div>
 
-    <div class="ticker">
-      <div class="coin">BTC $68,200</div>
-      <div class="coin">ETH $3,520</div>
-      <div class="coin">SOL $142</div>
-      <div class="coin">BNB $580</div>
-      <div class="coin">XRP $0.62</div>
-    </div>
+    <div class="rightPanel">
 
-    <div class="content">
-
-      <div class="chartBox">
-        <h3>BTC / USDT Live Chart</h3>
-        <canvas id="chart"></canvas>
+      <div class="card">
+        <h4>Live Signal</h4>
+        <p id="signal">Loading...</p>
       </div>
 
-      <div class="rightPanel">
-
-        <div class="card">
-          <h4>Live Signals</h4>
-          <p class="buy">BUY BTC +12%</p>
-          <p class="sell">SELL ETH -3%</p>
-          <p class="buy">BUY SOL +8%</p>
-        </div>
-
-        <div class="card">
-          <h4>Market Overview</h4>
-          <div class="row"><span>BTC</span><span>$68,200</span></div>
-          <div class="row"><span>ETH</span><span>$3,520</span></div>
-          <div class="row"><span>SOL</span><span>$142</span></div>
-          <div class="row"><span>BNB</span><span>$580</span></div>
-        </div>
-
-        <div class="card">
-          <h4>Upgrade Pro</h4>
-          <p>Unlock AI signals, alerts & premium charts</p>
-          <div class="btn" style="margin-top:10px;">Go Pro</div>
-        </div>
-
+      <div class="card">
+        <h4>Market</h4>
+        <div id="market"></div>
       </div>
 
     </div>
+
   </div>
+</div>
 
 <script>
-const ctx = document.getElementById('chart');
+let mode = "neutral";
+let timeframe = "1m";
+let chart;
 
-new Chart(ctx, {
-  type:'line',
-  data:{
-    labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-    datasets:[{
-      label:'BTC Price',
-      data:[65000,66200,64000,67500,69000,70000,71500],
-      borderColor:'#38bdf8',
-      tension:0.35
-    }]
-  },
-  options:{
-    responsive:true,
-    plugins:{legend:{labels:{color:'white'}}},
-    scales:{
-      x:{ticks:{color:'white'}},
-      y:{ticks:{color:'white'}}
-    }
+function setMode(m){ mode = m; }
+function setTime(t){ timeframe = t; }
+
+async function fetchData(){
+  const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd");
+  return await res.json();
+}
+
+function updateTicker(data){
+  document.getElementById("ticker").innerHTML = `
+    <div class='coin'>BTC $${data.bitcoin.usd}</div>
+    <div class='coin'>ETH $${data.ethereum.usd}</div>
+    <div class='coin'>SOL $${data.solana.usd}</div>
+  `;
+}
+
+function updateMarket(data){
+  document.getElementById("market").innerHTML = `
+    <div class='row'><span>BTC</span><span>$${data.bitcoin.usd}</span></div>
+    <div class='row'><span>ETH</span><span>$${data.ethereum.usd}</span></div>
+    <div class='row'><span>SOL</span><span>$${data.solana.usd}</span></div>
+  `;
+}
+
+function updateSignal(data){
+  let btc = data.bitcoin.usd;
+  let msg = "HOLD";
+
+  if(mode === "long" && btc > 65000) msg = "LONG READY ✔";
+  if(mode === "short" && btc < 65000) msg = "SHORT READY ✔";
+
+  document.getElementById("signal").innerText = msg;
+}
+
+function updateChart(price){
+  const now = new Date().toLocaleTimeString();
+  chart.data.labels.push(now);
+  chart.data.datasets[0].data.push(price);
+
+  if(chart.data.labels.length > 10){
+    chart.data.labels.shift();
+    chart.data.datasets[0].data.shift();
   }
-});
+
+  chart.update();
+}
+
+async function loop(){
+  const data = await fetchData();
+  updateTicker(data);
+  updateMarket(data);
+  updateSignal(data);
+  updateChart(data.bitcoin.usd);
+}
+
+window.onload = () => {
+  const ctx = document.getElementById('chart');
+
+  chart = new Chart(ctx, {
+    type:'line',
+    data:{labels:[],datasets:[{label:'BTC',data:[],borderColor:'#38bdf8'}]},
+    options:{responsive:true,plugins:{legend:{labels:{color:'white'}}},scales:{x:{ticks:{color:'white'}},y:{ticks:{color:'white'}}}}
+  });
+
+  setInterval(loop, 3000);
+  loop();
+};
 </script>
 
 </body>
