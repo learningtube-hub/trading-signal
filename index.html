@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>PRO TRADING DASHBOARD v3</title>
+<title>PRO TRADING SYSTEM v5</title>
 
 <script src="https://s3.tradingview.com/tv.js"></script>
 
@@ -12,49 +12,54 @@ margin:0;
 font-family:Arial;
 background:#0b1220;
 color:white;
-height:100vh;
-display:flex;
 }
 
-/* LEFT = CHART (50%) */
+/* RESPONSIVE WRAPPER */
+.wrapper{
+display:flex;
+flex-direction:row;
+height:100vh;
+}
+
+/* MOBILE STACK */
+@media (max-width: 900px){
+.wrapper{
+flex-direction:column;
+}
+.left,.right{
+width:100%!important;
+height:50%;
+}
+}
+
+/* CHART SIDE */
 .left{
-width:50%;
+width:60%;
 position:relative;
 border-right:1px solid #1f2937;
 }
 
-/* RIGHT = DASHBOARD */
+/* DASHBOARD */
 .right{
-width:50%;
+width:40%;
 padding:12px;
 overflow:auto;
 background:#0f172a;
 }
 
-/* TOP SIGNAL BAR */
-.topBar{
-position:absolute;
-top:10px;
-left:10px;
-z-index:10;
-display:flex;
-gap:10px;
+/* SIGNAL BOX */
+.signal{
+padding:16px;
+text-align:center;
+font-size:22px;
+font-weight:bold;
+border-radius:12px;
+margin-bottom:10px;
 }
 
-.light{
-width:14px;
-height:14px;
-border-radius:50%;
-background:#555;
-}
-
-.green{background:#22c55e; animation:blink 1s infinite;}
-.red{background:#ef4444; animation:blink 1s infinite;}
-.yellow{background:#facc15; animation:blink 1s infinite;}
-
-@keyframes blink{
-50%{opacity:0.3;}
-}
+.buy{background:#16a34a;}
+.sell{background:#dc2626;}
+.wait{background:#facc15;color:black;}
 
 /* BOX */
 .box{
@@ -64,54 +69,44 @@ margin:8px 0;
 border-radius:10px;
 }
 
-/* SIGNAL CARD */
-.signalCard{
-padding:15px;
-text-align:center;
-font-size:22px;
-font-weight:bold;
-border-radius:12px;
-}
-
-.buy{background:#16a34a;}
-.sell{background:#dc2626;}
-.wait{background:#facc15;color:black;}
-
+/* ROW */
 .row{
 display:flex;
 justify-content:space-between;
 margin:6px 0;
 }
 
-#chart{
-width:100%;
-height:100vh;
+/* LIGHT */
+.light{
+width:12px;
+height:12px;
+border-radius:50%;
+display:inline-block;
+background:#555;
+margin-right:6px;
 }
+
+.green{background:#22c55e;}
+.red{background:#ef4444;}
+.yellow{background:#facc15;}
 </style>
 </head>
 
 <body>
 
-<!-- LEFT: CHART -->
+<div class="wrapper">
+
+<!-- CHART -->
 <div class="left">
-
-<!-- TOP LIGHT BAR -->
-<div class="topBar">
-<div id="l1" class="light"></div>
-<div id="l2" class="light"></div>
-<div id="l3" class="light"></div>
-</div>
-
 <div id="chart"></div>
-
 </div>
 
-<!-- RIGHT: DASHBOARD -->
+<!-- DASHBOARD -->
 <div class="right">
 
-<h2>SMART DASHBOARD</h2>
+<h2>SMART PRO SYSTEM</h2>
 
-<div id="signal" class="signalCard wait">WAIT</div>
+<div id="signal" class="signal wait">WAIT</div>
 
 <div class="box">
 <div class="row"><span>Entry</span><span id="entry">--</span></div>
@@ -120,10 +115,16 @@ height:100vh;
 </div>
 
 <div class="box">
-<div class="row"><span>RSI 30M</span><span id="r30">--</span></div>
-<div class="row"><span>RSI 1H</span><span id="r1h">--</span></div>
-<div class="row"><span>RSI 4H</span><span id="r4h">--</span></div>
-<div class="row"><span>RSI 1D</span><span id="r1d">--</span></div>
+<div class="row"><span>RSI 4H</span><span id="rsi">--</span></div>
+<div class="row"><span>Trend</span><span id="trend">--</span></div>
+<div class="row"><span>Momentum</span><span id="momentum">--</span></div>
+</div>
+
+<div class="box">
+<span class="light" id="light"></span>
+<span id="statusText">SYSTEM READY</span>
+</div>
+
 </div>
 
 </div>
@@ -143,7 +144,7 @@ theme:"dark",
 style:"1"
 });
 
-// ---------------- FETCH ----------------
+// ---------------- DATA ----------------
 async function getCloses(tf){
 let res=await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol.replace("BINANCE:","")}&interval=${tf}&limit=50`);
 let data=await res.json();
@@ -151,7 +152,7 @@ return data.map(x=>parseFloat(x[4]));
 }
 
 // ---------------- RSI ----------------
-function calcRSI(closes){
+function rsi(closes){
 let gain=0,loss=0;
 for(let i=1;i<closes.length;i++){
 let d=closes[i]-closes[i-1];
@@ -162,48 +163,56 @@ let rs=gain/(loss||1);
 return 100-(100/(1+rs));
 }
 
-// ---------------- SIGNAL ----------------
-function getSignal(rsi){
-if(rsi<35) return "BUY";
-if(rsi>65) return "SELL";
+// ---------------- TREND ----------------
+function trend(closes){
+return closes[closes.length-1] > closes[0] ? "UP" : "DOWN";
+}
+
+// ---------------- MOMENTUM ----------------
+function momentum(closes){
+let mid=Math.floor(closes.length/2);
+let a=closes.slice(0,mid);
+let b=closes.slice(mid);
+
+let avg1=a.reduce((x,y)=>x+y)/a.length;
+let avg2=b.reduce((x,y)=>x+y)/b.length;
+
+return avg2>avg1 ? "UP" : "DOWN";
+}
+
+// ---------------- SIGNAL ENGINE (CLEAN) ----------------
+function signalEngine(rsi,trend,momentum){
+
+let score=0;
+
+if(rsi<35) score++;
+if(rsi>65) score--;
+
+if(trend=="UP") score++;
+if(trend=="DOWN") score--;
+
+if(momentum=="UP") score++;
+if(momentum=="DOWN") score--;
+
+if(score>=2) return "BUY";
+if(score<=-2) return "SELL";
 return "WAIT";
 }
 
-// ---------------- LIGHT CONTROL ----------------
-function setLights(signal){
-
-let l1=document.getElementById("l1");
-let l2=document.getElementById("l2");
-let l3=document.getElementById("l3");
-
-l1.className="light";
-l2.className="light";
-l3.className="light";
-
-if(signal=="BUY"){
-l1.classList.add("green");
-}
-else if(signal=="SELL"){
-l1.classList.add("red");
-}
-else{
-l1.classList.add("yellow");
-}
-}
-
 // ---------------- UI ----------------
-function updateUI(signal,price,rsi){
+function ui(signal,price,rsiVal,trendVal,mom){
 
 let box=document.getElementById("signal");
-box.innerText=signal;
 
-box.className="signalCard ";
+box.className="signal";
 
 if(signal=="BUY") box.classList.add("buy");
 if(signal=="SELL") box.classList.add("sell");
 if(signal=="WAIT") box.classList.add("wait");
 
-// entry
+box.innerText=signal;
+
+// ENTRY
 document.getElementById("entry").innerText=price.toFixed(2);
 
 // TP SL
@@ -220,29 +229,36 @@ document.getElementById("tp").innerText="--";
 document.getElementById("sl").innerText="--";
 }
 
+// INFO
+document.getElementById("rsi").innerText=rsiVal.toFixed(2);
+document.getElementById("trend").innerText=trendVal;
+document.getElementById("momentum").innerText=mom;
+
+// LIGHT
+let light=document.getElementById("light");
+light.className="light";
+
+if(signal=="BUY") light.classList.add("green");
+else if(signal=="SELL") light.classList.add("red");
+else light.classList.add("yellow");
+
+document.getElementById("statusText").innerText="LIVE ANALYSIS";
 }
 
 // ---------------- UPDATE LOOP ----------------
 async function update(){
 
 let c4h=await getCloses("4h");
+
+let r=rsi(c4h);
+let t=trend(c4h);
+let m=momentum(c4h);
+
 let price=c4h[c4h.length-1];
 
-let r30=calcRSI(await getCloses("30m"));
-let r1h=calcRSI(await getCloses("1h"));
-let r4h=calcRSI(c4h);
-let r1d=calcRSI(await getCloses("1d"));
+let sig=signalEngine(r,t,m);
 
-let signal=getSignal(r4h);
-
-setLights(signal);
-updateUI(signal,price,r4h);
-
-// RSI UI
-document.getElementById("r30").innerText=r30.toFixed(2);
-document.getElementById("r1h").innerText=r1h.toFixed(2);
-document.getElementById("r4h").innerText=r4h.toFixed(2);
-document.getElementById("r1d").innerText=r1d.toFixed(2);
+ui(sig,price,r,t,m);
 
 }
 
