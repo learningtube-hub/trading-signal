@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>AI SIGNAL TERMINAL</title>
 
@@ -10,40 +10,293 @@
 
 <style>
 
-/* MOBILE MARKET DROPDOWN FIX */
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
 
-@media(max-width:900px){
+body{
+background:#081018;
+color:white;
+overflow:hidden;
+}
 
-/* LEFT PANEL SMALL */
+/* TOPBAR */
+
+.topbar{
+height:60px;
+background:#0f172a;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 20px;
+border-bottom:1px solid #1f2937;
+}
+
+.logo{
+font-size:22px;
+font-weight:bold;
+color:#22c55e;
+}
+
+/* MAIN */
+
+.main{
+display:flex;
+height:calc(100vh - 60px);
+gap:10px;
+padding:10px;
+}
+
+/* LEFT */
 
 .left{
-display:block !important;
-width:100% !important;
-height:auto !important;
-padding:10px !important;
-margin-bottom:10px;
+width:20%;
+background:#0f172a;
+border-radius:14px;
+padding:12px;
+overflow:auto;
+}
+
+/* CENTER */
+
+.center{
+width:40%;
+background:#111827;
+border-radius:14px;
+position:relative;
+overflow:hidden;
+}
+
+/* RIGHT */
+
+.right{
+width:20%;
+background:#0f172a;
+border-radius:14px;
+padding:12px;
+overflow:auto;
 }
 
 /* MARKET HEADER */
 
 .marketHeader{
+display:none;
+}
+
+/* PAIRS */
+
+.pair{
+background:#111827;
+padding:14px;
+margin-bottom:10px;
+border-radius:12px;
+cursor:pointer;
+transition:0.3s;
+border:1px solid transparent;
+}
+
+.pair:hover{
+border-color:#22c55e;
+transform:scale(1.02);
+}
+
+.activePair{
+border-color:#22c55e;
+background:#162033;
+}
+
+/* SIGNAL */
+
+.signal{
+padding:18px;
+border-radius:14px;
+font-size:24px;
+font-weight:bold;
+text-align:center;
+margin-bottom:15px;
+}
+
+.long{
+background:#16a34a;
+}
+
+.short{
+background:#dc2626;
+}
+
+.neutral{
+background:#facc15;
+color:black;
+}
+
+/* LIGHTS */
+
+.lightBox{
 background:#111827;
 padding:14px;
 border-radius:12px;
-font-size:16px;
-font-weight:bold;
+margin-bottom:15px;
+}
+
+.lightRow{
 display:flex;
 justify-content:space-between;
 align-items:center;
-cursor:pointer;
+margin:12px 0;
 }
 
-/* PAIR LIST */
+.light{
+width:18px;
+height:18px;
+border-radius:50%;
+animation:blink 1s infinite;
+}
+
+.green{
+background:#22c55e;
+box-shadow:0 0 12px #22c55e;
+}
+
+.red{
+background:#ef4444;
+box-shadow:0 0 12px #ef4444;
+}
+
+.yellow{
+background:#facc15;
+box-shadow:0 0 12px #facc15;
+}
+
+@keyframes blink{
+
+0%{
+opacity:1;
+}
+
+50%{
+opacity:0.3;
+}
+
+100%{
+opacity:1;
+}
+
+}
+
+/* INFO */
+
+.info{
+background:#111827;
+padding:14px;
+border-radius:12px;
+margin-bottom:15px;
+}
+
+.row{
+display:flex;
+justify-content:space-between;
+margin:12px 0;
+}
+
+/* CONFIDENCE */
+
+.barWrap{
+width:100%;
+height:18px;
+background:#222;
+border-radius:10px;
+overflow:hidden;
+margin-top:10px;
+}
+
+.bar{
+height:100%;
+width:50%;
+background:#22c55e;
+transition:0.4s;
+}
+
+/* OVERLAY */
+
+.overlaySignal{
+position:absolute;
+top:18px;
+left:18px;
+padding:8px 14px;
+border-radius:10px;
+font-size:13px;
+font-weight:bold;
+display:none;
+z-index:999;
+animation:fadeSignal 1s infinite alternate;
+}
+
+.buyOverlay{
+background:#16a34acc;
+box-shadow:0 0 12px #16a34a;
+}
+
+.sellOverlay{
+background:#dc2626cc;
+box-shadow:0 0 12px #dc2626;
+}
+
+@keyframes fadeSignal{
+
+0%{
+opacity:1;
+transform:scale(1);
+}
+
+100%{
+opacity:0.7;
+transform:scale(1.05);
+}
+
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+body{
+overflow:auto;
+}
+
+.main{
+flex-direction:column;
+height:auto;
+}
+
+/* FULL WIDTH */
+
+.left,
+.center,
+.right{
+width:100%;
+}
+
+/* MARKET BUTTON */
+
+.marketHeader{
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:#111827;
+padding:14px;
+border-radius:12px;
+cursor:pointer;
+margin-bottom:10px;
+font-weight:bold;
+}
+
+/* HIDE MARKET */
 
 .marketList{
-margin-top:10px;
 display:none;
-animation:fadeDown .3s ease;
 }
 
 /* SHOW */
@@ -52,20 +305,10 @@ animation:fadeDown .3s ease;
 display:block;
 }
 
-/* ANIMATION */
+/* CHART */
 
-@keyframes fadeDown{
-
-0%{
-opacity:0;
-transform:translateY(-10px);
-}
-
-100%{
-opacity:1;
-transform:translateY(0);
-}
-
+.center{
+height:500px;
 }
 
 }
@@ -75,50 +318,64 @@ transform:translateY(0);
 
 <body>
 
-<!-- LEFT PANEL -->
+<!-- TOPBAR -->
+
+<div class="topbar">
+
+<div class="logo">
+AI SIGNAL TERMINAL
+</div>
+
+<div id="currentPair">
+BTCUSDT
+</div>
+
+</div>
+
+<!-- MAIN -->
+
+<div class="main">
+
+<!-- LEFT -->
 
 <div class="left">
 
-<!-- MOBILE MARKET BUTTON -->
+<!-- MOBILE MARKET -->
 
 <div class="marketHeader" onclick="toggleMarket()">
 
-<span>
-MARKETS
-</span>
+<span>MARKETS</span>
 
-<span id="marketArrow">
-▼
-</span>
+<span id="marketArrow">▼</span>
 
 </div>
 
 <!-- MARKET LIST -->
 
-<div class="marketList" id="marketList">
+<div class="marketList show" id="marketList">
 
 <div class="pair activePair"
-onclick="selectPair('BTCUSDT',this)">
+onclick="changePair('BTCUSDT',this)">
 BTCUSDT
 </div>
 
 <div class="pair"
-onclick="selectPair('ETHUSDT',this)">
+onclick="changePair('ETHUSDT',this)">
 ETHUSDT
 </div>
 
 <div class="pair"
-onclick="selectPair('SOLUSDT',this)">
+onclick="changePair('SOLUSDT',this)">
 SOLUSDT
 </div>
 
 <div class="pair"
-onclick="selectPair('XRPUSDT',this)">
+onclick="changePair('XRPUSDT',this)">
 XRPUSDT
 </div>
 
 <div class="pair"
-onclick="selectPair('SUIUSDT',this)">
+onclick="changePair('SUIUSDT',this)">
 SUIUSDT
 </div>
 
@@ -126,7 +383,221 @@ SUIUSDT
 
 </div>
 
+<!-- CENTER -->
+
+<div class="center">
+
+<div id="overlaySignal"
+class="overlaySignal">
+
+<span id="overlayText"></span>
+
+</div>
+
+<div id="tvchart"
+style="width:100%;height:100%;">
+</div>
+
+</div>
+
+<!-- RIGHT -->
+
+<div class="right">
+
+<!-- MAIN SIGNAL -->
+
+<div id="mainSignal"
+class="signal neutral">
+NEUTRAL
+</div>
+
+<!-- LIGHTS -->
+
+<div class="lightBox">
+
+<h3>MULTI TF SIGNALS</h3>
+
+<div class="lightRow">
+<span>15M</span>
+<div id="l15m"
+class="light yellow"></div>
+</div>
+
+<div class="lightRow">
+<span>30M</span>
+<div id="l30m"
+class="light yellow"></div>
+</div>
+
+<div class="lightRow">
+<span>1H</span>
+<div id="l1h"
+class="light yellow"></div>
+</div>
+
+<div class="lightRow">
+<span>4H</span>
+<div id="l4h"
+class="light yellow"></div>
+</div>
+
+<div class="lightRow">
+<span>1D</span>
+<div id="l1d"
+class="light yellow"></div>
+</div>
+
+</div>
+
+<!-- INFO -->
+
+<div class="info">
+
+<div class="row">
+<span>ENTRY</span>
+<span id="entry">--</span>
+</div>
+
+<div class="row">
+<span>TP</span>
+<span id="tp">--</span>
+</div>
+
+<div class="row">
+<span>SL</span>
+<span id="sl">--</span>
+</div>
+
+<div class="row">
+<span>RSI</span>
+<span id="rsi">--</span>
+</div>
+
+<div class="row">
+<span>STATUS</span>
+<span id="status">WAIT</span>
+</div>
+
+</div>
+
+<!-- CONFIDENCE -->
+
+<div class="info">
+
+<div class="row">
+<span>CONFIDENCE</span>
+<span id="confText">50%</span>
+</div>
+
+<div class="barWrap">
+<div id="bar"
+class="bar"></div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ALERT -->
+
+<audio id="alertSound">
+
+<source
+src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"
+type="audio/mpeg">
+
+</audio>
+
 <script>
+
+/* CURRENT */
+
+let currentPair="BTCUSDT";
+
+let widget;
+
+/* LOAD CHART */
+
+function loadChart(pair){
+
+document.getElementById("tvchart").innerHTML="";
+
+widget=new TradingView.widget({
+
+container_id:"tvchart",
+
+width:"100%",
+height:"100%",
+
+symbol:"BINANCE:"+pair,
+
+interval:"30",
+
+theme:"dark",
+
+style:"1",
+
+locale:"en",
+
+toolbar_bg:"#111827",
+
+enable_publishing:false,
+
+allow_symbol_change:false,
+
+save_image:false
+
+});
+
+}
+
+/* INITIAL */
+
+loadChart(currentPair);
+
+/* CHANGE PAIR */
+
+function changePair(pair,el){
+
+currentPair=pair;
+
+document.getElementById("currentPair")
+.innerText=pair;
+
+/* ACTIVE */
+
+document.querySelectorAll(".pair")
+.forEach(p=>{
+
+p.classList.remove("activePair");
+
+});
+
+el.classList.add("activePair");
+
+/* LOAD */
+
+loadChart(pair);
+
+/* UPDATE */
+
+update();
+
+/* MOBILE AUTO HIDE */
+
+if(window.innerWidth<900){
+
+document.getElementById("marketList")
+.classList.remove("show");
+
+document.getElementById("marketArrow")
+.innerText="▼";
+
+}
+
+}
 
 /* TOGGLE */
 
@@ -137,8 +608,6 @@ let list=document.getElementById("marketList");
 let arrow=document.getElementById("marketArrow");
 
 list.classList.toggle("show");
-
-/* ARROW */
 
 if(list.classList.contains("show")){
 
@@ -152,23 +621,301 @@ arrow.innerText="▼";
 
 }
 
-/* SELECT */
+/* FETCH */
 
-function selectPair(pair,el){
+async function getData(tf){
 
-/* CHANGE */
+let r=await fetch(
 
-changePair(pair,el);
+`https://api.binance.com/api/v3/klines?symbol=${currentPair}&interval=${tf}&limit=80`
 
-/* AUTO HIDE */
+);
 
-document.getElementById("marketList")
-.classList.remove("show");
+let d=await r.json();
 
-document.getElementById("marketArrow")
-.innerText="▼";
+return d.map(x=>parseFloat(x[4]));
 
 }
+
+/* RSI */
+
+function calcRSI(data){
+
+let gains=0;
+let losses=0;
+
+for(let i=1;i<data.length;i++){
+
+let diff=data[i]-data[i-1];
+
+if(diff>0){
+
+gains+=diff;
+
+}else{
+
+losses+=Math.abs(diff);
+
+}
+
+}
+
+let rs=gains/(losses || 1);
+
+return 100-(100/(1+rs));
+
+}
+
+/* SIGNAL */
+
+function getSignal(rsi){
+
+if(rsi>=70){
+
+return "SHORT";
+
+}
+
+if(rsi<=35){
+
+return "LONG";
+
+}
+
+return "NEUTRAL";
+
+}
+
+/* LIGHT */
+
+function setLight(id,signal){
+
+let el=document.getElementById(id);
+
+el.className="light";
+
+if(signal=="LONG"){
+
+el.classList.add("green");
+
+}
+
+else if(signal=="SHORT"){
+
+el.classList.add("red");
+
+}
+
+else{
+
+el.classList.add("yellow");
+
+}
+
+}
+
+/* ALERT */
+
+function playAlert(){
+
+document.getElementById("alertSound")
+.play();
+
+}
+
+/* UPDATE UI */
+
+function updateUI(signal,price,rsi){
+
+let box=document.getElementById("mainSignal");
+
+box.className="signal";
+
+if(signal=="LONG"){
+
+box.classList.add("long");
+
+}
+
+else if(signal=="SHORT"){
+
+box.classList.add("short");
+
+}
+
+else{
+
+box.classList.add("neutral");
+
+}
+
+box.innerText=signal;
+
+/* ENTRY */
+
+document.getElementById("entry")
+.innerText=price.toFixed(2);
+
+/* TP / SL */
+
+if(signal=="LONG"){
+
+document.getElementById("tp")
+.innerText=(price*1.02).toFixed(2);
+
+document.getElementById("sl")
+.innerText=(price*0.99).toFixed(2);
+
+}
+
+else if(signal=="SHORT"){
+
+document.getElementById("tp")
+.innerText=(price*0.98).toFixed(2);
+
+document.getElementById("sl")
+.innerText=(price*1.01).toFixed(2);
+
+}
+
+else{
+
+document.getElementById("tp")
+.innerText="--";
+
+document.getElementById("sl")
+.innerText="--";
+
+}
+
+/* RSI */
+
+document.getElementById("rsi")
+.innerText=rsi.toFixed(2);
+
+document.getElementById("status")
+.innerText=signal;
+
+/* CONFIDENCE */
+
+let conf=Math.min(
+100,
+Math.abs(rsi-50)*2
+);
+
+document.getElementById("confText")
+.innerText=Math.floor(conf)+"%";
+
+document.getElementById("bar")
+.style.width=conf+"%";
+
+/* OVERLAY */
+
+let ov=document.getElementById("overlaySignal");
+
+let txt=document.getElementById("overlayText");
+
+ov.style.display="none";
+
+/* BUY */
+
+if(signal=="LONG"){
+
+ov.style.display="block";
+
+ov.className=
+"overlaySignal buyOverlay";
+
+txt.innerText=
+"BUY • "+price.toFixed(2);
+
+playAlert();
+
+}
+
+/* SELL */
+
+else if(signal=="SHORT"){
+
+ov.style.display="block";
+
+ov.className=
+"overlaySignal sellOverlay";
+
+txt.innerText=
+"SELL • "+price.toFixed(2);
+
+playAlert();
+
+}
+
+}
+
+/* UPDATE */
+
+async function update(){
+
+let d15=await getData("15m");
+
+let d30=await getData("30m");
+
+let d1=await getData("1h");
+
+let d4=await getData("4h");
+
+let dD=await getData("1d");
+
+/* RSI */
+
+let r15=calcRSI(d15);
+
+let r30=calcRSI(d30);
+
+let r1=calcRSI(d1);
+
+let r4=calcRSI(d4);
+
+let rD=calcRSI(dD);
+
+/* SIGNAL */
+
+let s15=getSignal(r15);
+
+let s30=getSignal(r30);
+
+let s1=getSignal(r1);
+
+let s4=getSignal(r4);
+
+let sD=getSignal(rD);
+
+/* LIGHTS */
+
+setLight("l15m",s15);
+
+setLight("l30m",s30);
+
+setLight("l1h",s1);
+
+setLight("l4h",s4);
+
+setLight("l1d",sD);
+
+/* MAIN */
+
+let price=d4[d4.length-1];
+
+updateUI(s4,price,r4);
+
+}
+
+/* START */
+
+update();
+
+/* REFRESH */
+
+setInterval(update,10000);
 
 </script>
 
