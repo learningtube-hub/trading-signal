@@ -2,182 +2,175 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Crypto Pro Trading Dashboard</title>
+<title>Live Crypto Signal Engine</title>
 
 <script src="https://s3.tradingview.com/tv.js"></script>
 
 <style>
-body {
+body{
   margin:0;
-  font-family: Arial;
+  font-family:Arial;
   background:#0b1220;
   color:white;
-}
-
-/* TOP BAR */
-.topbar {
-  display:flex;
-  justify-content:space-between;
-  padding:15px;
-  background:#111827;
-}
-
-/* AUTH BOX */
-.auth {
-  padding:10px;
-}
-
-input {
-  padding:8px;
-  margin:5px;
-}
-
-/* MAIN LAYOUT */
-.container {
   display:flex;
 }
 
-/* LEFT PANEL */
-.left {
+.left{
   width:250px;
   background:#111827;
-  height:100vh;
   padding:10px;
-  overflow-y:auto;
 }
 
-.pair {
-  padding:10px;
-  margin:5px 0;
-  background:#1f2937;
-  cursor:pointer;
-  border-radius:5px;
-}
-
-/* CENTER CHART */
-.center {
+.center{
   flex:1;
   padding:10px;
 }
 
-/* RIGHT PANEL */
-.right {
-  width:250px;
+.right{
+  width:300px;
   background:#111827;
-  height:100vh;
   padding:10px;
 }
 
-.status {
-  padding:8px;
+.card{
+  background:#1f2937;
+  padding:10px;
+  margin-bottom:10px;
+  border-radius:8px;
+}
+
+.buy{color:#00ff88;}
+.sell{color:#ff4d4d;}
+
+.status{
+  padding:6px;
   background:orange;
   display:inline-block;
   border-radius:5px;
-}
-
-button {
-  padding:8px;
-  margin:5px;
-  cursor:pointer;
 }
 </style>
 </head>
 
 <body>
 
-<!-- TOP BAR -->
-<div class="topbar">
-  <div>Crypto Trading Pro</div>
-
-  <div class="auth">
-    <input placeholder="Email">
-    <input placeholder="Password" type="password">
-    <button onclick="login()">Login</button>
-    <button onclick="register()">Register</button>
-  </div>
-</div>
-
-<div class="container">
-
-<!-- LEFT PAIRS -->
+<!-- LEFT -->
 <div class="left">
-  <h3>Pairs</h3>
+<h3>PAIRS</h3>
 
-  <div class="pair" onclick="changeSymbol('BINANCE:BTCUSDT')">BTCUSDT</div>
-  <div class="pair" onclick="changeSymbol('BINANCE:ETHUSDT')">ETHUSDT</div>
-  <div class="pair" onclick="changeSymbol('BINANCE:BNBUSDT')">BNBUSDT</div>
-  <div class="pair" onclick="changeSymbol('BINANCE:XRPUSDT')">XRPUSDT</div>
-  <div class="pair" onclick="changeSymbol('BINANCE:SOLUSDT')">SOLUSDT</div>
-  <div class="pair" onclick="changeSymbol('BINANCE:ADAUSDT')">ADAUSDT</div>
+<div onclick="setPair('BTCUSDT')">BTCUSDT</div>
+<div onclick="setPair('ETHUSDT')">ETHUSDT</div>
+<div onclick="setPair('BNBUSDT')">BNBUSDT</div>
+
 </div>
 
-<!-- CENTER CHART -->
+<!-- CENTER -->
 <div class="center">
-
-<div id="tradingview_chart"></div>
-
+<div id="chart"></div>
 </div>
 
-<!-- RIGHT PANEL -->
+<!-- RIGHT -->
 <div class="right">
 
-<h3>Trade Panel</h3>
+<div class="card">
+<div class="status" id="status">WAITING...</div>
+</div>
 
-<p class="status" id="status">WAITING FOR SIGNAL</p>
-
-<p id="signal">Signal: -</p>
-<p id="entry">Entry: -</p>
-<p id="tp">TP: -</p>
-<p id="sl">SL: -</p>
-
+<div class="card">
+<div id="signal">Signal: -</div>
+<div id="price">Price: -</div>
+<div id="rsi">RSI: -</div>
 </div>
 
 </div>
 
 <script>
 
-// ===== LOGIN (dummy) =====
-function login(){
-  alert("Login successful (frontend only)");
-}
+let pair = "BTCUSDT";
+let prices = [];
 
-function register(){
-  alert("Register successful (frontend only)");
-}
-
-// ===== DEFAULT SYMBOL =====
-let currentSymbol = "BINANCE:BTCUSDT";
-
-// ===== TRADINGVIEW CHART =====
+// ===== TradingView =====
 function loadChart(symbol){
-
   new TradingView.widget({
-    "container_id": "tradingview_chart",
+    "container_id": "chart",
     "width": "100%",
     "height": 700,
-    "symbol": symbol,
+    "symbol": "BINANCE:"+symbol,
     "interval": "30",
-    "timezone": "Asia/Dhaka",
-    "theme": "dark",
-    "style": "1",
-    "locale": "en",
-    "toolbar_bg": "#111827",
-    "enable_publishing": false,
-    "hide_top_toolbar": false,
-    "save_image": false
+    "theme": "dark"
   });
 }
 
 // ===== CHANGE PAIR =====
-function changeSymbol(symbol){
-  currentSymbol = symbol;
-  loadChart(symbol);
+function setPair(p){
+  pair = p;
+  prices = [];
+  loadChart(pair);
+}
 
-  document.getElementById("status").innerText = "WAITING FOR SIGNAL";
+// ===== FETCH BINANCE PRICE =====
+async function getPrice(){
+  let res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${pair}`);
+  let data = await res.json();
+  return parseFloat(data.price);
+}
+
+// ===== RSI CALC =====
+function calculateRSI(arr){
+  if(arr.length < 14) return 50;
+
+  let gains = 0;
+  let losses = 0;
+
+  for(let i=1;i<14;i++){
+    let diff = arr[i] - arr[i-1];
+    if(diff >= 0) gains += diff;
+    else losses += Math.abs(diff);
+  }
+
+  let rs = gains / (losses || 1);
+  return 100 - (100 / (1 + rs));
+}
+
+// ===== SIGNAL ENGINE =====
+function getSignal(rsi, price){
+  
+  // SIMPLE MARKET LOGIC
+  if(rsi < 30) return "LONG";
+  if(rsi > 70) return "SHORT";
+  return "WAIT";
+}
+
+// ===== MAIN LOOP =====
+async function update(){
+
+  let price = await getPrice();
+  prices.push(price);
+
+  if(prices.length > 20) prices.shift();
+
+  let rsi = calculateRSI(prices);
+  let signal = getSignal(rsi, price);
+
+  document.getElementById("price").innerText = "Price: "+price;
+  document.getElementById("rsi").innerText = "RSI: "+rsi.toFixed(2);
+
+  if(signal === "LONG"){
+    document.getElementById("signal").innerHTML = "<span class='buy'>LONG SIGNAL</span>";
+    document.getElementById("status").innerText = "BUY CONDITION ACTIVE";
+  }
+  else if(signal === "SHORT"){
+    document.getElementById("signal").innerHTML = "<span class='sell'>SHORT SIGNAL</span>";
+    document.getElementById("status").innerText = "SELL CONDITION ACTIVE";
+  }
+  else {
+    document.getElementById("signal").innerText = "WAITING...";
+    document.getElementById("status").innerText = "NO TRADE";
+  }
 }
 
 // ===== INIT =====
-loadChart(currentSymbol);
+loadChart(pair);
+setInterval(update, 3000);
 
 </script>
 
