@@ -1,1 +1,21 @@
+<h2>Signal Details</h2>
+<div id="out"></div>
 
+<script>
+const id = new URLSearchParams(location.search).get("id");
+
+fetch("http://localhost:5000/api/signals")
+.then(r=>r.json())
+.then(data=>{
+  const s = data.find(x=>x.id == id);
+
+  out.innerHTML = `
+    <h3>${s.pair}</h3>
+    <p>Type: ${s.type}</p>
+    <p>Entry: ${s.entry}</p>
+    <p>TP: ${s.tp}</p>
+    <p>SL: ${s.sl}</p>
+    <p>Status: ${s.status}</p>
+  `;
+});
+</script>
