@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ADVANCED MULTI TF SIGNAL BOT</title>
+<title>FULL FIXED UI TRADING BOT</title>
 <script src="https://s3.tradingview.com/tv.js"></script>
 
 <style>
@@ -21,22 +21,29 @@ body{background:#0b1220;color:#e5e7eb;height:100vh;display:flex;overflow:hidden;
 
 .card{background:#111827;padding:12px;border-radius:12px;margin-bottom:10px;}
 
-.signal{font-size:20px;font-weight:bold;margin-top:6px;}
-.green{color:#22c55e;}
-.red{color:#ef4444;}
-.yellow{color:#fbbf24;}
-.small{font-size:12px;opacity:0.8;margin-top:4px;}
+.signalBox{padding:14px;border-radius:12px;text-align:center;font-size:18px;font-weight:bold;margin-top:10px;}
+.green{background:#16a34a;color:white;}
+.red{background:#dc2626;color:white;}
+.yellow{background:#f59e0b;color:black;}
+
+.small{font-size:12px;opacity:0.85;margin-top:4px;}
 
 .indGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
-.box{background:#0b1220;padding:10px;border-radius:10px;}
 canvas{width:100%;height:120px;background:#0b1220;border-radius:10px;}
+
+.btnRow{display:flex;gap:8px;margin-top:10px;}
+.btn{flex:1;padding:8px;border-radius:8px;text-align:center;font-weight:bold;}
+.btn.long{background:#16a34a;color:#fff;}
+.btn.short{background:#dc2626;color:#fff;}
+.btn.wait{background:#6b7280;color:#fff;}
+
 </style>
 </head>
 
 <body>
 
 <div class="left">
-<h3>MARKET</h3>
+<h3>MARKETS</h3>
 <div class="pair" onclick="setSymbol('BTCUSDT')">BTC</div>
 <div class="pair" onclick="setSymbol('ETHUSDT')">ETH</div>
 <div class="pair" onclick="setSymbol('SOLUSDT')">SOL</div>
@@ -44,39 +51,38 @@ canvas{width:100%;height:120px;background:#0b1220;border-radius:10px;}
 
 <div class="center">
 <div class="topbar">
-<div id="title">ADV SIGNAL BOT</div>
+<div id="title">FULL FIXED SIGNAL BOT</div>
 <div id="price">PRICE: --</div>
 </div>
-
 <div class="chartBox" id="tv"></div>
 </div>
 
 <div class="right">
 
 <div class="card">
-<h3>MAIN SIGNAL</h3>
-<div id="signal" class="signal yellow">WAIT</div>
-<div id="trend" class="small">Trend: --</div>
-<div id="tfbias" class="small">4H Bias: --</div>
+<h3>LIVE SIGNAL</h3>
+<div id="signalBox" class="signalBox yellow">WAIT</div>
+<div class="btnRow">
+<div id="btnLong" class="btn long">LONG</div>
+<div id="btnShort" class="btn short">SHORT</div>
+<div id="btnWait" class="btn wait">WAIT</div>
+</div>
+<div class="small" id="trend">Trend: --</div>
+<div class="small" id="entry">Entry: --</div>
+<div class="small" id="tp">TP: --</div>
+<div class="small" id="sl">SL: --</div>
 </div>
 
 <div class="card">
-<h3>RSI PANEL</h3>
+<h3>RSI INDICATOR</h3>
 <div id="rsiText">RSI: --</div>
 <div id="rsiState">State: --</div>
 <canvas id="rsiChart" width="300" height="120"></canvas>
 </div>
 
 <div class="card">
-<h3>DIVERGENCE</h3>
-<div id="divText">Loading...</div>
-</div>
-
-<div class="card">
-<h3>TRADE ZONE</h3>
-<div id="entry">Entry: --</div>
-<div id="tp">TP: --</div>
-<div id="sl">SL: --</div>
+<h3>DIVERGENCE WARNING</h3>
+<div id="divText">--</div>
 </div>
 
 </div>
@@ -116,7 +122,7 @@ async function getPrice(){
 
  document.getElementById("price").innerText="PRICE: "+price;
 
- updateEngine(rsiVal);
+ engine(rsiVal);
  drawRSI();
  }catch(e){}
 }
@@ -132,32 +138,33 @@ function calcRSI(data){
  return 100-(100/(1+rs));
 }
 
-function rsiState(r){
+function state(r){
  if(r<30) return "OVERSOLD 🟢";
  if(r>70) return "OVERBOUGHT 🔴";
  return "NEUTRAL 🟡";
 }
 
 function trend(){
- let m=Math.max(...prices.slice(-20));
- let n=Math.min(...prices.slice(-20));
- return price>(m+n)/2 ? "UPTREND" : "DOWNTREND";
+ let r=prices.slice(-20);
+ let max=Math.max(...r);
+ let min=Math.min(...r);
+ return price>(max+min)/2 ? "UPTREND" : "DOWNTREND";
 }
 
-function divergence(rsi){
+function divergence(r){
  if(prices.length<10) return "WAITING DATA";
  let last=prices[prices.length-1];
  let prev=prices[prices.length-5];
 
- if(last>prev && rsi<50) return "BULLISH DIVERGENCE 🟢 (WARNING BUY)") ;
- if(last<prev && rsi>50) return "BEARISH DIVERGENCE 🔴 (WARNING SELL)";
- return "NO DIVERGENCE (STABLE)";
+ if(last>prev && r<50) return "BULLISH DIVERGENCE (WARNING BUY) 🟢";
+ if(last<prev && r>50) return "BEARISH DIVERGENCE (WARNING SELL) 🔴";
+ return "NO DIVERGENCE";
 }
 
-function updateEngine(rsiVal){
+function engine(rsiVal){
 
 let tr=trend();
-let state=rsiState(rsiVal);
+let st=state(rsiVal);
 let div=divergence(rsiVal);
 
 let signal="WAIT";
@@ -170,14 +177,17 @@ let entry=price;
 let tp=signal=="LONG"?price*1.003:signal=="SHORT"?price*0.997:"--";
 let sl=signal=="LONG"?price*0.998:signal=="SHORT"?price*1.002:"--";
 
-// UI
+let box=document.getElementById("signalBox");
+box.innerText=signal;
+box.className="signalBox "+color;
 
-document.getElementById("signal").innerText=signal;
-document.getElementById("signal").className="signal "+color;
+document.getElementById("btnLong").style.opacity=signal=="LONG"?"1":"0.4";
+document.getElementById("btnShort").style.opacity=signal=="SHORT"?"1":"0.4";
+document.getElementById("btnWait").style.opacity=signal=="WAIT"?"1":"0.4";
 
 document.getElementById("trend").innerText="Trend: "+tr;
 document.getElementById("rsiText").innerText="RSI: "+rsiVal.toFixed(2);
-document.getElementById("rsiState").innerText="State: "+state;
+document.getElementById("rsiState").innerText="State: "+st;
 document.getElementById("divText").innerText=div;
 
 document.getElementById("entry").innerText="Entry: "+entry;
