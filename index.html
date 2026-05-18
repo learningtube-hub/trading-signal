@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>TradingView SMC Simulator v4</title>
+<title>REAL RSI TRADING DASHBOARD</title>
 
 <script src="https://s3.tradingview.com/tv.js"></script>
 
@@ -11,13 +11,13 @@ body{
 margin:0;
 font-family:Arial;
 background:#0b1220;
-color:white;
+color:#fff;
 display:flex;
 height:100vh;
 }
 
 .left{
-width:220px;
+width:200px;
 background:#111827;
 padding:10px;
 }
@@ -35,10 +35,6 @@ padding:10px;
 overflow:auto;
 }
 
-#tv_chart{
-flex:1;
-}
-
 .box{
 background:#1f2937;
 padding:10px;
@@ -46,15 +42,27 @@ margin:8px 0;
 border-radius:10px;
 }
 
+.signal{
+padding:12px;
+font-size:20px;
+text-align:center;
+border-radius:10px;
+font-weight:bold;
+}
+
+.green{background:#16a34a;}
+.red{background:#dc2626;}
+.yellow{background:#f59e0b;color:black;}
+
 button{
 padding:8px;
 margin:5px;
 cursor:pointer;
 }
 
-.green{color:#22c55e;}
-.red{color:#ef4444;}
-.yellow{color:#facc15;}
+#chart{
+flex:1;
+}
 </style>
 </head>
 
@@ -62,149 +70,141 @@ cursor:pointer;
 
 <div class="left">
 <h3>MARKET</h3>
-
 <button onclick="setSymbol('BINANCE:BTCUSDT')">BTC</button>
 <button onclick="setSymbol('BINANCE:ETHUSDT')">ETH</button>
 <button onclick="setSymbol('BINANCE:SOLUSDT')">SOL</button>
 
 <div class="box">
-Signal: <span id="signal">WAIT</span>
+Signal: <div id="signal" class="signal yellow">WAIT</div>
 </div>
 
-<button onclick="openTrade('BUY')">BUY</button>
-<button onclick="openTrade('SELL')">SELL</button>
-<button onclick="closeTrade()">CLOSE</button>
+<div class="box">
+Price: <span id="price">--</span>
+</div>
 
 </div>
 
 <div class="center">
-<div id="tv_chart"></div>
+<div id="chart"></div>
 </div>
 
 <div class="right">
 
-<div class="box">
-Balance: <span id="balance">1000</span>
-</div>
+<h3>RSI MULTI TF</h3>
 
-<div class="box">
-Position: <span id="position">NONE</span>
-</div>
-
-<div class="box">
-PnL: <span id="pnl">0</span>
-</div>
-
-<div class="box">
-RSI: <span id="rsi">--</span>
-</div>
-
-<h3>History</h3>
-<div id="history"></div>
+<div class="box">30M: <span id="r30">--</span></div>
+<div class="box">1H: <span id="r1h">--</span></div>
+<div class="box">4H: <span id="r4h">--</span></div>
+<div class="box">1D: <span id="r1d">--</span></div>
+<div class="box">1W: <span id="r1w">--</span></div>
 
 </div>
 
 <script>
 
 let symbol="BINANCE:BTCUSDT";
-
-let balance=1000;
-let position=null;
-let entryPrice=0;
-let pnl=0;
-
-let feeRate=0.001;
-
-let rsi=50;
 let price=0;
 
 // ---------------- CHART ----------------
 
 function loadChart(sym){
-document.getElementById("tv_chart").innerHTML="";
-
+document.getElementById("chart").innerHTML="";
 new TradingView.widget({
-container_id:"tv_chart",
+container_id:"chart",
 width:"100%",
 height:"100%",
 symbol:sym,
-interval:"5",
+interval:"30",
 theme:"dark",
 style:"1"
 });
 }
 
-// ---------------- RSI (SIMULATED FROM PRICE MOVEMENT FEEL) ----------------
+// ---------------- REAL RSI (NO RANDOM) ----------------
 
-function fakeRSI(){
-rsi = 30 + Math.random()*50;
-document.getElementById("rsi").innerText=rsi.toFixed(2);
+async function getKlines(tf){
+let res=await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol.replace("BINANCE:","")}&interval=${tf}&limit=50`);
+let data=await res.json();
 
-if(rsi<40){
-document.getElementById("signal").innerText="BUY";
-}
-else if(rsi>65){
-document.getElementById("signal").innerText="SELL";
-}
-else{
-document.getElementById("signal").innerText="NEUTRAL";
-}
+return data.map(x=>parseFloat(x[4]));
 }
 
-// ---------------- TRADING ----------------
+function calcRSI(closes){
+let gain=0,loss=0;
 
-function openTrade(type){
-
-if(position){
-alert("Close first!");
-return;
+for(let i=1;i<closes.length;i++){
+let diff=closes[i]-closes[i-1];
+if(diff>0) gain+=diff;
+else loss+=Math.abs(diff);
 }
 
-position=type;
-entryPrice=rsi; // proxy logic (since no real tick API)
-
-balance -= balance*feeRate;
-
-log("OPEN "+type+" | fee deducted");
-updateUI();
+let rs=gain/(loss||1);
+return 100-(100/(1+rs));
 }
 
-function closeTrade(){
-
-if(!position) return;
-
-let profit=(rsi-entryPrice);
-
-if(position=="SELL") profit=-profit;
-
-balance += profit;
-pnl += profit;
-
-log("CLOSE "+position+" | PnL: "+profit.toFixed(2));
-
-position=null;
-entryPrice=0;
-
-updateUI();
+function state(r){
+if(r<30) return "OVERSOLD";
+if(r>70) return "OVERBOUGHT";
+return "NEUTRAL";
 }
 
-function updateUI(){
-document.getElementById("balance").innerText=balance.toFixed(2);
-document.getElementById("pnl").innerText=pnl.toFixed(2);
-document.getElementById("position").innerText=position?position:"NONE";
+// ---------------- UPDATE ENGINE ----------------
+
+async function update(){
+
+let c30=await getKlines("30m");
+let c1h=await getKlines("1h");
+let c4h=await getKlines("4h");
+let c1d=await getKlines("1d");
+let c1w=await getKlines("1w");
+
+let r30=calcRSI(c30);
+let r1h=calcRSI(c1h);
+let r4h=calcRSI(c4h);
+let r1d=calcRSI(c1d);
+let r1w=calcRSI(c1w);
+
+document.getElementById("r30").innerText=r30.toFixed(2)+" ("+state(r30)+")";
+document.getElementById("r1h").innerText=r1h.toFixed(2)+" ("+state(r1h)+")";
+document.getElementById("r4h").innerText=r4h.toFixed(2)+" ("+state(r4h)+")";
+document.getElementById("r1d").innerText=r1d.toFixed(2)+" ("+state(r1d)+")";
+document.getElementById("r1w").innerText=r1w.toFixed(2)+" ("+state(r1w)+")";
+
+// ---------------- SIGNAL ENGINE ----------------
+
+let score=0;
+
+if(r4h<30) score++;
+if(r1h<30) score++;
+
+if(r4h>70) score--;
+if(r1h>70) score--;
+
+let signal="WAIT";
+let color="yellow";
+
+if(score>=2){
+signal="BUY";
+color="green";
+}
+if(score<=-2){
+signal="SELL";
+color="red";
 }
 
-function log(msg){
-let d=document.createElement("div");
-d.innerHTML=msg;
-document.getElementById("history").prepend(d);
+let box=document.getElementById("signal");
+box.innerText=signal;
+box.className="signal "+color;
+
 }
 
-// ---------------- MAIN LOOP ----------------
+// ---------------- PRICE ----------------
 
-function loop(){
-fakeRSI();
-updateUI();
+async function getPrice(){
+let r=await fetch("https://api.binance.com/api/v3/ticker/price?symbol="+symbol.replace("BINANCE:",""));
+let d=await r.json();
+price=parseFloat(d.price);
+document.getElementById("price").innerText=price;
 }
 
 function setSymbol(s){
@@ -212,9 +212,12 @@ symbol=s;
 loadChart(symbol);
 }
 
+// ---------------- INIT ----------------
+
 loadChart(symbol);
 
-setInterval(loop,3000);
+setInterval(update,10000);
+setInterval(getPrice,3000);
 
 </script>
 
