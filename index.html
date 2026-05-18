@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>FULL FIXED UI TRADING BOT</title>
+<title>MULTI TIMEFRAME RSI SIGNAL BOT</title>
 <script src="https://s3.tradingview.com/tv.js"></script>
 
 <style>
@@ -17,33 +17,26 @@ body{background:#0b1220;color:#e5e7eb;height:100vh;display:flex;overflow:hidden;
 .topbar{height:50px;background:#0f172a;border-bottom:1px solid #1f2937;display:flex;justify-content:space-between;align-items:center;padding:0 10px;}
 .chartBox{flex:1;margin:8px;border-radius:12px;overflow:hidden;border:1px solid #1f2937;}
 
-.right{width:360px;background:#0f172a;border-left:1px solid #1f2937;padding:10px;overflow:auto;}
+.right{width:380px;background:#0f172a;border-left:1px solid #1f2937;padding:10px;overflow:auto;}
 
 .card{background:#111827;padding:12px;border-radius:12px;margin-bottom:10px;}
 
-.signalBox{padding:14px;border-radius:12px;text-align:center;font-size:18px;font-weight:bold;margin-top:10px;}
-.green{background:#16a34a;color:white;}
-.red{background:#dc2626;color:white;}
-.yellow{background:#f59e0b;color:black;}
+.signalBox{padding:12px;border-radius:12px;text-align:center;font-size:18px;font-weight:bold;}
+.green{background:#16a34a;color:#fff;}
+.red{background:#dc2626;color:#fff;}
+.yellow{background:#f59e0b;color:#000;}
 
 .small{font-size:12px;opacity:0.85;margin-top:4px;}
 
-.indGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
-canvas{width:100%;height:120px;background:#0b1220;border-radius:10px;}
-
-.btnRow{display:flex;gap:8px;margin-top:10px;}
-.btn{flex:1;padding:8px;border-radius:8px;text-align:center;font-weight:bold;}
-.btn.long{background:#16a34a;color:#fff;}
-.btn.short{background:#dc2626;color:#fff;}
-.btn.wait{background:#6b7280;color:#fff;}
-
+.tfGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+.tfBox{background:#0b1220;padding:10px;border-radius:10px;font-size:12px;}
 </style>
 </head>
 
 <body>
 
 <div class="left">
-<h3>MARKETS</h3>
+<h3>MARKET</h3>
 <div class="pair" onclick="setSymbol('BTCUSDT')">BTC</div>
 <div class="pair" onclick="setSymbol('ETHUSDT')">ETH</div>
 <div class="pair" onclick="setSymbol('SOLUSDT')">SOL</div>
@@ -51,7 +44,7 @@ canvas{width:100%;height:120px;background:#0b1220;border-radius:10px;}
 
 <div class="center">
 <div class="topbar">
-<div id="title">FULL FIXED SIGNAL BOT</div>
+<div id="title">MULTI TF RSI BOT</div>
 <div id="price">PRICE: --</div>
 </div>
 <div class="chartBox" id="tv"></div>
@@ -60,29 +53,23 @@ canvas{width:100%;height:120px;background:#0b1220;border-radius:10px;}
 <div class="right">
 
 <div class="card">
-<h3>LIVE SIGNAL</h3>
+<h3>MAIN SIGNAL</h3>
 <div id="signalBox" class="signalBox yellow">WAIT</div>
-<div class="btnRow">
-<div id="btnLong" class="btn long">LONG</div>
-<div id="btnShort" class="btn short">SHORT</div>
-<div id="btnWait" class="btn wait">WAIT</div>
-</div>
-<div class="small" id="trend">Trend: --</div>
-<div class="small" id="entry">Entry: --</div>
-<div class="small" id="tp">TP: --</div>
-<div class="small" id="sl">SL: --</div>
+<div id="trend">Trend: --</div>
+<div id="entry">Entry: --</div>
+<div id="tp">TP: --</div>
+<div id="sl">SL: --</div>
 </div>
 
 <div class="card">
-<h3>RSI INDICATOR</h3>
-<div id="rsiText">RSI: --</div>
-<div id="rsiState">State: --</div>
-<canvas id="rsiChart" width="300" height="120"></canvas>
+<h3>RSI MULTI TIMEFRAME</h3>
+<div class="tfGrid">
+<div class="tfBox" id="rsi30m">30M: --</div>
+<div class="tfBox" id="rsi1h">1H: --</div>
+<div class="tfBox" id="rsi4h">4H: --</div>
+<div class="tfBox" id="rsi1d">1D: --</div>
+<div class="tfBox" id="rsi1w">7D: --</div>
 </div>
-
-<div class="card">
-<h3>DIVERGENCE WARNING</h3>
-<div id="divText">--</div>
 </div>
 
 </div>
@@ -90,8 +77,6 @@ canvas{width:100%;height:120px;background:#0b1220;border-radius:10px;}
 <script>
 
 let symbol="BINANCE:BTCUSDT";
-let prices=[];
-let rsiArr=[];
 let price=0;
 
 function loadChart(sym){
@@ -100,35 +85,22 @@ function loadChart(sym){
  width:"100%",
  height:"100%",
  symbol:sym,
- interval:"1",
+ interval:"30",
  theme:"dark",
  style:"1",
  container_id:"tv"
  });
 }
 
-async function getPrice(){
- try{
- let r=await fetch("https://api.binance.com/api/v3/ticker/price?symbol="+symbol.replace("BINANCE:",""));
+async function fetchKlines(interval){
+ let url=`https://api.binance.com/api/v3/klines?symbol=${symbol.replace("BINANCE:","")}&interval=${interval}&limit=50`;
+ let r=await fetch(url);
  let d=await r.json();
- price=parseFloat(d.price);
-
- prices.push(price);
- if(prices.length>100) prices.shift();
-
- let rsiVal=calcRSI(prices);
- rsiArr.push(rsiVal);
- if(rsiArr.length>50) rsiArr.shift();
-
- document.getElementById("price").innerText="PRICE: "+price;
-
- engine(rsiVal);
- drawRSI();
- }catch(e){}
+ return d.map(x=>parseFloat(x[4]));
 }
 
 function calcRSI(data){
- if(data.length<15) return 50;
+ if(data.length<14) return 50;
  let gain=0,loss=0;
  for(let i=data.length-14;i<data.length;i++){
  let diff=data[i]-data[i-1];
@@ -139,90 +111,72 @@ function calcRSI(data){
 }
 
 function state(r){
- if(r<30) return "OVERSOLD 🟢";
- if(r>70) return "OVERBOUGHT 🔴";
- return "NEUTRAL 🟡";
+ if(r<30) return "OVERSOLD";
+ if(r>70) return "OVERBOUGHT";
+ return "NEUTRAL";
 }
 
-function trend(){
- let r=prices.slice(-20);
- let max=Math.max(...r);
- let min=Math.min(...r);
- return price>(max+min)/2 ? "UPTREND" : "DOWNTREND";
-}
+async function updateRSI(){
 
-function divergence(r){
- if(prices.length<10) return "WAITING DATA";
- let last=prices[prices.length-1];
- let prev=prices[prices.length-5];
+let tf30 = await fetchKlines("30m");
+let tf1h = await fetchKlines("1h");
+let tf4h = await fetchKlines("4h");
+let tf1d = await fetchKlines("1d");
+let tf1w = await fetchKlines("1w");
 
- if(last>prev && r<50) return "BULLISH DIVERGENCE (WARNING BUY) 🟢";
- if(last<prev && r>50) return "BEARISH DIVERGENCE (WARNING SELL) 🔴";
- return "NO DIVERGENCE";
-}
+let r30 = calcRSI(tf30);
+let r1h = calcRSI(tf1h);
+let r4h = calcRSI(tf4h);
+let r1d = calcRSI(tf1d);
+let r1w = calcRSI(tf1w);
 
-function engine(rsiVal){
+// UI update
 
-let tr=trend();
-let st=state(rsiVal);
-let div=divergence(rsiVal);
+document.getElementById("rsi30m").innerText="30M: "+r30.toFixed(2)+" ("+state(r30)+")";
+document.getElementById("rsi1h").innerText="1H: "+r1h.toFixed(2)+" ("+state(r1h)+")";
+document.getElementById("rsi4h").innerText="4H: "+r4h.toFixed(2)+" ("+state(r4h)+")";
+document.getElementById("rsi1d").innerText="1D: "+r1d.toFixed(2)+" ("+state(r1d)+")";
+document.getElementById("rsi1w").innerText="7D: "+r1w.toFixed(2)+" ("+state(r1w)+")";
+
+// MAIN SIGNAL (simple confluence)
+let score=0;
+if(r4h<30) score++;
+if(r4h>70) score--;
+if(r1h<30) score++;
+if(r1h>70) score--;
 
 let signal="WAIT";
 let color="yellow";
 
-if(tr=="UPTREND" && rsiVal<35){signal="LONG";color="green";}
-if(tr=="DOWNTREND" && rsiVal>65){signal="SHORT";color="red";}
-
-let entry=price;
-let tp=signal=="LONG"?price*1.003:signal=="SHORT"?price*0.997:"--";
-let sl=signal=="LONG"?price*0.998:signal=="SHORT"?price*1.002:"--";
+if(score>=2){signal="LONG";color="green";}
+if(score<=-2){signal="SHORT";color="red";}
 
 let box=document.getElementById("signalBox");
 box.innerText=signal;
 box.className="signalBox "+color;
 
-document.getElementById("btnLong").style.opacity=signal=="LONG"?"1":"0.4";
-document.getElementById("btnShort").style.opacity=signal=="SHORT"?"1":"0.4";
-document.getElementById("btnWait").style.opacity=signal=="WAIT"?"1":"0.4";
-
-document.getElementById("trend").innerText="Trend: "+tr;
-document.getElementById("rsiText").innerText="RSI: "+rsiVal.toFixed(2);
-document.getElementById("rsiState").innerText="State: "+st;
-document.getElementById("divText").innerText=div;
-
-document.getElementById("entry").innerText="Entry: "+entry;
-document.getElementById("tp").innerText="TP: "+tp;
-document.getElementById("sl").innerText="SL: "+sl;
-
 }
 
-function drawRSI(){
-let c=document.getElementById("rsiChart");
-let ctx=c.getContext("2d");
-ctx.clearRect(0,0,c.width,c.height);
-
-ctx.beginPath();
-for(let i=0;i<rsiArr.length;i++){
-let x=i*(c.width/rsiArr.length);
-let y=c.height-(rsiArr[i]/100)*c.height;
-if(i==0)ctx.moveTo(x,y);
-else ctx.lineTo(x,y);
-}
-ctx.strokeStyle="#38bdf8";
-ctx.stroke();
+async function getPrice(){
+ try{
+ let r=await fetch("https://api.binance.com/api/v3/ticker/price?symbol="+symbol.replace("BINANCE:",""));
+ let d=await r.json();
+ price=parseFloat(d.price);
+ document.getElementById("price").innerText="PRICE: "+price;
+ }catch(e){}
 }
 
 function setSymbol(s){
-symbol="BINANCE:"+s;
-prices=[];
-rsiArr=[];
-loadChart(symbol);
+ symbol="BINANCE:"+s;
+ loadChart(symbol);
 }
 
 window.onload=function(){
-loadChart(symbol);
-getPrice();
-setInterval(getPrice,3000);
+ loadChart(symbol);
+ getPrice();
+ updateRSI();
+ setInterval(getPrice,3000);
+ setInterval(updateRSI,15000);
 };
 
 </script>
