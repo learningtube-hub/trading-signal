@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>SMART CONFIRMATION ENGINE v2</title>
+<title>OVERLAY TRADING SIGNAL UI</title>
 
 <script src="https://s3.tradingview.com/tv.js"></script>
 
@@ -12,131 +12,119 @@ margin:0;
 font-family:Arial;
 background:#0b1220;
 color:white;
-display:flex;
+height:100vh;
+overflow:hidden;
+}
+
+/* WRAPPER */
+#chartWrapper{
+position:relative;
+width:100%;
 height:100vh;
 }
 
-.left{
-width:220px;
-background:#111827;
-padding:10px;
+/* TRADINGVIEW */
+#chart{
+width:100%;
+height:100%;
 }
 
-.center{
-flex:1;
-display:flex;
-flex-direction:column;
-}
-
-.right{
-width:340px;
-background:#111827;
-padding:10px;
-overflow:auto;
-}
-
-.box{
-background:#1f2937;
-padding:10px;
-margin:8px 0;
-border-radius:10px;
-}
-
-.signal{
+/* OVERLAY PANEL */
+.overlay{
+position:absolute;
+top:15px;
+left:15px;
+width:280px;
+background:rgba(17,24,39,0.92);
+border-radius:12px;
 padding:12px;
+z-index:10;
+box-shadow:0 0 20px rgba(0,0,0,0.6);
+}
+
+/* SIGNAL BOX */
+.signal{
 text-align:center;
+padding:12px;
+border-radius:10px;
 font-size:20px;
 font-weight:bold;
-border-radius:10px;
+margin-bottom:10px;
 }
 
-.green{background:#16a34a;}
-.red{background:#dc2626;}
-.yellow{background:#facc15;color:black;}
+.buy{background:#16a34a;}
+.sell{background:#dc2626;}
+.wait{background:#facc15;color:black;}
 
-.rsiBox{
+/* INFO ROW */
+.row{
 display:flex;
 justify-content:space-between;
-padding:6px;
-margin:5px 0;
-background:#111827;
-border-radius:8px;
+margin:6px 0;
+font-size:14px;
 }
+
+/* TP SL */
+.tp{color:#22c55e;font-weight:bold;}
+.sl{color:#ef4444;font-weight:bold;}
+
 </style>
 </head>
 
 <body>
 
-<!-- LEFT PANEL -->
-<div class="left">
-<h3>MARKET</h3>
-<div class="box">BTC</div>
-<div class="box">ETH</div>
-<div class="box">SOL</div>
+<div id="chartWrapper">
 
-<hr>
+<!-- OVERLAY UI -->
+<div class="overlay">
 
-<div class="box">
-ENTRY: <span id="entry">--</span>
+<div id="signalBox" class="signal wait">WAIT</div>
+
+<div class="row">
+<span>Entry</span>
+<span id="entry">--</span>
 </div>
 
-<div class="box">
-TP: <span id="tp">--</span>
+<div class="row">
+<span>TP</span>
+<span id="tp" class="tp">--</span>
 </div>
 
-<div class="box">
-SL: <span id="sl">--</span>
+<div class="row">
+<span>SL</span>
+<span id="sl" class="sl">--</span>
+</div>
+
+<div class="row">
+<span>RSI (4H)</span>
+<span id="rsi">--</span>
 </div>
 
 </div>
 
-<!-- CENTER -->
-<div class="center">
+<!-- CHART -->
 <div id="chart"></div>
-</div>
-
-<!-- RIGHT PANEL -->
-<div class="right">
-
-<h3>SMART SIGNAL ENGINE</h3>
-
-<div class="box signal yellow" id="signal">WAIT</div>
-
-<div class="box">
-Score: <span id="score">0</span>
-</div>
-
-<hr>
-
-<h3>RSI MULTI TF</h3>
-
-<div class="rsiBox">30M <span id="r30">--</span></div>
-<div class="rsiBox">1H <span id="r1h">--</span></div>
-<div class="rsiBox">4H <span id="r4h">--</span></div>
-<div class="rsiBox">1D <span id="r1d">--</span></div>
 
 </div>
 
 <script>
 
 let symbol="BINANCE:BTCUSDT";
-let price=0;
 
 // ---------------- CHART ----------------
-function loadChart(sym){
-document.getElementById("chart").innerHTML="";
+function loadChart(){
 new TradingView.widget({
 container_id:"chart",
 width:"100%",
 height:"100%",
-symbol:sym,
+symbol:symbol,
 interval:"30",
 theme:"dark",
 style:"1"
 });
 }
 
-// ---------------- FETCH ----------------
+// ---------------- DATA ----------------
 async function getCloses(tf){
 let res=await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol.replace("BINANCE:","")}&interval=${tf}&limit=50`);
 let data=await res.json();
@@ -157,116 +145,72 @@ let rs=gain/(loss||1);
 return 100-(100/(1+rs));
 }
 
-// ---------------- TREND ----------------
-function getTrend(closes){
-return closes[closes.length-1] > closes[0] ? "UP" : "DOWN";
+// ---------------- SIGNAL ----------------
+function getSignal(rsi){
+if(rsi<35) return "BUY";
+if(rsi>65) return "SELL";
+return "WAIT";
 }
 
-// ---------------- MOMENTUM ----------------
-function getMomentum(closes){
-let mid=Math.floor(closes.length/2);
-let a1=closes.slice(0,mid);
-let a2=closes.slice(mid);
+// ---------------- OVERLAY UPDATE ----------------
+function updateUI(signal,price,rsi){
 
-let avg1=a1.reduce((a,b)=>a+b)/a1.length;
-let avg2=a2.reduce((a,b)=>a+b)/a2.length;
+let box=document.getElementById("signalBox");
 
-return avg2>avg1 ? "UP" : "DOWN";
-}
-
-// ---------------- SIGNAL ENGINE ----------------
-function smartSignal(rsi,trend,momentum){
-
-let score=0;
-
-if(rsi<35) score++;
-if(rsi>65) score--;
-
-if(trend=="UP") score++;
-if(trend=="DOWN") score--;
-
-if(momentum=="UP") score++;
-if(momentum=="DOWN") score--;
-
-return score;
-}
-
-// ---------------- TP/SL CALC ----------------
-function setRisk(price,signal){
-
-let tp,sl;
+box.className="signal";
 
 if(signal=="BUY"){
-tp = price * 1.02;
-sl = price * 0.99;
+box.classList.add("buy");
+box.innerText="🟢 BUY SIGNAL";
 }
 
-if(signal=="SELL"){
-tp = price * 0.98;
-sl = price * 1.01;
+else if(signal=="SELL"){
+box.classList.add("sell");
+box.innerText="🔴 SELL SIGNAL";
 }
 
-document.getElementById("tp").innerText=tp.toFixed(2);
-document.getElementById("sl").innerText=sl.toFixed(2);
+else{
+box.classList.add("wait");
+box.innerText="🟡 WAIT";
 }
-
-// ---------------- UPDATE ----------------
-async function update(){
-
-let c30=await getCloses("30m");
-let c1h=await getCloses("1h");
-let c4h=await getCloses("4h");
-let c1d=await getCloses("1d");
-
-// RSI
-let r30=calcRSI(c30);
-let r1h=calcRSI(c1h);
-let r4h=calcRSI(c4h);
-let r1d=calcRSI(c1d);
-
-// UI RSI
-document.getElementById("r30").innerText=r30.toFixed(2);
-document.getElementById("r1h").innerText=r1h.toFixed(2);
-document.getElementById("r4h").innerText=r4h.toFixed(2);
-document.getElementById("r1d").innerText=r1d.toFixed(2);
-
-// TREND + MOMENTUM (4H base)
-let trend=getTrend(c4h);
-let momentum=getMomentum(c4h);
-
-// SCORE
-let score=smartSignal(r4h,trend,momentum);
-
-document.getElementById("score").innerText=score;
-
-// DECISION
-let signal="WAIT";
-let color="yellow";
-
-if(score>=2){
-signal="BUY";
-color="green";
-setRisk(c4h[c4h.length-1],signal);
-}
-
-if(score<=-2){
-signal="SELL";
-color="red";
-setRisk(c4h[c4h.length-1],signal);
-}
-
-// UI SIGNAL
-let box=document.getElementById("signal");
-box.innerText=signal;
-box.className="signal "+color;
 
 // ENTRY
-document.getElementById("entry").innerText=c4h[c4h.length-1].toFixed(2);
+document.getElementById("entry").innerText=price.toFixed(2);
+
+// TP / SL
+if(signal=="BUY"){
+document.getElementById("tp").innerText=(price*1.02).toFixed(2);
+document.getElementById("sl").innerText=(price*0.99).toFixed(2);
+}
+
+else if(signal=="SELL"){
+document.getElementById("tp").innerText=(price*0.98).toFixed(2);
+document.getElementById("sl").innerText=(price*1.01).toFixed(2);
+}
+
+else{
+document.getElementById("tp").innerText="--";
+document.getElementById("sl").innerText="--";
+}
+
+document.getElementById("rsi").innerText=rsi.toFixed(2);
+}
+
+// ---------------- MAIN LOOP ----------------
+async function update(){
+
+let c4h=await getCloses("4h");
+let price=c4h[c4h.length-1];
+
+let rsi=calcRSI(c4h);
+let signal=getSignal(rsi);
+
+updateUI(signal,price,rsi);
 
 }
 
 // INIT
-loadChart(symbol);
+loadChart();
 setInterval(update,10000);
 
 </script>
