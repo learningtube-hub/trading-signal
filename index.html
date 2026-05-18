@@ -3,48 +3,32 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>STRUCTURE SIGNAL BOT (TRADINGVIEW CORE)</title>
+<title>SMC + RSI STRUCTURE SIGNAL BOT</title>
 <script src="https://s3.tradingview.com/tv.js"></script>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
 body{background:#0b1220;color:#e5e7eb;height:100vh;display:flex;overflow:hidden;}
 
-.left{
-width:200px;background:#0f172a;border-right:1px solid #1f2937;padding:10px;
-}
-
-.pair{
-padding:10px;margin:6px 0;background:#111827;border-radius:8px;cursor:pointer;text-align:center;
-}
+.left{width:200px;background:#0f172a;border-right:1px solid #1f2937;padding:10px;}
+.pair{padding:10px;margin:6px 0;background:#111827;border-radius:8px;cursor:pointer;text-align:center;}
 
 .center{flex:1;display:flex;flex-direction:column;}
+.topbar{height:50px;background:#0f172a;border-bottom:1px solid #1f2937;display:flex;justify-content:space-between;align-items:center;padding:0 10px;}
 
-.topbar{
-height:50px;background:#0f172a;border-bottom:1px solid #1f2937;display:flex;justify-content:space-between;align-items:center;padding:0 10px;
-}
+.chartBox{flex:1;margin:10px;border-radius:12px;border:1px solid #1f2937;overflow:hidden;}
 
-.chartBox{
-flex:1;margin:10px;border-radius:12px;border:1px solid #1f2937;overflow:hidden;
-}
+.right{width:320px;background:#0f172a;border-left:1px solid #1f2937;padding:10px;overflow:auto;}
 
-.right{
-width:300px;background:#0f172a;border-left:1px solid #1f2937;padding:10px;
-}
+.card{background:#111827;padding:12px;border-radius:12px;}
 
-.card{
-background:#111827;padding:12px;border-radius:12px;
-}
-
-.signal{
-font-size:22px;font-weight:bold;margin-top:10px;
-}
-
+.signal{font-size:22px;font-weight:bold;margin-top:10px;}
 .green{color:#22c55e;}
 .red{color:#ef4444;}
 .yellow{color:#fbbf24;}
 
 .small{font-size:12px;opacity:0.8;margin-top:6px;}
+.indicatorBox{margin-top:10px;padding:10px;background:#0b1220;border-radius:10px;}
 </style>
 </head>
 
@@ -58,26 +42,29 @@ font-size:22px;font-weight:bold;margin-top:10px;
 </div>
 
 <div class="center">
-
 <div class="topbar">
-<div id="title">STRUCTURE BOT</div>
+<div id="title">ADVANCED SIGNAL BOT</div>
 <div id="price">PRICE: --</div>
 </div>
 
 <div class="chartBox" id="tv"></div>
-
 </div>
 
 <div class="right">
 <div class="card">
-<h3>STRUCTURE SIGNAL</h3>
+<h3>SIGNAL PANEL</h3>
 
 <div id="signal" class="signal yellow">WAIT</div>
 <div class="small" id="trend">Trend: --</div>
 <div class="small" id="entry">Entry: --</div>
 <div class="small" id="tp">TP: --</div>
 <div class="small" id="sl">SL: --</div>
-<div class="small" id="info">Market Structure Engine Running...</div>
+
+<div class="indicatorBox">
+<div id="rsi">RSI: --</div>
+<div id="rsiState">State: --</div>
+<div id="divergence">Divergence: --</div>
+</div>
 
 </div>
 </div>
@@ -86,109 +73,122 @@ font-size:22px;font-weight:bold;margin-top:10px;
 
 let symbol="BINANCE:BTCUSDT";
 let prices=[];
+let highs=[];
+let lows=[];
 let price=0;
 
 function loadChart(sym){
-
-document.getElementById("tv").innerHTML="";
-
-new TradingView.widget({
-width:"100%",
-height:"100%",
-symbol:sym,
-interval:"1",
-theme:"dark",
-style:"1",
-container_id:"tv"
-});
-
+ document.getElementById("tv").innerHTML="";
+ new TradingView.widget({
+ width:"100%",
+ height:"100%",
+ symbol:sym,
+ interval:"1",
+ theme:"dark",
+ style:"1",
+ container_id:"tv"
+ });
 }
 
-// LIVE PRICE (simple fallback for engine)
 async function getPrice(){
-try{
-let r=await fetch("https://api.binance.com/api/v3/ticker/price?symbol="+symbol.replace("BINANCE:",""));
-let d=await r.json();
-price=parseFloat(d.price);
+ try{
+ let r=await fetch("https://api.binance.com/api/v3/ticker/price?symbol="+symbol.replace("BINANCE:",""));
+ let d=await r.json();
+ price=parseFloat(d.price);
 
-prices.push(price);
-if(prices.length>100) prices.shift();
+ prices.push(price);
+ if(prices.length>100) prices.shift();
 
-document.getElementById("price").innerText="PRICE: "+price;
+ document.getElementById("price").innerText="PRICE: "+price;
 
-runStructure();
-}catch(e){}
+ runEngine();
+ }catch(e){}
 }
 
-// FIND SWINGS (STRUCTURE)
-function getStructure(){
-if(prices.length<20) return "WAIT";
-
-let recent=prices.slice(-20);
-
-let max=Math.max(...recent);
-let min=Math.min(...recent);
-
-let mid=(max+min)/2;
-
-if(price>mid) return "UPTREND";
-else return "DOWNTREND";
+function rsi(data, period=14){
+ if(data.length<period) return 50;
+ let gain=0,loss=0;
+ for(let i=data.length-period;i<data.length;i++){
+ let diff=data[i]-data[i-1];
+ if(diff>0) gain+=diff; else loss+=Math.abs(diff);
+ }
+ let rs=gain/(loss||1);
+ return 100-(100/(1+rs));
 }
 
-function runStructure(){
-if(prices.length<20) return;
-
-let trend=getStructure();
-
-let signal="WAIT";
-let color="yellow";
-
-if(trend=="UPTREND" && price>prices[prices.length-2]){
-signal="LONG";
-color="green";
+function detectRSIState(r){
+ if(r<30) return "OVERSOLD 🟢";
+ if(r>70) return "OVERBOUGHT 🔴";
+ return "NEUTRAL 🟡";
 }
 
-if(trend=="DOWNTREND" && price<prices[prices.length-2]){
-signal="SHORT";
-color="red";
+function detectTrend(){
+ let recent=prices.slice(-20);
+ let max=Math.max(...recent);
+ let min=Math.min(...recent);
+ let mid=(max+min)/2;
+ return price>mid ? "UPTREND" : "DOWNTREND";
 }
 
-// TP SL STRUCTURE BASED
-let entry=price;
-let tp,sl;
-
-if(signal=="LONG"){
-tp=price*1.003;
-sl=price*0.998;
-}else if(signal=="SHORT"){
-tp=price*0.997;
-sl=price*1.002;
-}else{
-tp="--";sl="--";
+function detectDivergence(){
+ if(prices.length<20) return "NONE";
+ let last=prices[prices.length-1];
+ let prev=prices[prices.length-5];
+ if(last>prev && rsi(prices)<50) return "BULLISH DIVERGENCE 🟢";
+ if(last<prev && rsi(prices)>50) return "BEARISH DIVERGENCE 🔴";
+ return "NONE";
 }
 
-// UI UPDATE
-document.getElementById("signal").innerText=signal;
-document.getElementById("signal").className="signal "+color;
+function runEngine(){
+ if(prices.length<20) return;
 
-document.getElementById("trend").innerText="Trend: "+trend;
-document.getElementById("entry").innerText="Entry: "+entry;
-document.getElementById("tp").innerText="TP: "+tp;
-document.getElementById("sl").innerText="SL: "+sl;
-document.getElementById("info").innerText="Market Structure Logic Active";
+ let r=rsi(prices);
+ let state=detectRSIState(r);
+ let trend=detectTrend();
+ let div=detectDivergence();
 
+ let signal="WAIT";
+ let color="yellow";
+
+ if(trend=="UPTREND" && r<30){signal="LONG";color="green";}
+ if(trend=="DOWNTREND" && r>70){signal="SHORT";color="red";}
+
+ let entry=price;
+ let tp,sl;
+
+ if(signal=="LONG"){
+ tp=price*1.003;
+ sl=price*0.998;
+ }else if(signal=="SHORT"){
+ tp=price*0.997;
+ sl=price*1.002;
+ }else{
+ tp="--";sl="--";
+ }
+
+ document.getElementById("signal").innerText=signal;
+ document.getElementById("signal").className="signal "+color;
+
+ document.getElementById("trend").innerText="Trend: "+trend;
+ document.getElementById("entry").innerText="Entry: "+entry;
+ document.getElementById("tp").innerText="TP: "+tp;
+ document.getElementById("sl").innerText="SL: "+sl;
+
+ document.getElementById("rsi").innerText="RSI: "+r.toFixed(2);
+ document.getElementById("rsiState").innerText="State: "+state;
+ document.getElementById("divergence").innerText="Divergence: "+div;
 }
 
 function setSymbol(s){
-symbol="BINANCE:"+s;
-prices=[];
-loadChart(symbol);
+ symbol="BINANCE:"+s;
+ prices=[];
+ loadChart(symbol);
 }
 
 window.onload=function(){
-loadChart(symbol);
-getPrice();
-setInterval(getPrice,3000);
+ loadChart(symbol);
+ getPrice();
+ setInterval(getPrice,3000);
 };
 
 </script>
