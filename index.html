@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <title>Crypto Signal Dashboard Pro</title>
@@ -8,129 +8,196 @@
 body {
   margin:0;
   font-family: Arial;
-  background:#0f172a;
+  background:#0b1220;
   color:white;
-  text-align:center;
+  display:flex;
 }
 
-header {
-  padding:20px;
+/* SIDEBAR */
+.sidebar {
+  width:300px;
   background:#111827;
+  height:100vh;
+  overflow-y:auto;
+  padding:15px;
 }
 
-.container {
-  display:grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap:15px;
+.pair {
+  padding:10px;
+  margin:8px 0;
+  background:#1f2937;
+  cursor:pointer;
+  border-radius:6px;
+}
+
+.pair:hover {
+  background:#374151;
+}
+
+/* MAIN */
+.main {
+  flex:1;
   padding:20px;
 }
 
 .card {
-  background:#1e293b;
+  background:#1f2937;
   padding:15px;
   border-radius:10px;
+  margin-bottom:15px;
 }
 
-.buy { color: #00ff88; font-weight:bold; }
-.sell { color: #ff4d4d; font-weight:bold; }
-
-.badge {
-  padding:5px 10px;
-  border-radius:8px;
-  background:#334155;
+.status {
+  padding:8px;
   display:inline-block;
-  margin-top:5px;
+  border-radius:6px;
+  background:orange;
 }
 
-.paid {
-  background: gold;
-  color:black;
-  padding:5px 10px;
-  border-radius:8px;
-}
+.buy { color:#00ff88; }
+.sell { color:#ff4d4d; }
 
-.free {
-  background: #22c55e;
-  padding:5px 10px;
-  border-radius:8px;
+.chart {
+  height:300px;
+  background:#0f172a;
+  border:1px solid #334155;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <h1>Crypto Signal Dashboard</h1>
-  <p>Live Long / Short Signals (Free + Paid System Ready)</p>
-</header>
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h3>Pairs</h3>
 
-<div id="status" class="badge free">FREE MODE</div>
+  <div class="pair" onclick="selectPair('BTC')">BTCUSDT</div>
+  <div class="pair" onclick="selectPair('ETH')">ETHUSDT</div>
+  <div class="pair" onclick="selectPair('BNB')">BNBUSDT</div>
+  <div class="pair" onclick="selectPair('XRP')">XRPUSDT</div>
+  <div class="pair" onclick="selectPair('SOL')">SOLUSDT</div>
+  <div class="pair" onclick="selectPair('ADA')">ADAUSDT</div>
 
-<div class="container">
+  <hr>
 
-  <div class="card" id="BTCUSDT">Loading BTC...</div>
-  <div class="card" id="ETHUSDT">Loading ETH...</div>
-  <div class="card" id="BNBUSDT">Loading BNB...</div>
-  <div class="card" id="XRPUSDT">Loading XRP...</div>
-  <div class="card" id="SOLUSDT">Loading SOL...</div>
-  <div class="card" id="ADAUSDT">Loading ADA...</div>
+  <div class="card">
+    <h4>Trade Panel</h4>
+    <p id="status">WAITING FOR SIGNAL</p>
+    <p id="signal">Signal: -</p>
+    <p id="entry">Entry: -</p>
+    <p id="tp">TP: -</p>
+    <p id="sl">SL: -</p>
+  </div>
+
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <h2 id="title">BTCUSDT Dashboard</h2>
+
+  <div class="card">
+    <h4>Live Price</h4>
+    <h1 id="price">0</h1>
+  </div>
+
+  <div class="chart" id="chart">
+    PRICE CHART (SIMPLE VIEW)
+  </div>
 
 </div>
 
 <script>
-// ====== CONFIG ======
-const pairs = ["BTCUSDT","ETHUSDT","BNBUSDT","XRPUSDT","SOLUSDT","ADAUSDT"];
 
-// demo base prices
+// ===== DATA =====
+let currentPair = "BTC";
+
 let basePrices = {
-  BTCUSDT: 65000,
-  ETHUSDT: 3200,
-  BNBUSDT: 580,
-  XRPUSDT: 0.6,
-  SOLUSDT: 140,
-  ADAUSDT: 0.5
+  BTC:65000,
+  ETH:3200,
+  BNB:580,
+  XRP:0.6,
+  SOL:140,
+  ADA:0.5
 };
 
-// ====== SIGNAL ENGINE ======
-function getSignal(price, base) {
-  if (price > base) return "BUY";
-  else return "SELL";
+// ===== STATE =====
+let trade = null;
+let state = "WAITING";
+
+// ===== SELECT PAIR =====
+function selectPair(pair){
+  currentPair = pair;
+  document.getElementById("title").innerText = pair + "USDT Dashboard";
+
+  // reset state when switching
+  state = "WAITING";
+  trade = null;
 }
 
-// ====== UPDATE UI ======
-function updateUI() {
-
-  pairs.forEach(pair => {
-
-    // fake live movement (demo)
-    let change = (Math.random() * 200 - 100);
-    let price = basePrices[pair] + change;
-
-    let signal = getSignal(price, basePrices[pair]);
-
-    document.getElementById(pair).innerHTML = `
-      <h2>${pair}</h2>
-      <p>Price: ${price.toFixed(2)}</p>
-      <p class="${signal === 'BUY' ? 'buy' : 'sell'}">
-        Signal: ${signal}
-      </p>
-      <p>Entry: ${price.toFixed(2)}</p>
-      <p>TP: ${(price * 1.03).toFixed(2)}</p>
-      <p>SL: ${(price * 0.97).toFixed(2)}</p>
-      <div class="badge">ACTIVE</div>
-    `;
-  });
+// ===== SIGNAL =====
+function getSignal(price, base){
+  return price > base ? "BUY" : "SELL";
 }
 
-// ====== AUTO UPDATE ======
-updateUI();
-setInterval(updateUI, 5000);
+// ===== UPDATE ENGINE =====
+function update(){
 
-// ====== FUTURE BACKEND HOOK ======
-async function fetchFromBackend() {
-  // এখানে পরে তোমার real API বসবে
-  // const res = await fetch(API_URL);
+  let base = basePrices[currentPair];
+
+  // fake live movement
+  let price = base + (Math.random()*200 - 100);
+
+  document.getElementById("price").innerText = price.toFixed(2);
+
+  // TRADE LOGIC
+  if(state === "WAITING"){
+
+    let signal = getSignal(price, base);
+
+    trade = {
+      signal: signal,
+      entry: price,
+      tp: signal === "BUY" ? price*1.03 : price*0.97,
+      sl: signal === "BUY" ? price*0.97 : price*1.03
+    };
+
+    state = "OPEN";
+
+    document.getElementById("status").innerText = "TRADE ACTIVE";
+    document.getElementById("signal").innerText = "Signal: " + signal;
+    document.getElementById("entry").innerText = "Entry: " + price.toFixed(2);
+    document.getElementById("tp").innerText = "TP: " + trade.tp.toFixed(2);
+    document.getElementById("sl").innerText = "SL: " + trade.sl.toFixed(2);
+
+  } else {
+
+    // CHECK TP/SL
+    if(price >= trade.tp || price <= trade.sl){
+
+      state = "WAITING";
+
+      document.getElementById("status").innerText =
+        (price >= trade.tp) ? "TAKE PROFIT HIT → WAITING" : "STOP LOSS HIT → WAITING";
+
+      trade = null;
+    }
+  }
+
+  // chart fake update
+  document.getElementById("chart").innerText =
+    currentPair + " LIVE PRICE MOVING...";
 }
+
+// ===== LOOP =====
+update();
+setInterval(update, 3000);
+
 </script>
 
 </body>
