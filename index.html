@@ -66,10 +66,11 @@ body{
   margin-bottom:10px;
 }
 
+/* CHART HEIGHT REDUCED */
 .chartBox{
   width:100%;
   max-width:900px;
-  height:70vh;
+  height:35vh;
   border-radius:12px;
   border:1px solid #1f2937;
   overflow:hidden;
@@ -155,67 +156,4 @@ body{
     <div class="status" id="status">WAITING...</div>
   </div>
 
-</div>
-
-<script>
-let symbol="BTCUSDT";
-let price=65000;
-
-function loadChart(sym){
-  document.getElementById("tv").innerHTML="";
-
-  new TradingView.widget({
-    width:"100%",
-    height:"100%",
-    symbol:"BINANCE:"+sym,
-    interval:"1",
-    theme:"dark",
-    style:"1",
-    container_id:"tv"
-  });
-
-  document.getElementById("title").innerText=sym+" TERMINAL";
-}
-
-async function fetchPrice(){
-  try{
-    let res=await fetch("https://api.binance.com/api/v3/ticker/price?symbol="+symbol);
-    let data=await res.json();
-    price=parseFloat(data.price);
-    document.getElementById("livePrice").innerText="PRICE: "+price;
-  }catch(e){}
-}
-
-function signal(type){
-  let entry=price;
-  let tp,sl;
-
-  if(type=="LONG"){
-    tp=entry+250;
-    sl=entry-180;
-  }else{
-    tp=entry-250;
-    sl=entry+180;
-  }
-
-  document.getElementById("entry").innerText="ENTRY: "+entry;
-  document.getElementById("tp").innerText="TP: "+tp;
-  document.getElementById("sl").innerText="SL: "+sl;
-
-  document.getElementById("status").innerText=type+" ACTIVE";
-  document.getElementById("status").style.color=type=="LONG"?"#22c55e":"#ef4444";
-}
-
-function manual(t){signal(t);}
-
-function setPair(p){symbol=p;loadChart(p);}
-
-window.onload=function(){
-  loadChart(symbol);
-  fetchPrice();
-  setInterval(fetchPrice,3000);
-};
-</script>
-
-</body>
-</html>
+</d
