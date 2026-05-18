@@ -3,19 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Real-Time Crypto Trading Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>Pro TradingView Dashboard</title>
   <style>
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-      font-family: Arial, sans-serif;
-    }
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
 
     body{
       background:#0b1220;
-      color:#e5e7eb;
+      color:white;
       height:100vh;
       display:flex;
       overflow:hidden;
@@ -24,115 +18,56 @@
     .sidebar{
       width:260px;
       background:#0f172a;
-      padding:20px;
+      padding:15px;
       display:flex;
       flex-direction:column;
-      gap:12px;
+      gap:10px;
       border-right:1px solid #1f2937;
     }
 
     .logo{
-      font-size:22px;
+      font-size:20px;
       font-weight:bold;
       color:#38bdf8;
+      margin-bottom:10px;
     }
 
     .menu{
       padding:10px;
-      border-radius:10px;
       background:#111827;
+      border-radius:8px;
       cursor:pointer;
     }
 
-    .menu:hover{ background:#1f2937; }
+    .menu:hover{background:#1f2937;}
 
-    .main{ flex:1; display:flex; flex-direction:column; }
+    .main{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+    }
 
     .topbar{
-      height:65px;
+      height:60px;
+      background:#0f172a;
+      border-bottom:1px solid #1f2937;
       display:flex;
       justify-content:space-between;
       align-items:center;
-      padding:0 20px;
-      background:#0f172a;
-      border-bottom:1px solid #1f2937;
+      padding:0 15px;
     }
 
-    .search{
-      width:300px;
-      padding:10px;
-      border-radius:10px;
-      border:none;
-      background:#111827;
-      color:white;
-    }
-
-    .btn{
-      background:#38bdf8;
-      color:black;
-      padding:10px 14px;
-      border-radius:10px;
+    .title{
       font-weight:bold;
-      cursor:pointer;
-      margin-left:5px;
-    }
-
-    .btn.red{background:#ef4444;color:white;}
-    .btn.green{background:#22c55e;color:white;}
-
-    .ticker{
-      display:flex;
-      gap:10px;
-      padding:10px;
-      overflow:auto;
-      background:#0f172a;
-      border-bottom:1px solid #1f2937;
-    }
-
-    .coin{
-      background:#111827;
-      padding:8px 12px;
-      border-radius:10px;
-      white-space:nowrap;
     }
 
     .content{
       flex:1;
-      display:grid;
-      grid-template-columns:2fr 1fr;
-      gap:15px;
-      padding:15px;
-    }
-
-    .chartBox{
-      background:#0f172a;
-      border:1px solid #1f2937;
-      border-radius:14px;
-      padding:15px;
-    }
-
-    .rightPanel{
       display:flex;
-      flex-direction:column;
-      gap:12px;
     }
 
-    .card{
-      background:#0f172a;
-      border:1px solid #1f2937;
-      border-radius:14px;
-      padding:12px;
-    }
-
-    .buy{color:#22c55e;font-weight:bold;}
-    .sell{color:#ef4444;font-weight:bold;}
-
-    .row{display:flex;justify-content:space-between;margin:6px 0;}
-
-    .error{
-      color:#f87171;
-      font-size:12px;
-      margin-top:5px;
+    .chart{
+      flex:1;
     }
   </style>
 </head>
@@ -144,145 +79,38 @@
   <div class="menu">Market</div>
   <div class="menu">Signals</div>
   <div class="menu">Portfolio</div>
-  <div class="menu">Settings</div>
 </div>
 
 <div class="main">
 
   <div class="topbar">
-    <input class="search" placeholder="Search BTC, ETH..." />
-    <div>
-      <button class="btn green" onclick="setMode('long')">LONG</button>
-      <button class="btn red" onclick="setMode('short')">SHORT</button>
-      <button class="btn" onclick="setTime('1m')">1m</button>
-      <button class="btn" onclick="setTime('5m')">5m</button>
-      <button class="btn" onclick="setTime('1h')">1h</button>
-    </div>
+    <div class="title">BTC / USDT Live TradingView</div>
+    <div>Real Market Chart</div>
   </div>
-
-  <div class="ticker" id="ticker"></div>
 
   <div class="content">
-
-    <div class="chartBox">
-      <h3>BTC Live Price</h3>
-      <canvas id="chart"></canvas>
-      <div id="status" class="error"></div>
-    </div>
-
-    <div class="rightPanel">
-
-      <div class="card">
-        <h4>Live Signal</h4>
-        <p id="signal">Loading...</p>
-      </div>
-
-      <div class="card">
-        <h4>Market</h4>
-        <div id="market">Loading market data...</div>
-        <div id="marketError" class="error"></div>
-      </div>
-
-    </div>
-
+    <div class="chart" id="tv_chart"></div>
   </div>
+
 </div>
 
+<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+
 <script>
-let mode = "neutral";
-let timeframe = "1m";
-let chart;
-
-function setMode(m){ mode = m; }
-function setTime(t){ timeframe = t; }
-
-async function fetchData(){
-  try{
-    const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd");
-    if(!res.ok) throw new Error("API failed");
-    return await res.json();
-  }catch(err){
-    document.getElementById("status").innerText = "Market data fetch failed. Check internet or API limit.";
-    console.error(err);
-    return null;
-  }
-}
-
-function updateTicker(data){
-  if(!data) return;
-  document.getElementById("ticker").innerHTML = `
-    <div class='coin'>BTC $${data.bitcoin.usd}</div>
-    <div class='coin'>ETH $${data.ethereum.usd}</div>
-    <div class='coin'>SOL $${data.solana.usd}</div>
-  `;
-}
-
-function updateMarket(data){
-  const el = document.getElementById("market");
-  const err = document.getElementById("marketError");
-
-  if(!data){
-    el.innerHTML = "No data";
-    err.innerText = "Market box not updating (API issue or blocked request).";
-    return;
-  }
-
-  err.innerText = "";
-  el.innerHTML = `
-    <div class='row'><span>BTC</span><span>$${data.bitcoin.usd}</span></div>
-    <div class='row'><span>ETH</span><span>$${data.ethereum.usd}</span></div>
-    <div class='row'><span>SOL</span><span>$${data.solana.usd}</span></div>
-  `;
-}
-
-function updateSignal(data){
-  if(!data) return;
-
-  let btc = data.bitcoin.usd;
-  let msg = "HOLD";
-
-  if(mode === "long" && btc > 65000) msg = "LONG READY ✔";
-  if(mode === "short" && btc < 65000) msg = "SHORT READY ✔";
-
-  document.getElementById("signal").innerText = msg;
-}
-
-function updateChart(price){
-  const now = new Date().toLocaleTimeString();
-
-  chart.data.labels.push(now);
-  chart.data.datasets[0].data.push(price);
-
-  if(chart.data.labels.length > 10){
-    chart.data.labels.shift();
-    chart.data.datasets[0].data.shift();
-  }
-
-  chart.update();
-}
-
-async function loop(){
-  const data = await fetchData();
-
-  updateTicker(data);
-  updateMarket(data);
-  updateSignal(data);
-
-  if(data) updateChart(data.bitcoin.usd);
-}
-
-window.onload = () => {
-  const ctx = document.getElementById('chart');
-
-  chart = new Chart(ctx, {
-    type:'line',
-    data:{labels:[],datasets:[{label:'BTC',data:[],borderColor:'#38bdf8'}]},
-    options:{responsive:true,plugins:{legend:{labels:{color:'white'}}},scales:{x:{ticks:{color:'white'}},y:{ticks:{color:'white'}}}}
-  });
-
-  setInterval(loop, 3000);
-  loop();
-};
+new TradingView.widget({
+  "width": "100%",
+  "height": "100%",
+  "symbol": "BINANCE:BTCUSDT",
+  "interval": "1",
+  "timezone": "Asia/Dhaka",
+  "theme": "dark",
+  "style": "1",
+  "locale": "en",
+  "toolbar_bg": "#0f172a",
+  "enable_publishing": false,
+  "hide_top_toolbar": false,
+  "container_id": "tv_chart"
+});
 </script>
 
 </body>
