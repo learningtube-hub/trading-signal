@@ -3,114 +3,234 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pro TradingView Dashboard</title>
+  <title>Pro Trading Signal Dashboard V2</title>
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
   <style>
-    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, sans-serif;
+    }
 
     body{
       background:#0b1220;
-      color:white;
+      color:#e5e7eb;
       height:100vh;
       display:flex;
       overflow:hidden;
     }
 
-    .sidebar{
-      width:260px;
+    /* LEFT PANEL */
+    .left{
+      width:230px;
       background:#0f172a;
-      padding:15px;
+      border-right:1px solid #1f2937;
+      padding:12px;
       display:flex;
       flex-direction:column;
       gap:10px;
-      border-right:1px solid #1f2937;
+      overflow:auto;
     }
 
     .logo{
-      font-size:20px;
+      font-size:18px;
       font-weight:bold;
       color:#38bdf8;
-      margin-bottom:10px;
+      margin-bottom:8px;
     }
 
-    .menu{
+    .pair{
       padding:10px;
-      background:#111827;
       border-radius:8px;
+      background:#111827;
       cursor:pointer;
+      text-align:center;
+      transition:0.2s;
     }
 
-    .menu:hover{background:#1f2937;}
+    .pair:hover{
+      background:#1f2937;
+    }
 
-    .main{
+    /* CENTER */
+    .center{
       flex:1;
       display:flex;
       flex-direction:column;
     }
 
     .topbar{
-      height:60px;
+      height:55px;
       background:#0f172a;
       border-bottom:1px solid #1f2937;
       display:flex;
-      justify-content:space-between;
       align-items:center;
-      padding:0 15px;
+      justify-content:space-between;
+      padding:0 12px;
     }
 
-    .title{
-      font-weight:bold;
+    .status{
+      font-size:13px;
+      opacity:0.8;
     }
 
-    .content{
+    .chartBox{
       flex:1;
+      margin:10px;
+      border:1px solid #1f2937;
+      border-radius:12px;
+      overflow:hidden;
+    }
+
+    /* RIGHT */
+    .right{
+      width:270px;
+      background:#0f172a;
+      border-left:1px solid #1f2937;
+      padding:12px;
       display:flex;
+      flex-direction:column;
+      gap:12px;
     }
 
-    .chart{
+    .card{
+      background:#111827;
+      padding:12px;
+      border-radius:12px;
+    }
+
+    .btnRow{
+      display:flex;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .btn{
       flex:1;
+      padding:12px;
+      border:none;
+      border-radius:50px;
+      font-weight:bold;
+      cursor:pointer;
+      color:white;
+      transition:0.2s;
+    }
+
+    .green{background:#22c55e;}
+    .red{background:#ef4444;}
+
+    .signalText{
+      font-size:16px;
+      font-weight:bold;
+      margin-top:8px;
+    }
+
+    .small{
+      font-size:12px;
+      opacity:0.7;
     }
   </style>
 </head>
 <body>
 
-<div class="sidebar">
+<!-- LEFT PAIRS -->
+<div class="left">
   <div class="logo">TRADE PRO LIVE</div>
-  <div class="menu">Dashboard</div>
-  <div class="menu">Market</div>
-  <div class="menu">Signals</div>
-  <div class="menu">Portfolio</div>
+
+  <div class="pair" onclick="changePair('BINANCE:BTCUSDT')">BTC / USDT</div>
+  <div class="pair" onclick="changePair('BINANCE:ETHUSDT')">ETH / USDT</div>
+  <div class="pair" onclick="changePair('BINANCE:SOLUSDT')">SOL / USDT</div>
+  <div class="pair" onclick="changePair('BINANCE:BNBUSDT')">BNB / USDT</div>
+  <div class="pair" onclick="changePair('BINANCE:XRPUSDT')">XRP / USDT</div>
 </div>
 
-<div class="main">
-
+<!-- CENTER -->
+<div class="center">
   <div class="topbar">
-    <div class="title">BTC / USDT Live TradingView</div>
-    <div>Real Market Chart</div>
+    <div>📊 PRO SIGNAL DASHBOARD</div>
+    <div class="status" id="pairName">BTCUSDT</div>
   </div>
 
-  <div class="content">
-    <div class="chart" id="tv_chart"></div>
+  <div class="chartBox" id="tv_chart"></div>
+</div>
+
+<!-- RIGHT -->
+<div class="right">
+
+  <div class="card">
+    <div>LIVE SIGNAL</div>
+    <div id="signal" class="signalText">WAITING...</div>
+    <div class="small">Auto demo signal engine</div>
+
+    <div class="btnRow">
+      <button class="btn green" onclick="setSignal('LONG')">LONG</button>
+      <button class="btn red" onclick="setSignal('SHORT')">SHORT</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div>MARKET MODE</div>
+    <div id="mode">NEUTRAL</div>
   </div>
 
 </div>
-
-<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 
 <script>
-new TradingView.widget({
-  "width": "100%",
-  "height": "100%",
-  "symbol": "BINANCE:BTCUSDT",
-  "interval": "1",
-  "timezone": "Asia/Dhaka",
-  "theme": "dark",
-  "style": "1",
-  "locale": "en",
-  "toolbar_bg": "#0f172a",
-  "enable_publishing": false,
-  "hide_top_toolbar": false,
-  "container_id": "tv_chart"
-});
+let widget;
+let currentSymbol = "BINANCE:BTCUSDT";
+
+function loadChart(symbol){
+  document.getElementById("tv_chart").innerHTML = "";
+
+  widget = new TradingView.widget({
+    "width": "100%",
+    "height": "100%",
+    "symbol": symbol,
+    "interval": "1",
+    "timezone": "Asia/Dhaka",
+    "theme": "dark",
+    "style": "1",
+    "locale": "en",
+    "toolbar_bg": "#0f172a",
+    "enable_publishing": false,
+    "hide_top_toolbar": true,
+    "container_id": "tv_chart"
+  });
+
+  document.getElementById("pairName").innerText = symbol.replace("BINANCE:","");
+}
+
+function changePair(symbol){
+  currentSymbol = symbol;
+  loadChart(symbol);
+  autoSignal();
+}
+
+function setSignal(type){
+  let el = document.getElementById("signal");
+  el.innerText = type;
+  el.style.color = (type === "LONG") ? "#22c55e" : "#ef4444";
+}
+
+function autoSignal(){
+  // simple demo logic
+  let r = Math.random();
+  let sig = "HOLD";
+
+  if(r > 0.6) sig = "LONG ✔";
+  else if(r < 0.3) sig = "SHORT ✔";
+
+  let el = document.getElementById("signal");
+  el.innerText = sig;
+  el.style.color = sig.includes("LONG") ? "#22c55e" : sig.includes("SHORT") ? "#ef4444" : "#e5e7eb";
+}
+
+window.onload = function(){
+  loadChart(currentSymbol);
+  autoSignal();
+  setInterval(autoSignal, 4000);
+};
 </script>
 
 </body>
