@@ -2,7 +2,9 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Crypto Signal Dashboard Pro</title>
+<title>Crypto Pro Trading Dashboard</title>
+
+<script src="https://s3.tradingview.com/tv.js"></script>
 
 <style>
 body {
@@ -10,193 +12,172 @@ body {
   font-family: Arial;
   background:#0b1220;
   color:white;
+}
+
+/* TOP BAR */
+.topbar {
+  display:flex;
+  justify-content:space-between;
+  padding:15px;
+  background:#111827;
+}
+
+/* AUTH BOX */
+.auth {
+  padding:10px;
+}
+
+input {
+  padding:8px;
+  margin:5px;
+}
+
+/* MAIN LAYOUT */
+.container {
   display:flex;
 }
 
-/* SIDEBAR */
-.sidebar {
-  width:300px;
+/* LEFT PANEL */
+.left {
+  width:250px;
   background:#111827;
   height:100vh;
+  padding:10px;
   overflow-y:auto;
-  padding:15px;
 }
 
 .pair {
   padding:10px;
-  margin:8px 0;
+  margin:5px 0;
   background:#1f2937;
   cursor:pointer;
-  border-radius:6px;
+  border-radius:5px;
 }
 
-.pair:hover {
-  background:#374151;
-}
-
-/* MAIN */
-.main {
+/* CENTER CHART */
+.center {
   flex:1;
-  padding:20px;
+  padding:10px;
 }
 
-.card {
-  background:#1f2937;
-  padding:15px;
-  border-radius:10px;
-  margin-bottom:15px;
+/* RIGHT PANEL */
+.right {
+  width:250px;
+  background:#111827;
+  height:100vh;
+  padding:10px;
 }
 
 .status {
   padding:8px;
-  display:inline-block;
-  border-radius:6px;
   background:orange;
+  display:inline-block;
+  border-radius:5px;
 }
 
-.buy { color:#00ff88; }
-.sell { color:#ff4d4d; }
-
-.chart {
-  height:300px;
-  background:#0f172a;
-  border:1px solid #334155;
-  border-radius:10px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:20px;
+button {
+  padding:8px;
+  margin:5px;
+  cursor:pointer;
 }
 </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
-<div class="sidebar">
+<!-- TOP BAR -->
+<div class="topbar">
+  <div>Crypto Trading Pro</div>
+
+  <div class="auth">
+    <input placeholder="Email">
+    <input placeholder="Password" type="password">
+    <button onclick="login()">Login</button>
+    <button onclick="register()">Register</button>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- LEFT PAIRS -->
+<div class="left">
   <h3>Pairs</h3>
 
-  <div class="pair" onclick="selectPair('BTC')">BTCUSDT</div>
-  <div class="pair" onclick="selectPair('ETH')">ETHUSDT</div>
-  <div class="pair" onclick="selectPair('BNB')">BNBUSDT</div>
-  <div class="pair" onclick="selectPair('XRP')">XRPUSDT</div>
-  <div class="pair" onclick="selectPair('SOL')">SOLUSDT</div>
-  <div class="pair" onclick="selectPair('ADA')">ADAUSDT</div>
+  <div class="pair" onclick="changeSymbol('BINANCE:BTCUSDT')">BTCUSDT</div>
+  <div class="pair" onclick="changeSymbol('BINANCE:ETHUSDT')">ETHUSDT</div>
+  <div class="pair" onclick="changeSymbol('BINANCE:BNBUSDT')">BNBUSDT</div>
+  <div class="pair" onclick="changeSymbol('BINANCE:XRPUSDT')">XRPUSDT</div>
+  <div class="pair" onclick="changeSymbol('BINANCE:SOLUSDT')">SOLUSDT</div>
+  <div class="pair" onclick="changeSymbol('BINANCE:ADAUSDT')">ADAUSDT</div>
+</div>
 
-  <hr>
+<!-- CENTER CHART -->
+<div class="center">
 
-  <div class="card">
-    <h4>Trade Panel</h4>
-    <p id="status">WAITING FOR SIGNAL</p>
-    <p id="signal">Signal: -</p>
-    <p id="entry">Entry: -</p>
-    <p id="tp">TP: -</p>
-    <p id="sl">SL: -</p>
-  </div>
+<div id="tradingview_chart"></div>
 
 </div>
 
-<!-- MAIN -->
-<div class="main">
+<!-- RIGHT PANEL -->
+<div class="right">
 
-  <h2 id="title">BTCUSDT Dashboard</h2>
+<h3>Trade Panel</h3>
 
-  <div class="card">
-    <h4>Live Price</h4>
-    <h1 id="price">0</h1>
-  </div>
+<p class="status" id="status">WAITING FOR SIGNAL</p>
 
-  <div class="chart" id="chart">
-    PRICE CHART (SIMPLE VIEW)
-  </div>
+<p id="signal">Signal: -</p>
+<p id="entry">Entry: -</p>
+<p id="tp">TP: -</p>
+<p id="sl">SL: -</p>
+
+</div>
 
 </div>
 
 <script>
 
-// ===== DATA =====
-let currentPair = "BTC";
-
-let basePrices = {
-  BTC:65000,
-  ETH:3200,
-  BNB:580,
-  XRP:0.6,
-  SOL:140,
-  ADA:0.5
-};
-
-// ===== STATE =====
-let trade = null;
-let state = "WAITING";
-
-// ===== SELECT PAIR =====
-function selectPair(pair){
-  currentPair = pair;
-  document.getElementById("title").innerText = pair + "USDT Dashboard";
-
-  // reset state when switching
-  state = "WAITING";
-  trade = null;
+// ===== LOGIN (dummy) =====
+function login(){
+  alert("Login successful (frontend only)");
 }
 
-// ===== SIGNAL =====
-function getSignal(price, base){
-  return price > base ? "BUY" : "SELL";
+function register(){
+  alert("Register successful (frontend only)");
 }
 
-// ===== UPDATE ENGINE =====
-function update(){
+// ===== DEFAULT SYMBOL =====
+let currentSymbol = "BINANCE:BTCUSDT";
 
-  let base = basePrices[currentPair];
+// ===== TRADINGVIEW CHART =====
+function loadChart(symbol){
 
-  // fake live movement
-  let price = base + (Math.random()*200 - 100);
-
-  document.getElementById("price").innerText = price.toFixed(2);
-
-  // TRADE LOGIC
-  if(state === "WAITING"){
-
-    let signal = getSignal(price, base);
-
-    trade = {
-      signal: signal,
-      entry: price,
-      tp: signal === "BUY" ? price*1.03 : price*0.97,
-      sl: signal === "BUY" ? price*0.97 : price*1.03
-    };
-
-    state = "OPEN";
-
-    document.getElementById("status").innerText = "TRADE ACTIVE";
-    document.getElementById("signal").innerText = "Signal: " + signal;
-    document.getElementById("entry").innerText = "Entry: " + price.toFixed(2);
-    document.getElementById("tp").innerText = "TP: " + trade.tp.toFixed(2);
-    document.getElementById("sl").innerText = "SL: " + trade.sl.toFixed(2);
-
-  } else {
-
-    // CHECK TP/SL
-    if(price >= trade.tp || price <= trade.sl){
-
-      state = "WAITING";
-
-      document.getElementById("status").innerText =
-        (price >= trade.tp) ? "TAKE PROFIT HIT → WAITING" : "STOP LOSS HIT → WAITING";
-
-      trade = null;
-    }
-  }
-
-  // chart fake update
-  document.getElementById("chart").innerText =
-    currentPair + " LIVE PRICE MOVING...";
+  new TradingView.widget({
+    "container_id": "tradingview_chart",
+    "width": "100%",
+    "height": 700,
+    "symbol": symbol,
+    "interval": "30",
+    "timezone": "Asia/Dhaka",
+    "theme": "dark",
+    "style": "1",
+    "locale": "en",
+    "toolbar_bg": "#111827",
+    "enable_publishing": false,
+    "hide_top_toolbar": false,
+    "save_image": false
+  });
 }
 
-// ===== LOOP =====
-update();
-setInterval(update, 3000);
+// ===== CHANGE PAIR =====
+function changeSymbol(symbol){
+  currentSymbol = symbol;
+  loadChart(symbol);
+
+  document.getElementById("status").innerText = "WAITING FOR SIGNAL";
+}
+
+// ===== INIT =====
+loadChart(currentSymbol);
 
 </script>
 
