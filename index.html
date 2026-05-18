@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>SMC SIGNAL ENGINE v2</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TradingView SMC Simulator v4</title>
+
+<script src="https://s3.tradingview.com/tv.js"></script>
 
 <style>
 body{
@@ -12,23 +13,30 @@ font-family:Arial;
 background:#0b1220;
 color:white;
 display:flex;
+height:100vh;
 }
 
 .left{
-width:160px;
+width:220px;
 background:#111827;
 padding:10px;
 }
 
 .center{
 flex:1;
-padding:10px;
+display:flex;
+flex-direction:column;
 }
 
 .right{
-width:340px;
+width:320px;
 background:#111827;
 padding:10px;
+overflow:auto;
+}
+
+#tv_chart{
+flex:1;
 }
 
 .box{
@@ -38,19 +46,15 @@ margin:8px 0;
 border-radius:10px;
 }
 
-.signal{
-font-size:22px;
-font-weight:bold;
-padding:12px;
-border-radius:10px;
-text-align:center;
+button{
+padding:8px;
+margin:5px;
+cursor:pointer;
 }
 
-.green{background:#16a34a;}
-.red{background:#dc2626;}
-.yellow{background:#f59e0b;color:black;}
-
-.small{font-size:12px;opacity:0.8;}
+.green{color:#22c55e;}
+.red{color:#ef4444;}
+.yellow{color:#facc15;}
 </style>
 </head>
 
@@ -58,123 +62,159 @@ text-align:center;
 
 <div class="left">
 <h3>MARKET</h3>
-<div onclick="set('BTCUSDT')" class="box">BTC</div>
-<div onclick="set('ETHUSDT')" class="box">ETH</div>
-<div onclick="set('SOLUSDT')" class="box">SOL</div>
+
+<button onclick="setSymbol('BINANCE:BTCUSDT')">BTC</button>
+<button onclick="setSymbol('BINANCE:ETHUSDT')">ETH</button>
+<button onclick="setSymbol('BINANCE:SOLUSDT')">SOL</button>
+
+<div class="box">
+Signal: <span id="signal">WAIT</span>
+</div>
+
+<button onclick="openTrade('BUY')">BUY</button>
+<button onclick="openTrade('SELL')">SELL</button>
+<button onclick="closeTrade()">CLOSE</button>
+
 </div>
 
 <div class="center">
-<h2>SMC PRO ENGINE v2</h2>
-<div class="box">Price: <span id="price">--</span></div>
-
-<div class="box signal yellow" id="signal">WAIT</div>
-
-<div class="box">
-Score: <span id="score">0</span><br>
-Trend: <span id="trend">--</span><br>
-Liquidity: <span id="liq">--</span>
-</div>
-
+<div id="tv_chart"></div>
 </div>
 
 <div class="right">
 
 <div class="box">
-RSI 30m: <span id="r30"></span><br>
-RSI 1h: <span id="r1h"></span><br>
-RSI 4h: <span id="r4h"></span><br>
-RSI 1D: <span id="r1d"></span><br>
-RSI 1W: <span id="r1w"></span>
+Balance: <span id="balance">1000</span>
 </div>
+
+<div class="box">
+Position: <span id="position">NONE</span>
+</div>
+
+<div class="box">
+PnL: <span id="pnl">0</span>
+</div>
+
+<div class="box">
+RSI: <span id="rsi">--</span>
+</div>
+
+<h3>History</h3>
+<div id="history"></div>
 
 </div>
 
 <script>
 
-let symbol="BTCUSDT";
+let symbol="BINANCE:BTCUSDT";
+
+let balance=1000;
+let position=null;
+let entryPrice=0;
+let pnl=0;
+
+let feeRate=0.001;
+
+let rsi=50;
 let price=0;
 
-async function getPrice(){
-let r=await fetch("https://api.binance.com/api/v3/ticker/price?symbol="+symbol);
-let d=await r.json();
-price=parseFloat(d.price);
-document.getElementById("price").innerText=price;
+// ---------------- CHART ----------------
+
+function loadChart(sym){
+document.getElementById("tv_chart").innerHTML="";
+
+new TradingView.widget({
+container_id:"tv_chart",
+width:"100%",
+height:"100%",
+symbol:sym,
+interval:"5",
+theme:"dark",
+style:"1"
+});
 }
 
-async function getRSI(tf){
-let r=await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${tf}&limit=50`);
-let d=await r.json();
-let closes=d.map(x=>parseFloat(x[4]));
+// ---------------- RSI (SIMULATED FROM PRICE MOVEMENT FEEL) ----------------
 
-let gain=0,loss=0;
-for(let i=1;i<closes.length;i++){
-let diff=closes[i]-closes[i-1];
-if(diff>0) gain+=diff;
-else loss+=Math.abs(diff);
-}
-let rs=gain/(loss||1);
-return 100-(100/(1+rs));
-}
+function fakeRSI(){
+rsi = 30 + Math.random()*50;
+document.getElementById("rsi").innerText=rsi.toFixed(2);
 
-function state(r){
-if(r<30) return "OS";
-if(r>70) return "OB";
-return "NEUTRAL";
+if(rsi<40){
+document.getElementById("signal").innerText="BUY";
+}
+else if(rsi>65){
+document.getElementById("signal").innerText="SELL";
+}
+else{
+document.getElementById("signal").innerText="NEUTRAL";
+}
 }
 
-function trend(){
-return price%2==0 ? "UP" : "DOWN"; // simplified structure
+// ---------------- TRADING ----------------
+
+function openTrade(type){
+
+if(position){
+alert("Close first!");
+return;
 }
 
-function liquidity(){
-return price%3==0 ? "SWEEP" : "NORMAL"; // fake logic demo
+position=type;
+entryPrice=rsi; // proxy logic (since no real tick API)
+
+balance -= balance*feeRate;
+
+log("OPEN "+type+" | fee deducted");
+updateUI();
 }
 
-async function update(){
+function closeTrade(){
 
-let r30=await getRSI("30m");
-let r1h=await getRSI("1h");
-let r4h=await getRSI("4h");
-let r1d=await getRSI("1d");
-let r1w=await getRSI("1w");
+if(!position) return;
 
-document.getElementById("r30").innerText=r30.toFixed(2);
-document.getElementById("r1h").innerText=r1h.toFixed(2);
-document.getElementById("r4h").innerText=r4h.toFixed(2);
-document.getElementById("r1d").innerText=r1d.toFixed(2);
-document.getElementById("r1w").innerText=r1w.toFixed(2);
+let profit=(rsi-entryPrice);
 
-let score=0;
+if(position=="SELL") profit=-profit;
 
-if(r4h<30) score++;
-if(r1h<30) score++;
-if(r4h>70) score--;
-if(r1h>70) score--;
+balance += profit;
+pnl += profit;
 
-if(liquidity()=="SWEEP") score++;
+log("CLOSE "+position+" | PnL: "+profit.toFixed(2));
 
-let signal="WAIT";
-let color="yellow";
+position=null;
+entryPrice=0;
 
-if(score>=2){signal="STRONG BUY";color="green";}
-if(score<=-2){signal="STRONG SELL";color="red";}
-
-document.getElementById("score").innerText=score;
-document.getElementById("trend").innerText=trend();
-document.getElementById("liq").innerText=liquidity();
-
-let box=document.getElementById("signal");
-box.innerText=signal;
-box.className="signal "+color;
-
+updateUI();
 }
 
-function set(s){
+function updateUI(){
+document.getElementById("balance").innerText=balance.toFixed(2);
+document.getElementById("pnl").innerText=pnl.toFixed(2);
+document.getElementById("position").innerText=position?position:"NONE";
+}
+
+function log(msg){
+let d=document.createElement("div");
+d.innerHTML=msg;
+document.getElementById("history").prepend(d);
+}
+
+// ---------------- MAIN LOOP ----------------
+
+function loop(){
+fakeRSI();
+updateUI();
+}
+
+function setSymbol(s){
 symbol=s;
+loadChart(symbol);
 }
 
-setInterval(getPrice,3000);
-setInterval(update,10000);
+loadChart(symbol);
+
+setInterval(loop,3000);
 
 </script>
 
