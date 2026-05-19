@@ -76,38 +76,38 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 p-4 lg:p-6 space-y-6 overflow-y-auto flex flex-col justify-between">
+        <main class="flex-1 p-4 lg:p-6 space-y-4 lg:space-y-6 overflow-y-auto flex flex-col justify-between">
             <div>
-                <!-- Header -->
-                <header class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 border-b border-slate-900 dark:border-slate-900 light:border-slate-200 pb-4">
+                <!-- Header (Optimized for Mobile Height) -->
+                <header class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3 xl:gap-4 border-b border-slate-900 dark:border-slate-900 light:border-slate-200 pb-3 lg:pb-4">
                     <div>
-                        <h1 id="mainHeading" class="text-2xl font-cyber font-bold tracking-wider text-white dark:text-white">NEXUS AI // SIGNAL HUB</h1>
-                        <p class="text-slate-400 text-xs mt-1">Copy premium algorithmic crypto signals instantly.</p>
+                        <h1 id="mainHeading" class="text-xl lg:text-2xl font-cyber font-bold tracking-wider text-white dark:text-white">NEXUS AI // SIGNAL HUB</h1>
+                        <p class="text-slate-400 text-[11px] lg:text-xs mt-0.5">Copy premium algorithmic crypto signals instantly.</p>
                     </div>
                     
                     <!-- WIN-RATE & ACCURACY TRACKER STATS -->
-                    <div class="flex flex-wrap items-center gap-3 w-full xl:w-auto">
-                        <div class="bg-black/40 border border-neonGreen/20 px-3 py-1.5 rounded-xl flex items-center gap-2 text-xs font-cyber">
+                    <div class="flex flex-wrap items-center gap-2 xl:gap-3 w-full xl:w-auto">
+                        <div class="bg-black/40 border border-neonGreen/20 px-2.5 py-1 rounded-xl flex items-center gap-1.5 text-[11px] lg:text-xs font-cyber">
                             <span class="text-slate-400">WIN RATE:</span>
                             <span class="text-neonGreen font-bold shadow-neonGlow">89.4% 🔥</span>
                         </div>
-                        <div class="bg-black/40 border border-neonBlue/20 px-3 py-1.5 rounded-xl flex items-center gap-2 text-xs font-cyber">
+                        <div class="bg-black/40 border border-neonBlue/20 px-2.5 py-1 rounded-xl flex items-center gap-1.5 text-[11px] lg:text-xs font-cyber">
                             <span class="text-slate-400">MONTHLY ROI:</span>
                             <span class="text-neonBlue font-bold shadow-blueGlow">+540%</span>
                         </div>
                         
-                        <div class="glass-panel px-4 py-2 rounded-xl flex items-center gap-3 text-xs justify-between border border-gold/20 flex-1 sm:flex-none">
-                            <div class="flex items-center gap-2 dark:text-white">
+                        <div class="glass-panel px-3 py-1.5 lg:py-2 rounded-xl flex items-center gap-2.5 text-[11px] lg:text-xs justify-between border border-gold/20 flex-1 sm:flex-none">
+                            <div class="flex items-center gap-1.5 dark:text-white">
                                 <i class="fa-solid fa-crown text-gold animate-bounce"></i>
                                 <span>Status: <span id="accountStatusText" class="text-gold font-bold font-cyber">FREE PLAN</span></span>
                             </div>
-                            <button id="upgradeBtnTop" onclick="openAuthModal()" class="bg-gradient-to-r from-gold to-yellow-500 text-black px-3 py-1 rounded-lg font-cyber font-bold text-[11px] shadow-goldGlow hover:scale-105 transition-all">UPGRADE ($15)</button>
+                            <button id="upgradeBtnTop" onclick="openAuthModal()" class="bg-gradient-to-r from-gold to-yellow-500 text-black px-2.5 py-0.5 rounded-lg font-cyber font-bold text-[10px] lg:text-[11px] shadow-goldGlow hover:scale-105 transition-all">UPGRADE ($15)</button>
                         </div>
                     </div>
                 </header>
 
                 <!-- ADMIN FLASH NOTICE BOARD -->
-                <div id="flashNoticeBoard" class="bg-gradient-to-r from-neonBlue/10 to-transparent border-l-4 border-neonBlue p-3 rounded-r-xl flex items-center gap-3 text-xs text-slate-300 mt-6">
+                <div id="flashNoticeBoard" class="bg-gradient-to-r from-neonBlue/10 to-transparent border-l-4 border-neonBlue p-3 rounded-r-xl flex items-center gap-3 text-xs text-slate-300 mt-4 lg:mt-6">
                     <i class="fa-solid fa-bullhorn text-neonBlue text-sm animate-pulse"></i>
                     <div><span class="font-bold text-white uppercase font-cyber mr-1">Market Update:</span> <span id="liveFlashNotice">Bitcoin is consolidation near $67.4k. Tighten your Stop-Losses on altcoin longs.</span></div>
                 </div>
@@ -123,16 +123,17 @@
                 </div>
 
                 <!-- LAYOUT GRID -->
-                <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 mt-6">
-                    <!-- IMAGE CHART ANALYSIS PANEL (Left 7 Cols) -->
+                <div class="grid grid-cols-1 xl:grid-cols-12 gap-4 lg:gap-6 mt-4 lg:mt-6">
+                    <!-- IMAGE CHART ANALYSIS PANEL (Optimized Mobile Height) -->
                     <div class="xl:col-span-7 space-y-6">
-                        <div class="glass-panel rounded-2xl p-4">
-                            <div class="flex justify-between items-center mb-3 px-1">
-                                <span id="chartPanelTitle" class="font-cyber text-xs uppercase tracking-wider text-slate-400 dark:text-slate-400"><i class="fa-solid fa-chart-line text-neonGreen mr-2"></i> Technical Chart Analysis</span>
-                                <span class="text-[10px] font-cyber bg-purple-500/10 text-purple-400 border border-purple-500/20 px-2 py-0.5 rounded font-bold uppercase tracking-widest animate-pulse">HTF ANALYSIS • 4H / 1D</span>
+                        <div class="glass-panel rounded-2xl p-3 lg:p-4">
+                            <div class="flex justify-between items-center mb-2 lg:mb-3 px-1">
+                                <span id="chartPanelTitle" class="font-cyber text-[11px] lg:text-xs uppercase tracking-wider text-slate-400 dark:text-slate-400"><i class="fa-solid fa-chart-line text-neonGreen mr-2"></i> Technical Chart Analysis</span>
+                                <span class="text-[9px] font-cyber bg-purple-500/10 text-purple-400 border border-purple-500/20 px-1.5 py-0.5 rounded font-bold uppercase tracking-widest animate-pulse">HTF ANALYSIS</span>
                             </div>
                             
-                            <div class="w-full h-[380px] rounded-xl overflow-hidden bg-black/40 border border-slate-900 dark:border-slate-900 light:border-slate-200 relative group cursor-zoom-in" onclick="zoomAnalysisImage()">
+                            <!-- Mobile-friendly compact height h-[240px] and desktop standard h-[380px] -->
+                            <div class="w-full h-[240px] lg:h-[380px] rounded-xl overflow-hidden bg-black/40 border border-slate-900 dark:border-slate-900 light:border-slate-200 relative group cursor-zoom-in" onclick="zoomAnalysisImage()">
                                 <img id="liveAnalysisImage" src="https://images.unsplash.com/photo-1621416894569-0f39ed31d247?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500" alt="Market Analysis">
                                 <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
                                     <span class="bg-black/80 text-white font-cyber text-xs px-4 py-2 rounded-xl border border-white/10"><i class="fa-solid fa-magnifying-glass-plus mr-2 text-neonGreen"></i>Click to Enlarge Chart</span>
@@ -169,7 +170,7 @@
                             <div id="holdingOverlay" class="absolute inset-0 blur-lock z-10 hidden flex flex-col items-center justify-center p-4 text-center bg-black/95">
                                 <div class="w-10 h-10 rounded-full bg-neonBlue/10 border border-neonBlue/30 flex items-center justify-center text-neonBlue mb-2 animate-spin shadow-blueGlow"><i class="fa-solid fa-spinner text-sm"></i></div>
                                 <h4 class="font-cyber text-xs font-bold text-neonBlue uppercase tracking-wider">Verification Pending</h4>
-                                <p class="text-[11px] text-slate-400 mt-1 max-w-[240px]">We are manually verifying your submission. Your VIP card will unlock here instantly.</p>
+                                <p class="text-[11px] text-slate-400 mt-1 max-w-[240px]"> We are manually verifying your submission. Your VIP card will unlock here instantly.</p>
                             </div>
 
                             <div>
@@ -225,7 +226,7 @@
                 </section>
             </div>
 
-            <!-- 🔒 NEW: MODERN FOOTER SECTION (Legal Links) -->
+            <!-- FOOTER SECTION (Legal Links) -->
             <footer class="mt-12 pt-6 border-t border-slate-900 dark:border-slate-900 light:border-slate-200 text-center space-y-3">
                 <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-[11px] font-cyber tracking-wider text-slate-400">
                     <button onclick="openLegalModal('privacy')" class="hover:text-neonBlue transition-colors">PRIVACY POLICY</button>
@@ -239,13 +240,13 @@
         </main>
     </div>
 
-    <!-- 🔍 FULLSCREEN IMAGE LIGHTBOX MODAL -->
+    <!-- FULLSCREEN IMAGE LIGHTBOX MODAL -->
     <div id="imageLightbox" class="fixed inset-0 bg-black/95 backdrop-blur-lg hidden items-center justify-center z-50 p-4" onclick="closeLightbox()">
         <button class="absolute top-6 right-6 text-slate-400 hover:text-white text-2xl"><i class="fa-solid fa-xmark"></i></button>
         <img id="lightboxImg" src="" class="max-w-full max-h-[92vh] rounded-xl object-contain shadow-2xl border border-white/5">
     </div>
 
-    <!-- 📄 NEW: DYNAMIC LEGAL CONTENT POPUP MODAL -->
+    <!-- DYNAMIC LEGAL CONTENT POPUP MODAL -->
     <div id="legalModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center z-50 p-4">
         <div class="glass-panel max-w-xl w-full rounded-3xl p-6 relative border border-slate-800 shadow-blueGlow max-h-[80vh] flex flex-col">
             <button onclick="closeLegalModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -340,7 +341,6 @@
 
         let currentLoggedUserEmail = "";
 
-        // ১. লিগ্যাল টেক্সট ডিক্লেয়ারেশন (Privacy, Terms, Disclaimer)
         const legalContents = {
             privacy: {
                 title: "🔒 PRIVACY POLICY // DATA PROTECTION",
@@ -370,7 +370,7 @@
         }
         function closeLegalModal() { document.getElementById('legalModal').style.display = 'none'; }
 
-        // ২. রিয়েল-টাইম এনালাইসিস ইমেজ লিসেনার
+        // রিয়েল-টাইম এনালাইসিস ইমেজ লিসেনার
         database.ref('analysis_image').on('value', (snapshot) => {
             const imageUrl = snapshot.val();
             if (imageUrl) { document.getElementById('liveAnalysisImage').src = imageUrl; }
@@ -383,7 +383,7 @@
         }
         function closeLightbox() { document.getElementById('imageLightbox').style.display = 'none'; }
 
-        // ৩. রিয়েল-টাইম ইউজার স্ট্যাটাস ট্র্যাকিং
+        // রিয়েল-টাইম ইউজার স্ট্যাটাস ট্র্যাকিং
         function listenToUserStatus(email) {
             const userKey = btoa(email);
             database.ref('users/' + userKey).on('value', (snapshot) => {
@@ -405,7 +405,7 @@
             });
         }
 
-        // ৪. অ্যাডমিন প্যানেল চেক লিসেনার
+        // অ্যাডমিন প্যানেল চেক লিসেনার
         database.ref('pending_payments').on('value', (snapshot) => {
             const data = snapshot.val();
             if(data) {
