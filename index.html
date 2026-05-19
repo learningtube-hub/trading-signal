@@ -44,10 +44,10 @@
         .glow-box-open { border: 1px solid rgba(0, 255, 163, 0.3); }
     </style>
 </head>
-<body class="bg-darkBg text-gray-100 dark:bg-darkBg dark:text-gray-100 font-sans antialiased min-h-screen transition-colors duration-300">
+<body class="bg-darkBg text-gray-100 dark:bg-darkBg dark:text-gray-100 font-sans antialiased min-h-screen transition-colors duration-300 flex flex-col">
 
     <!-- HORIZONTAL ONE-LINE TICKER -->
-    <div class="ticker-wrap h-10 flex items-center sticky top-0 z-40">
+    <div class="ticker-wrap h-10 flex items-center sticky top-0 z-50">
         <div class="ticker-items font-cyber text-white">
             <div class="ticker-item"><span class="text-neonBlue">BTC/USDT</span> <span>$67,420.50</span> <span class="text-neonGreen">(+2.45%)</span></div>
             <div class="ticker-item"><span class="text-neonBlue">ETH/USDT</span> <span>$3,512.20</span> <span class="text-neonGreen">(+1.88%)</span></div>
@@ -57,46 +57,52 @@
         </div>
     </div>
 
-    <!-- MAIN DASHBOARD -->
-    <div class="flex flex-col lg:flex-row min-h-[calc(100vh-2.5rem)]">
-        <!-- Sidebar -->
-        <aside id="mainSidebar" class="w-full lg:w-20 bg-black/20 dark:bg-black/20 border-r border-slate-900 light:border-slate-300 flex lg:flex-col items-center justify-between p-4 z-30 transition-colors duration-300">
-            <div class="text-neonBlue font-cyber text-2xl font-black tracking-widest">N<span class="text-neonGreen">X</span></div>
-            <nav class="flex lg:flex-col gap-6 text-slate-400 my-4 lg:my-0">
-                <button class="w-12 h-12 rounded-xl flex items-center justify-center text-neonBlue bg-neonBlue/10 border border-neonBlue/20 shadow-blueGlow"><i class="fa-solid fa-satellite-dish text-lg"></i></button>
-                <button onclick="openAuthModal()" class="w-12 h-12 rounded-xl flex items-center justify-center hover:text-gold"><i class="fa-solid fa-crown text-lg"></i></button>
+    <!-- MAIN DASHBOARD CONTENT AREA -->
+    <div class="flex flex-col lg:flex-row flex-1">
+        
+        <!-- SIDEBAR (ডেস্কটপে বামে ফিক্সড, মোবাইলে উপরে খুবই চিকন টপ-বার হিসেবে থাকবে) -->
+        <aside id="mainSidebar" class="w-full h-14 lg:h-[calc(100vh-2.5rem)] lg:w-20 bg-black/20 dark:bg-black/20 border-b lg:border-b-0 lg:border-r border-slate-950 light:border-slate-300 flex lg:flex-col items-center justify-between px-4 lg:px-0 lg:py-6 sticky top-10 lg:top-10 z-40 transition-colors duration-300">
+            <!-- লোগো (NX) -->
+            <div class="text-neonBlue font-cyber text-xl lg:text-2xl font-black tracking-widest">N<span class="text-neonGreen">X</span></div>
+            
+            <!-- নেভিগেশন আইকন (লাইভ ও ভিআইপি বাটন) -->
+            <nav class="flex lg:flex-col gap-4 lg:gap-6 text-slate-400">
+                <button class="w-9 h-9 lg:w-12 lg:h-12 rounded-xl flex items-center justify-center text-neonBlue bg-neonBlue/10 border border-neonBlue/20 shadow-blueGlow"><i class="fa-solid fa-satellite-dish text-sm lg:text-lg"></i></button>
+                <button onclick="openAuthModal()" class="w-9 h-9 lg:w-12 lg:h-12 rounded-xl flex items-center justify-center hover:text-gold"><i class="fa-solid fa-crown text-sm lg:text-lg"></i></button>
             </nav>
-            <div class="flex lg:flex-col items-center gap-4">
-                <button onclick="toggleTheme()" class="w-10 h-10 rounded-xl bg-slate-900/60 dark:bg-slate-900/60 border border-slate-800 light:border-slate-300 flex items-center justify-center text-gold text-sm cursor-pointer">
+            
+            <!-- থিম এবং প্রোফাইল বাটন -->
+            <div class="flex lg:flex-col items-center gap-3 lg:gap-4">
+                <button onclick="toggleTheme()" class="w-8 h-8 lg:w-10 lg:h-10 rounded-xl bg-slate-900/60 dark:bg-slate-900/60 border border-slate-800 light:border-slate-300 flex items-center justify-center text-gold text-xs lg:text-sm cursor-pointer">
                     <i id="darkIcon" class="fa-solid fa-moon"></i>
                     <i id="lightIcon" class="fa-solid fa-sun text-yellow-600 hidden"></i>
                 </button>
-                <div onclick="openAuthModal()" class="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-neonGreen cursor-pointer"><i class="fa-solid fa-user text-sm"></i></div>
+                <div onclick="openAuthModal()" class="w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-neonGreen text-xs lg:text-sm cursor-pointer"><i class="fa-solid fa-user"></i></div>
             </div>
         </aside>
 
-        <!-- Main Content -->
+        <!-- MAIN LAYOUT CONTENT -->
         <main class="flex-1 p-4 lg:p-6 space-y-4 lg:space-y-6 overflow-y-auto flex flex-col justify-between">
             <div>
-                <!-- Header (Optimized for Mobile Height) -->
-                <header class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3 xl:gap-4 border-b border-slate-900 dark:border-slate-900 light:border-slate-200 pb-3 lg:pb-4">
+                <!-- Header (মোবাইলে টেক্সট ও প্যাডিং একদম কমপ্যাক্ট করা হয়েছে) -->
+                <header class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3 xl:gap-4 border-b border-slate-950 dark:border-slate-950 light:border-slate-200 pb-3 lg:pb-4">
                     <div>
-                        <h1 id="mainHeading" class="text-xl lg:text-2xl font-cyber font-bold tracking-wider text-white dark:text-white">NEXUS AI // SIGNAL HUB</h1>
-                        <p class="text-slate-400 text-[11px] lg:text-xs mt-0.5">Copy premium algorithmic crypto signals instantly.</p>
+                        <h1 id="mainHeading" class="text-lg lg:text-2xl font-cyber font-bold tracking-wider text-white dark:text-white">NEXUS AI // SIGNAL HUB</h1>
+                        <p class="text-slate-400 text-[10px] lg:text-xs mt-0.5">Copy premium algorithmic crypto signals instantly.</p>
                     </div>
                     
                     <!-- WIN-RATE & ACCURACY TRACKER STATS -->
                     <div class="flex flex-wrap items-center gap-2 xl:gap-3 w-full xl:w-auto">
-                        <div class="bg-black/40 border border-neonGreen/20 px-2.5 py-1 rounded-xl flex items-center gap-1.5 text-[11px] lg:text-xs font-cyber">
+                        <div class="bg-black/40 border border-neonGreen/20 px-2.5 py-1 rounded-xl flex items-center gap-1.5 text-[10px] lg:text-xs font-cyber">
                             <span class="text-slate-400">WIN RATE:</span>
                             <span class="text-neonGreen font-bold shadow-neonGlow">89.4% 🔥</span>
                         </div>
-                        <div class="bg-black/40 border border-neonBlue/20 px-2.5 py-1 rounded-xl flex items-center gap-1.5 text-[11px] lg:text-xs font-cyber">
+                        <div class="bg-black/40 border border-neonBlue/20 px-2.5 py-1 rounded-xl flex items-center gap-1.5 text-[10px] lg:text-xs font-cyber">
                             <span class="text-slate-400">MONTHLY ROI:</span>
                             <span class="text-neonBlue font-bold shadow-blueGlow">+540%</span>
                         </div>
                         
-                        <div class="glass-panel px-3 py-1.5 lg:py-2 rounded-xl flex items-center gap-2.5 text-[11px] lg:text-xs justify-between border border-gold/20 flex-1 sm:flex-none">
+                        <div class="glass-panel px-3 py-1.5 lg:py-2 rounded-xl flex items-center gap-2.5 text-[10px] lg:text-xs justify-between border border-gold/20 flex-1 sm:flex-none">
                             <div class="flex items-center gap-1.5 dark:text-white">
                                 <i class="fa-solid fa-crown text-gold animate-bounce"></i>
                                 <span>Status: <span id="accountStatusText" class="text-gold font-bold font-cyber">FREE PLAN</span></span>
@@ -124,7 +130,7 @@
 
                 <!-- LAYOUT GRID -->
                 <div class="grid grid-cols-1 xl:grid-cols-12 gap-4 lg:gap-6 mt-4 lg:mt-6">
-                    <!-- IMAGE CHART ANALYSIS PANEL (Optimized Mobile Height) -->
+                    <!-- IMAGE CHART ANALYSIS PANEL (মোবাইলের জন্য হাইট ২৪0px এ ফিক্সড রাখা হয়েছে) -->
                     <div class="xl:col-span-7 space-y-6">
                         <div class="glass-panel rounded-2xl p-3 lg:p-4">
                             <div class="flex justify-between items-center mb-2 lg:mb-3 px-1">
@@ -132,8 +138,8 @@
                                 <span class="text-[9px] font-cyber bg-purple-500/10 text-purple-400 border border-purple-500/20 px-1.5 py-0.5 rounded font-bold uppercase tracking-widest animate-pulse">HTF ANALYSIS</span>
                             </div>
                             
-                            <!-- Mobile-friendly compact height h-[240px] and desktop standard h-[380px] -->
-                            <div class="w-full h-[240px] lg:h-[380px] rounded-xl overflow-hidden bg-black/40 border border-slate-900 dark:border-slate-900 light:border-slate-200 relative group cursor-zoom-in" onclick="zoomAnalysisImage()">
+                            <!-- মোবিলে কমপ্যাক্ট ২৪০ পিক্সেল, ডেক্সটপে স্ট্যান্ডার্ড ৩৮০ পিক্সেল -->
+                            <div class="w-full h-[240px] lg:h-[380px] rounded-xl overflow-hidden bg-black/40 border border-slate-950 dark:border-slate-950 light:border-slate-200 relative group cursor-zoom-in" onclick="zoomAnalysisImage()">
                                 <img id="liveAnalysisImage" src="https://images.unsplash.com/photo-1621416894569-0f39ed31d247?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500" alt="Market Analysis">
                                 <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
                                     <span class="bg-black/80 text-white font-cyber text-xs px-4 py-2 rounded-xl border border-white/10"><i class="fa-solid fa-magnifying-glass-plus mr-2 text-neonGreen"></i>Click to Enlarge Chart</span>
@@ -227,7 +233,7 @@
             </div>
 
             <!-- FOOTER SECTION (Legal Links) -->
-            <footer class="mt-12 pt-6 border-t border-slate-900 dark:border-slate-900 light:border-slate-200 text-center space-y-3">
+            <footer class="mt-12 pt-6 border-t border-slate-950 dark:border-slate-950 light:border-slate-200 text-center space-y-3">
                 <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-[11px] font-cyber tracking-wider text-slate-400">
                     <button onclick="openLegalModal('privacy')" class="hover:text-neonBlue transition-colors">PRIVACY POLICY</button>
                     <span class="text-slate-700 hidden sm:inline">|</span>
@@ -250,14 +256,14 @@
     <div id="legalModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center z-50 p-4">
         <div class="glass-panel max-w-xl w-full rounded-3xl p-6 relative border border-slate-800 shadow-blueGlow max-h-[80vh] flex flex-col">
             <button onclick="closeLegalModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h3 id="legalModalTitle" class="font-cyber text-sm font-bold uppercase tracking-wider text-neonBlue mb-4 border-b border-slate-900 pb-2">...</h3>
+            <h3 id="legalModalTitle" class="font-cyber text-sm font-bold uppercase tracking-wider text-neonBlue mb-4 border-b border-slate-950 pb-2">...</h3>
             
             <!-- Scrolling Content Space -->
             <div id="legalModalBody" class="text-xs text-slate-300 space-y-3 overflow-y-auto pr-2 font-sans leading-relaxed">
                 <!-- Content will load dynamically via JS -->
             </div>
             
-            <div class="mt-4 pt-3 border-t border-slate-900 flex justify-end">
+            <div class="mt-4 pt-3 border-t border-slate-950 flex justify-end">
                 <button onclick="closeLegalModal()" class="bg-slate-950 hover:bg-black border border-slate-800 text-white font-cyber text-[10px] font-bold px-4 py-2 rounded-xl uppercase">Close Window</button>
             </div>
         </div>
@@ -475,7 +481,7 @@
             if (html.classList.contains('dark')) {
                 html.classList.remove('dark'); html.classList.add('light');
                 body.classList.remove('bg-darkBg', 'text-gray-100'); body.classList.add('bg-lightBg', 'text-slate-900');
-                sidebar.classList.remove('bg-black/20', 'border-slate-900'); sidebar.classList.add('bg-white', 'border-slate-300');
+                sidebar.classList.remove('bg-black/20', 'border-slate-950'); sidebar.classList.add('bg-white', 'border-slate-300');
                 heading.classList.remove('text-white'); heading.classList.add('text-slate-900');
                 feedTitle.classList.remove('text-slate-400'); feedTitle.classList.add('text-slate-600');
                 historyTitle.classList.remove('text-slate-400'); historyTitle.classList.add('text-slate-600');
@@ -484,7 +490,7 @@
             } else {
                 html.classList.remove('light'); html.classList.add('dark');
                 body.classList.remove('bg-lightBg', 'text-slate-900'); body.classList.add('bg-darkBg', 'text-gray-100');
-                sidebar.classList.remove('bg-white', 'border-slate-300'); sidebar.classList.add('bg-black/20', 'border-slate-900');
+                sidebar.classList.remove('bg-white', 'border-slate-300'); sidebar.classList.add('bg-black/20', 'border-slate-950');
                 heading.classList.remove('text-slate-900'); heading.classList.add('text-white');
                 feedTitle.classList.remove('text-slate-600'); feedTitle.classList.add('text-slate-400');
                 historyTitle.classList.remove('text-slate-600'); historyTitle.classList.add('text-slate-400');
