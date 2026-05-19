@@ -76,154 +76,190 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 p-4 lg:p-6 space-y-6 overflow-y-auto">
-            <!-- Header -->
-            <header class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 border-b border-slate-900 dark:border-slate-900 light:border-slate-200 pb-4">
-                <div>
-                    <h1 id="mainHeading" class="text-2xl font-cyber font-bold tracking-wider text-white dark:text-white">NEXUS AI // SIGNAL HUB</h1>
-                    <p class="text-slate-400 text-xs mt-1">Copy premium algorithmic crypto signals instantly.</p>
-                </div>
-                
-                <!-- WIN-RATE & ACCURACY TRACKER STATS -->
-                <div class="flex flex-wrap items-center gap-3 w-full xl:w-auto">
-                    <div class="bg-black/40 border border-neonGreen/20 px-3 py-1.5 rounded-xl flex items-center gap-2 text-xs font-cyber">
-                        <span class="text-slate-400">WIN RATE:</span>
-                        <span class="text-neonGreen font-bold shadow-neonGlow">89.4% 🔥</span>
-                    </div>
-                    <div class="bg-black/40 border border-neonBlue/20 px-3 py-1.5 rounded-xl flex items-center gap-2 text-xs font-cyber">
-                        <span class="text-slate-400">MONTHLY ROI:</span>
-                        <span class="text-neonBlue font-bold shadow-blueGlow">+540%</span>
+        <main class="flex-1 p-4 lg:p-6 space-y-6 overflow-y-auto flex flex-col justify-between">
+            <div>
+                <!-- Header -->
+                <header class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 border-b border-slate-900 dark:border-slate-900 light:border-slate-200 pb-4">
+                    <div>
+                        <h1 id="mainHeading" class="text-2xl font-cyber font-bold tracking-wider text-white dark:text-white">NEXUS AI // SIGNAL HUB</h1>
+                        <p class="text-slate-400 text-xs mt-1">Copy premium algorithmic crypto signals instantly.</p>
                     </div>
                     
-                    <div class="glass-panel px-4 py-2 rounded-xl flex items-center gap-3 text-xs justify-between border border-gold/20 flex-1 sm:flex-none">
-                        <div class="flex items-center gap-2 dark:text-white">
-                            <i class="fa-solid fa-crown text-gold animate-bounce"></i>
-                            <span>Status: <span id="accountStatusText" class="text-gold font-bold font-cyber">FREE PLAN</span></span>
+                    <!-- WIN-RATE & ACCURACY TRACKER STATS -->
+                    <div class="flex flex-wrap items-center gap-3 w-full xl:w-auto">
+                        <div class="bg-black/40 border border-neonGreen/20 px-3 py-1.5 rounded-xl flex items-center gap-2 text-xs font-cyber">
+                            <span class="text-slate-400">WIN RATE:</span>
+                            <span class="text-neonGreen font-bold shadow-neonGlow">89.4% 🔥</span>
                         </div>
-                        <button id="upgradeBtnTop" onclick="openAuthModal()" class="bg-gradient-to-r from-gold to-yellow-500 text-black px-3 py-1 rounded-lg font-cyber font-bold text-[11px] shadow-goldGlow hover:scale-105 transition-all">UPGRADE ($15)</button>
-                    </div>
-                </div>
-            </header>
-
-            <!-- ADMIN FLASH NOTICE BOARD -->
-            <div id="flashNoticeBoard" class="bg-gradient-to-r from-neonBlue/10 to-transparent border-l-4 border-neonBlue p-3 rounded-r-xl flex items-center gap-3 text-xs text-slate-300">
-                <i class="fa-solid fa-bullhorn text-neonBlue text-sm animate-pulse"></i>
-                <div><span class="font-bold text-white uppercase font-cyber mr-1">Market Update:</span> <span id="liveFlashNotice">Bitcoin is consolidation near $67.4k. Tighten your Stop-Losses on altcoin longs.</span></div>
-            </div>
-
-            <!-- 🔔 SECRET ADMIN NOTIFICATION ALERT -->
-            <div id="adminPaymentAlert" class="bg-slate-950 border border-dashed border-amber-500 p-4 rounded-xl hidden flex justify-between items-center z-50 relative">
-                <div class="text-xs space-y-1">
-                    <p class="text-amber-400 font-bold font-cyber"><i class="fa-solid fa-circle-exclamation mr-1"></i> ADMIN ALERT: NEW ACTION SUBMITTED</p>
-                    <p class="text-slate-300">User: <span id="admUserEmail" class="font-bold text-white">...</span></p>
-                    <p class="text-slate-300">Method/Details: <span id="admUserTxid" class="font-mono text-neonGreen bg-black px-1.5 py-0.5 rounded">...</span></p>
-                </div>
-                <button onclick="approveUserVip()" class="bg-neonGreen text-black font-cyber font-bold text-xs px-4 py-2 rounded-xl shadow-neonGlow hover:scale-105 transition-all">APPROVE VIP NOW</button>
-            </div>
-
-            <!-- LAYOUT GRID -->
-            <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
-                <!-- Chart (Left 7 Cols) -->
-                <div class="xl:col-span-7 space-y-6">
-                    <div class="glass-panel rounded-2xl p-4">
-                        <div class="w-full h-[420px] rounded-xl overflow-hidden bg-black/40">
-                            <div id="tv_mini" class="w-full h-full"></div>
-                            <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                            <script type="text/javascript">
-                            new TradingView.widget({"width": "100%", "height": "100%", "symbol": "BINANCE:BTCUSDT", "interval": "60", "theme": "dark", "style": "3", "locale": "en", "container_id": "tv_mini"});
-                            </script>
+                        <div class="bg-black/40 border border-neonBlue/20 px-3 py-1.5 rounded-xl flex items-center gap-2 text-xs font-cyber">
+                            <span class="text-slate-400">MONTHLY ROI:</span>
+                            <span class="text-neonBlue font-bold shadow-blueGlow">+540%</span>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Live Signals (Right 5 Cols) -->
-                <div class="xl:col-span-5 space-y-4">
-                    <h2 id="feedTitle" class="font-cyber text-xs uppercase tracking-wider text-slate-400 px-1"><i class="fa-solid fa-satellite-dish text-neonBlue mr-2 animate-pulse"></i> Live Signal Feed</h2>
-
-                    <!-- FREE SIGNAL CARD -->
-                    <div class="glass-panel glow-box-open rounded-2xl p-5 relative">
-                        <div class="flex justify-between items-start mb-3">
-                            <span class="font-cyber font-bold text-lg">BTCUSDT <span class="text-[10px] font-cyber bg-neonGreen/10 text-neonGreen px-2 py-0.5 rounded ml-2 font-bold uppercase">LONG</span></span>
-                            <span class="text-[11px] font-mono text-slate-400 bg-black/20 px-2 py-0.5 rounded border border-slate-800"><i class="fa-regular fa-clock mr-1 text-neonBlue"></i><span id="freeTimer">01h 54m</span></span>
-                        </div>
-                        <div class="space-y-2 bg-black/30 dark:bg-black/30 light:bg-slate-200/60 p-3 rounded-xl text-xs font-mono">
-                            <div class="flex justify-between"><span>ENTRY:</span><span class="font-bold">64250.00</span></div>
-                            <div class="flex justify-between"><span>STOP LOSS:</span><span class="font-bold text-neonRed">63500.00</span></div>
-                            <div class="flex justify-between"><span>TAKE PROFIT:</span><span class="font-bold text-neonGreen">66000.00</span></div>
-                        </div>
-                    </div>
-
-                    <!-- PREMIUM SIGNAL CARD -->
-                    <div id="premiumSignalCard" class="glass-panel rounded-2xl p-5 relative overflow-hidden h-[180px]">
                         
-                        <!-- 🔒 1st LAYER: DEFAULT LOCK SCREEN -->
-                        <div id="lockOverlay" class="absolute inset-0 blur-lock z-10 flex flex-col items-center justify-center p-4 text-center">
-                            <div class="w-10 h-10 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center text-gold mb-2 shadow-goldGlow"><i class="fa-solid fa-lock text-sm"></i></div>
-                            <h4 class="font-cyber text-xs font-bold uppercase tracking-wider">Premium AI Signal Locked</h4>
-                            <button onclick="openAuthModal()" class="mt-3 bg-gradient-to-r from-gold to-yellow-500 text-black px-4 py-1.5 rounded-xl font-cyber font-bold text-xs shadow-goldGlow hover:scale-105 transition-all">UNLOCK INSTANTLY</button>
-                        </div>
-
-                        <!-- ⏳ 2nd LAYER: HOLDING SCREEN -->
-                        <div id="holdingOverlay" class="absolute inset-0 blur-lock z-10 hidden flex flex-col items-center justify-center p-4 text-center bg-black/95">
-                            <div class="w-10 h-10 rounded-full bg-neonBlue/10 border border-neonBlue/30 flex items-center justify-center text-neonBlue mb-2 animate-spin shadow-blueGlow"><i class="fa-solid fa-spinner text-sm"></i></div>
-                            <h4 class="font-cyber text-xs font-bold text-neonBlue uppercase tracking-wider">Verification Pending</h4>
-                            <p class="text-[11px] text-slate-400 mt-1 max-w-[240px]">We are manually verifying your submission. Your VIP card will unlock here instantly.</p>
-                        </div>
-
-                        <!-- Real Premium Content -->
-                        <div>
-                            <div class="flex justify-between items-start mb-3">
-                                <span class="font-cyber font-bold text-lg text-gold">SOLUSDT <span class="text-[10px] bg-gold/20 text-gold px-2 py-0.5 rounded ml-2 font-bold">VIP SHORT</span></span>
-                                <span class="text-[11px] font-mono text-gold bg-black/20 px-2 py-0.5 rounded border border-slate-800"><i class="fa-regular fa-clock mr-1"></i><span id="premTimer">03h 12m</span></span>
+                        <div class="glass-panel px-4 py-2 rounded-xl flex items-center gap-3 text-xs justify-between border border-gold/20 flex-1 sm:flex-none">
+                            <div class="flex items-center gap-2 dark:text-white">
+                                <i class="fa-solid fa-crown text-gold animate-bounce"></i>
+                                <span>Status: <span id="accountStatusText" class="text-gold font-bold font-cyber">FREE PLAN</span></span>
                             </div>
-                            <div class="space-y-2 bg-black/40 p-3 rounded-xl text-xs font-mono">
-                                <div class="flex justify-between"><span>ENTRY:</span><span class="font-bold">182.40</span></div>
-                                <div class="flex justify-between"><span>STOP LOSS:</span><span class="font-bold text-neonRed">186.00</span></div>
-                                <div class="flex justify-between"><span>TAKE PROFIT:</span><span class="font-bold text-neonGreen">174.00</span></div>
+                            <button id="upgradeBtnTop" onclick="openAuthModal()" class="bg-gradient-to-r from-gold to-yellow-500 text-black px-3 py-1 rounded-lg font-cyber font-bold text-[11px] shadow-goldGlow hover:scale-105 transition-all">UPGRADE ($15)</button>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- ADMIN FLASH NOTICE BOARD -->
+                <div id="flashNoticeBoard" class="bg-gradient-to-r from-neonBlue/10 to-transparent border-l-4 border-neonBlue p-3 rounded-r-xl flex items-center gap-3 text-xs text-slate-300 mt-6">
+                    <i class="fa-solid fa-bullhorn text-neonBlue text-sm animate-pulse"></i>
+                    <div><span class="font-bold text-white uppercase font-cyber mr-1">Market Update:</span> <span id="liveFlashNotice">Bitcoin is consolidation near $67.4k. Tighten your Stop-Losses on altcoin longs.</span></div>
+                </div>
+
+                <!-- SECRET ADMIN NOTIFICATION ALERT -->
+                <div id="adminPaymentAlert" class="bg-slate-950 border border-dashed border-amber-500 p-4 rounded-xl hidden flex justify-between items-center z-50 relative mt-4">
+                    <div class="text-xs space-y-1">
+                        <p class="text-amber-400 font-bold font-cyber"><i class="fa-solid fa-circle-exclamation mr-1"></i> ADMIN ALERT: NEW ACTION SUBMITTED</p>
+                        <p class="text-slate-300">User: <span id="admUserEmail" class="font-bold text-white">...</span></p>
+                        <p class="text-slate-300">Method/Details: <span id="admUserTxid" class="font-mono text-neonGreen bg-black px-1.5 py-0.5 rounded">...</span></p>
+                    </div>
+                    <button onclick="approveUserVip()" class="bg-neonGreen text-black font-cyber font-bold text-xs px-4 py-2 rounded-xl shadow-neonGlow hover:scale-105 transition-all">APPROVE VIP NOW</button>
+                </div>
+
+                <!-- LAYOUT GRID -->
+                <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 mt-6">
+                    <!-- IMAGE CHART ANALYSIS PANEL (Left 7 Cols) -->
+                    <div class="xl:col-span-7 space-y-6">
+                        <div class="glass-panel rounded-2xl p-4">
+                            <div class="flex justify-between items-center mb-3 px-1">
+                                <span id="chartPanelTitle" class="font-cyber text-xs uppercase tracking-wider text-slate-400 dark:text-slate-400"><i class="fa-solid fa-chart-line text-neonGreen mr-2"></i> Technical Chart Analysis</span>
+                                <span class="text-[10px] font-cyber bg-purple-500/10 text-purple-400 border border-purple-500/20 px-2 py-0.5 rounded font-bold uppercase tracking-widest animate-pulse">HTF ANALYSIS • 4H / 1D</span>
+                            </div>
+                            
+                            <div class="w-full h-[380px] rounded-xl overflow-hidden bg-black/40 border border-slate-900 dark:border-slate-900 light:border-slate-200 relative group cursor-zoom-in" onclick="zoomAnalysisImage()">
+                                <img id="liveAnalysisImage" src="https://images.unsplash.com/photo-1621416894569-0f39ed31d247?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500" alt="Market Analysis">
+                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+                                    <span class="bg-black/80 text-white font-cyber text-xs px-4 py-2 rounded-xl border border-white/10"><i class="fa-solid fa-magnifying-glass-plus mr-2 text-neonGreen"></i>Click to Enlarge Chart</span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Live Signals (Right 5 Cols) -->
+                    <div class="xl:col-span-5 space-y-4">
+                        <h2 id="feedTitle" class="font-cyber text-xs uppercase tracking-wider text-slate-400 px-1"><i class="fa-solid fa-satellite-dish text-neonBlue mr-2 animate-pulse"></i> Live Signal Feed</h2>
+
+                        <!-- FREE SIGNAL CARD -->
+                        <div class="glass-panel glow-box-open rounded-2xl p-5 relative">
+                            <div class="flex justify-between items-start mb-3">
+                                <span class="font-cyber font-bold text-lg">BTCUSDT <span class="text-[10px] font-cyber bg-neonGreen/10 text-neonGreen px-2 py-0.5 rounded ml-2 font-bold uppercase">LONG</span></span>
+                                <span class="text-[11px] font-mono text-slate-400 bg-black/20 px-2 py-0.5 rounded border border-slate-800"><i class="fa-regular fa-clock mr-1 text-neonBlue"></i><span id="freeTimer">01h 54m</span></span>
+                            </div>
+                            <div class="space-y-2 bg-black/30 dark:bg-black/30 light:bg-slate-200/60 p-3 rounded-xl text-xs font-mono">
+                                <div class="flex justify-between"><span>ENTRY:</span><span class="font-bold">64250.00</span></div>
+                                <div class="flex justify-between"><span>STOP LOSS:</span><span class="font-bold text-neonRed">63500.00</span></div>
+                                <div class="flex justify-between"><span>TAKE PROFIT:</span><span class="font-bold text-neonGreen">66000.00</span></div>
+                            </div>
+                        </div>
+
+                        <!-- PREMIUM SIGNAL CARD -->
+                        <div id="premiumSignalCard" class="glass-panel rounded-2xl p-5 relative overflow-hidden h-[180px]">
+                            <div id="lockOverlay" class="absolute inset-0 blur-lock z-10 flex flex-col items-center justify-center p-4 text-center">
+                                <div class="w-10 h-10 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center text-gold mb-2 shadow-goldGlow"><i class="fa-solid fa-lock text-sm"></i></div>
+                                <h4 class="font-cyber text-xs font-bold uppercase tracking-wider">Premium AI Signal Locked</h4>
+                                <button onclick="openAuthModal()" class="mt-3 bg-gradient-to-r from-gold to-yellow-500 text-black px-4 py-1.5 rounded-xl font-cyber font-bold text-xs shadow-goldGlow hover:scale-105 transition-all">UNLOCK INSTANTLY</button>
+                            </div>
+
+                            <div id="holdingOverlay" class="absolute inset-0 blur-lock z-10 hidden flex flex-col items-center justify-center p-4 text-center bg-black/95">
+                                <div class="w-10 h-10 rounded-full bg-neonBlue/10 border border-neonBlue/30 flex items-center justify-center text-neonBlue mb-2 animate-spin shadow-blueGlow"><i class="fa-solid fa-spinner text-sm"></i></div>
+                                <h4 class="font-cyber text-xs font-bold text-neonBlue uppercase tracking-wider">Verification Pending</h4>
+                                <p class="text-[11px] text-slate-400 mt-1 max-w-[240px]">We are manually verifying your submission. Your VIP card will unlock here instantly.</p>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between items-start mb-3">
+                                    <span class="font-cyber font-bold text-lg text-gold">SOLUSDT <span class="text-[10px] bg-gold/20 text-gold px-2 py-0.5 rounded ml-2 font-bold">VIP SHORT</span></span>
+                                    <span class="text-[11px] font-mono text-gold bg-black/20 px-2 py-0.5 rounded border border-slate-800"><i class="fa-regular fa-clock mr-1"></i><span id="premTimer">03h 12m</span></span>
+                                </div>
+                                <div class="space-y-2 bg-black/40 p-3 rounded-xl text-xs font-mono">
+                                    <div class="flex justify-between"><span>ENTRY:</span><span class="font-bold">182.40</span></div>
+                                    <div class="flex justify-between"><span>STOP LOSS:</span><span class="font-bold text-neonRed">186.00</span></div>
+                                    <div class="flex justify-between"><span>TAKE PROFIT:</span><span class="font-bold text-neonGreen">174.00</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- PAST PERFORMANCE HISTORY TABLE -->
+                <section class="glass-panel rounded-2xl p-5 mt-6 transition-colors duration-300">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 id="historyTitle" class="font-cyber text-xs uppercase tracking-wider text-slate-400"><i class="fa-solid fa-clock-history text-gold mr-2"></i> Recent Signal History</h3>
+                        <span class="text-[10px] font-cyber bg-neonGreen/10 text-neonGreen px-2 py-1 rounded font-bold">UPDATED REAL-TIME</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs font-mono border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-800 light:border-slate-200 text-slate-400 text-[11px]">
+                                    <th class="pb-3 font-cyber">COIN/PAIR</th>
+                                    <th class="pb-3 font-cyber">TYPE</th>
+                                    <th class="pb-3 font-cyber">ENTRY</th>
+                                    <th class="pb-3 font-cyber">TARGET</th>
+                                    <th class="pb-3 font-cyber">STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody" class="divide-y divide-slate-900/40 light:divide-slate-200/40">
+                                <tr class="hover:bg-black/10">
+                                    <td class="py-3 font-bold dark:text-white">ETHUSDT</td>
+                                    <td class="py-3 text-neonRed font-bold">SHORT</td>
+                                    <td class="py-3">$3,420.00</td>
+                                    <td class="py-3">$3,210.00</td>
+                                    <td class="py-3 text-neonGreen font-bold"><i class="fa-solid fa-circle-check mr-1"></i> Target Hit (+6.1%)</td>
+                                </tr>
+                                <tr class="hover:bg-black/10">
+                                    <td class="py-3 font-bold dark:text-white">SOLUSDT</td>
+                                    <td class="py-3 text-neonGreen font-bold">LONG</td>
+                                    <td class="py-3">$172.50</td>
+                                    <td class="py-3">$185.00</td>
+                                    <td class="py-3 text-neonGreen font-bold"><i class="fa-solid fa-circle-check mr-1"></i> Target Hit (+7.2%)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
             </div>
 
-            <!-- PAST PERFORMANCE HISTORY TABLE -->
-            <section class="glass-panel rounded-2xl p-5 mt-6 transition-colors duration-300">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 id="historyTitle" class="font-cyber text-xs uppercase tracking-wider text-slate-400"><i class="fa-solid fa-clock-history text-gold mr-2"></i> Recent Signal History</h3>
-                    <span class="text-[10px] font-cyber bg-neonGreen/10 text-neonGreen px-2 py-1 rounded font-bold">UPDATED REAL-TIME</span>
+            <!-- 🔒 NEW: MODERN FOOTER SECTION (Legal Links) -->
+            <footer class="mt-12 pt-6 border-t border-slate-900 dark:border-slate-900 light:border-slate-200 text-center space-y-3">
+                <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-[11px] font-cyber tracking-wider text-slate-400">
+                    <button onclick="openLegalModal('privacy')" class="hover:text-neonBlue transition-colors">PRIVACY POLICY</button>
+                    <span class="text-slate-700 hidden sm:inline">|</span>
+                    <button onclick="openLegalModal('terms')" class="hover:text-neonBlue transition-colors">TERMS OF SERVICE</button>
+                    <span class="text-slate-700 hidden sm:inline">|</span>
+                    <button onclick="openLegalModal('disclaimer')" class="hover:text-neonRed transition-colors">RISK DISCLAIMER</button>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs font-mono border-collapse">
-                        <thead>
-                            <tr class="border-b border-slate-800 light:border-slate-200 text-slate-400 text-[11px]">
-                                <th class="pb-3 font-cyber">COIN/PAIR</th>
-                                <th class="pb-3 font-cyber">TYPE</th>
-                                <th class="pb-3 font-cyber">ENTRY</th>
-                                <th class="pb-3 font-cyber">TARGET</th>
-                                <th class="pb-3 font-cyber">STATUS</th>
-                            </tr>
-                        </thead>
-                        <tbody id="historyTableBody" class="divide-y divide-slate-900/40 light:divide-slate-200/40">
-                            <tr class="hover:bg-black/10">
-                                <td class="py-3 font-bold dark:text-white">ETHUSDT</td>
-                                <td class="py-3 text-neonRed font-bold">SHORT</td>
-                                <td class="py-3">$3,420.00</td>
-                                <td class="py-3">$3,210.00</td>
-                                <td class="py-3 text-neonGreen font-bold"><i class="fa-solid fa-circle-check mr-1"></i> Target Hit (+6.1%)</td>
-                            </tr>
-                            <tr class="hover:bg-black/10">
-                                <td class="py-3 font-bold dark:text-white">SOLUSDT</td>
-                                <td class="py-3 text-neonGreen font-bold">LONG</td>
-                                <td class="py-3">$172.50</td>
-                                <td class="py-3">$185.00</td>
-                                <td class="py-3 text-neonGreen font-bold"><i class="fa-solid fa-circle-check mr-1"></i> Target Hit (+7.2%)</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+                <p class="text-[10px] font-mono text-slate-500">© 2026 NEXUS AI. All algorithmic data is strictly for educational purpose.</p>
+            </footer>
         </main>
+    </div>
+
+    <!-- 🔍 FULLSCREEN IMAGE LIGHTBOX MODAL -->
+    <div id="imageLightbox" class="fixed inset-0 bg-black/95 backdrop-blur-lg hidden items-center justify-center z-50 p-4" onclick="closeLightbox()">
+        <button class="absolute top-6 right-6 text-slate-400 hover:text-white text-2xl"><i class="fa-solid fa-xmark"></i></button>
+        <img id="lightboxImg" src="" class="max-w-full max-h-[92vh] rounded-xl object-contain shadow-2xl border border-white/5">
+    </div>
+
+    <!-- 📄 NEW: DYNAMIC LEGAL CONTENT POPUP MODAL -->
+    <div id="legalModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center z-50 p-4">
+        <div class="glass-panel max-w-xl w-full rounded-3xl p-6 relative border border-slate-800 shadow-blueGlow max-h-[80vh] flex flex-col">
+            <button onclick="closeLegalModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <h3 id="legalModalTitle" class="font-cyber text-sm font-bold uppercase tracking-wider text-neonBlue mb-4 border-b border-slate-900 pb-2">...</h3>
+            
+            <!-- Scrolling Content Space -->
+            <div id="legalModalBody" class="text-xs text-slate-300 space-y-3 overflow-y-auto pr-2 font-sans leading-relaxed">
+                <!-- Content will load dynamically via JS -->
+            </div>
+            
+            <div class="mt-4 pt-3 border-t border-slate-900 flex justify-end">
+                <button onclick="closeLegalModal()" class="bg-slate-950 hover:bg-black border border-slate-800 text-white font-cyber text-[10px] font-bold px-4 py-2 rounded-xl uppercase">Close Window</button>
+            </div>
+        </div>
     </div>
 
     <!-- AUTH MODAL -->
@@ -244,13 +280,12 @@
         <div class="glass-panel max-w-md w-full rounded-3xl p-5 relative border border-gold/20 shadow-goldGlow max-h-[90vh] overflow-y-auto">
             <button onclick="closePaymentModal()" class="absolute top-4 right-4 text-slate-500 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             
-            <!-- 🔥 NEW SPECIAL REFERRAL OFFER BOX -->
+            <!-- SPECIAL REFERRAL OFFER BOX -->
             <div class="bg-gradient-to-r from-purple-900/30 to-indigo-950/40 border border-indigo-500/30 p-3 rounded-2xl mb-4 text-center">
                 <span class="bg-indigo-500 text-white text-[9px] font-cyber font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">🔥 Special Promo</span>
                 <h4 class="font-cyber text-xs font-bold text-neonBlue mt-1">GET 1-MONTH VIP FREE</h4>
                 <p class="text-[10px] text-slate-400 mt-1">Create a new account using our link below, then submit your ID to get activated without paying!</p>
                 
-                <!-- Referral Buttons (এখানে আপনার আসল রেফারেল লিংক বসাবেন) -->
                 <div class="grid grid-cols-2 gap-2 mt-2">
                     <a href="https://accounts.binance.com/register?ref=YOUR_BINANCE_ID" target="_blank" class="bg-slate-900 hover:bg-black border border-amber-500/40 text-[11px] font-bold py-1.5 rounded-xl text-gold flex items-center justify-center gap-1">
                         <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i> Binance Link
@@ -260,7 +295,6 @@
                     </a>
                 </div>
 
-                <!-- Submit UID Form -->
                 <form onsubmit="submitReferralUid(event)" class="mt-2.5 flex gap-1.5">
                     <input id="userUidInput" type="text" required class="flex-1 bg-black/60 border border-slate-800 rounded-xl px-3 py-1.5 text-[11px] text-white focus:outline-none" placeholder="Enter Binance UID or Email">
                     <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-cyber text-[10px] font-bold px-3 rounded-xl uppercase">Submit ID</button>
@@ -306,7 +340,50 @@
 
         let currentLoggedUserEmail = "";
 
-        // ১. রিয়েল-টাইম ইউজার স্ট্যাটাস ট্র্যাকিং
+        // ১. লিগ্যাল টেক্সট ডিক্লেয়ারেশন (Privacy, Terms, Disclaimer)
+        const legalContents = {
+            privacy: {
+                title: "🔒 PRIVACY POLICY // DATA PROTECTION",
+                body: `<p><strong>1. Information Collection:</strong> We collect only your email address and transaction hashes required to manage your VIP subscription. No passwords or personal bio-data are stored raw.</p>
+                       <p><strong>2. Third-Party Links:</strong> Our system provides affiliate registration links to trusted exchanges like Binance and Gate.io. We do not track your activity inside those external exchanges except verifying the Referral UID provided by you.</p>
+                       <p><strong>3. Data Security:</strong> All user connections are synchronised safely using Firebase SSL tokens. We never share or sell your email database to marketing parties.</p>`
+            },
+            terms: {
+                title: "📜 TERMS OF SERVICE // PLATFORM RULES",
+                body: `<p><strong>1. Subscription Rules:</strong> By joining our premium signal terminal, you pay for a 1-month access license. Re-distributing or sharing our live terminal signals into other Telegram groups is strictly prohibited.</p>
+                       <p><strong>2. Referral Promotions:</strong> The 1-Month Free Promo is only applicable for new active accounts registered via our official tracking links. Fake or duplicate UIDs will be automatically rejected by the engine.</p>
+                       <p><strong>3. System Abuse:</strong> Any attempt to inject false payment TxIDs or spam the admin verification alerts will result in immediate email address ban.</p>`
+            },
+            disclaimer: {
+                title: "⚠️ RISK DISCLAIMER // FINANCIAL WARNING",
+                body: `<p><strong>1. High-Risk Trading:</strong> Cryptocurrency trading involves extreme market volatility and carries a significant risk of capital loss. Future trading leverage exponentially scales this risk.</p>
+                       <p><strong>2. Not Financial Advice:</strong> All data, automated algorithm logs, chart patterns, and trading signals broadcasted via NEXUS AI are strictly for technical educational purposes. Past success metrics do not guarantee future exact profit outcomes.</p>
+                       <p><strong>3. Personal Liability:</strong> You are 100% responsible for managing your own stop-losses and position sizing. NEXUS AI will not accept liability for any direct or indirect financial damage caused to your trade balance.</p>`
+            }
+        };
+
+        function openLegalModal(type) {
+            const data = legalContents[type];
+            document.getElementById('legalModalTitle').innerHTML = data.title;
+            document.getElementById('legalModalBody').innerHTML = data.body;
+            document.getElementById('legalModal').style.display = 'flex';
+        }
+        function closeLegalModal() { document.getElementById('legalModal').style.display = 'none'; }
+
+        // ২. রিয়েল-টাইম এনালাইসিস ইমেজ লিসেনার
+        database.ref('analysis_image').on('value', (snapshot) => {
+            const imageUrl = snapshot.val();
+            if (imageUrl) { document.getElementById('liveAnalysisImage').src = imageUrl; }
+        });
+
+        function zoomAnalysisImage() {
+            const currentSrc = document.getElementById('liveAnalysisImage').src;
+            document.getElementById('lightboxImg').src = currentSrc;
+            document.getElementById('imageLightbox').style.display = 'flex';
+        }
+        function closeLightbox() { document.getElementById('imageLightbox').style.display = 'none'; }
+
+        // ৩. রিয়েল-টাইম ইউজার স্ট্যাটাস ট্র্যাকিং
         function listenToUserStatus(email) {
             const userKey = btoa(email);
             database.ref('users/' + userKey).on('value', (snapshot) => {
@@ -328,7 +405,7 @@
             });
         }
 
-        // ২. অ্যাডমিন প্যানেল চেক লিসেনার
+        // ৪. অ্যাডমিন প্যানেল চেক লিসেনার
         database.ref('pending_payments').on('value', (snapshot) => {
             const data = snapshot.val();
             if(data) {
@@ -351,7 +428,6 @@
             document.getElementById('paymentModal').style.display = 'flex';
         }
 
-        // ⏳ ৩. পেমেন্ট TxID সাবমিট
         function submitTxid(e) {
             e.preventDefault();
             const txidHash = document.getElementById('txidInput').value;
@@ -365,13 +441,11 @@
             listenToUserStatus(currentLoggedUserEmail);
         }
 
-        // 🚀 ৪. নতুন: রেফারেল UID সাবমিট ফাংশন
         function submitReferralUid(e) {
             e.preventDefault();
             const uidDetails = document.getElementById('userUidInput').value;
             const userKey = btoa(currentLoggedUserEmail);
 
-            // ফায়ারবেস ডাটাবেজে ইউজার স্ট্যাটাস পেন্ডিং করবে এবং অ্যাডমিন প্যানেলে নোটিফিকেশন পাঠাবে
             database.ref('users/' + userKey).set({ email: currentLoggedUserEmail, status: 'pending', method: "Referral UID: " + uidDetails });
             database.ref('pending_payments/' + userKey).set({ email: currentLoggedUserEmail, txid: "UID Signup Check: " + uidDetails });
 
@@ -380,7 +454,6 @@
             listenToUserStatus(currentLoggedUserEmail);
         }
 
-        // ৫. অ্যাডমিন APPROVE
         function approveUserVip() {
             const emailInAlert = document.getElementById('admUserEmail').innerText;
             const userKey = btoa(emailInAlert);
@@ -388,7 +461,6 @@
             database.ref('pending_payments/' + userKey).remove().then(() => { alert("✅ VIP Plan Approved Live!"); });
         }
 
-        // ৬. থিম পরিবর্তন করার ফাংশন
         function toggleTheme() {
             const html = document.documentElement;
             const body = document.body;
@@ -396,6 +468,7 @@
             const heading = document.getElementById('mainHeading');
             const feedTitle = document.getElementById('feedTitle');
             const historyTitle = document.getElementById('historyTitle');
+            const chartPanelTitle = document.getElementById('chartPanelTitle');
             const darkIcon = document.getElementById('darkIcon');
             const lightIcon = document.getElementById('lightIcon');
 
@@ -406,6 +479,7 @@
                 heading.classList.remove('text-white'); heading.classList.add('text-slate-900');
                 feedTitle.classList.remove('text-slate-400'); feedTitle.classList.add('text-slate-600');
                 historyTitle.classList.remove('text-slate-400'); historyTitle.classList.add('text-slate-600');
+                chartPanelTitle.classList.remove('text-slate-400'); chartPanelTitle.classList.add('text-slate-700');
                 darkIcon.classList.add('hidden'); lightIcon.classList.remove('hidden');
             } else {
                 html.classList.remove('light'); html.classList.add('dark');
@@ -414,6 +488,7 @@
                 heading.classList.remove('text-slate-900'); heading.classList.add('text-white');
                 feedTitle.classList.remove('text-slate-600'); feedTitle.classList.add('text-slate-400');
                 historyTitle.classList.remove('text-slate-600'); historyTitle.classList.add('text-slate-400');
+                chartPanelTitle.classList.remove('text-slate-700'); chartPanelTitle.classList.add('text-slate-400');
                 lightIcon.classList.add('hidden'); darkIcon.classList.remove('hidden');
             }
         }
