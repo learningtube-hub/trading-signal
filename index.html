@@ -3,519 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI // Ultimate Crypto Signal Terminal</title>
+    <title>NEXUS AI // Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
-    
-    <!-- Firebase SDK (Real-time Sync) -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'], cyber: ['Orbitron', 'sans-serif'] },
                     colors: { 
                         darkBg: '#03050d', 
-                        lightBg: '#f1f5f9',
+                        lightBg: '#f8fafc',
                         neonGreen: '#00ffa3', 
                         neonBlue: '#00e5ff', 
-                        neonRed: '#ff0055', 
                         gold: '#ffd700' 
-                    },
-                    boxShadow: { neonGlow: '0 0 20px rgba(0, 255, 163, 0.2)', blueGlow: '0 0 20px rgba(0, 229, 255, 0.2)', goldGlow: '0 0 20px rgba(255, 215, 0, 0.2)' }
+                    }
                 }
             }
         }
     </script>
-    <style>
-        @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } }
-        .ticker-wrap { overflow: hidden; width: 100%; background: #000; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .ticker-items { display: flex; width: max-content; animation: ticker 25s infinite linear; }
-        .ticker-item { padding: 0 2rem; display: flex; items-center: center; gap: 0.5rem; font-size: 12px; font-weight: 600; }
-        .glass-panel { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
-        .dark .glass-panel { background: rgba(11, 15, 36, 0.45); border: 1px solid rgba(255, 255, 255, 0.04); }
-        .light .glass-panel { background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(15, 23, 42, 0.08); color: #0f172a; }
-        .dark .blur-lock { backdrop-filter: blur(8px) saturate(50%); background: rgba(6, 8, 20, 0.85); }
-        .light .blur-lock { backdrop-filter: blur(8px) saturate(50%); background: rgba(241, 245, 249, 0.9); }
-        .glow-box-open { border: 1px solid rgba(0, 255, 163, 0.3); }
-    </style>
 </head>
-<body class="bg-darkBg text-gray-100 dark:bg-darkBg dark:text-gray-100 font-sans antialiased min-h-screen transition-colors duration-300 flex flex-col">
+<body class="bg-darkBg dark:bg-darkBg light:bg-lightBg text-slate-900 dark:text-gray-100 transition-colors duration-300">
 
-    <!-- HORIZONTAL ONE-LINE TICKER -->
-    <div class="ticker-wrap h-10 flex items-center sticky top-0 z-50">
-        <div class="ticker-items font-cyber text-white">
-            <div class="ticker-item"><span class="text-neonBlue">BTC/USDT</span> <span>$67,420.50</span> <span class="text-neonGreen">(+2.45%)</span></div>
-            <div class="ticker-item"><span class="text-neonBlue">ETH/USDT</span> <span>$3,512.20</span> <span class="text-neonGreen">(+1.88%)</span></div>
-            <div class="ticker-item"><span class="text-neonBlue">SOL/USDT</span> <span>$178.45</span> <span class="text-neonRed">(-0.65%)</span></div>
-            <div class="ticker-item"><span class="text-neonBlue">BNB/USDT</span> <span>$585.10</span> <span class="text-neonGreen">(+3.12%)</span></div>
-            <div class="ticker-item"><span class="text-neonBlue">BTC/USDT</span> <span>$67,420.50</span> <span class="text-neonGreen">(+2.45%)</span></div>
+    <!-- হেডার বা স্ট্যাটাস সেকশন (লাইট মোড ফিক্সড) -->
+    <div class="p-6">
+        <header class="flex flex-wrap gap-4 border-b border-slate-300 dark:border-slate-800 pb-4">
+            <!-- WIN RATE (Light: Text-Slate-600, Dark: Text-Slate-400) -->
+            <div class="bg-slate-200 dark:bg-black/40 border border-slate-300 dark:border-neonGreen/20 px-3 py-1.5 rounded-xl flex items-center gap-2">
+                <span class="text-slate-600 dark:text-slate-400 font-bold">WIN RATE:</span>
+                <span class="text-green-700 dark:text-neonGreen font-bold">89.4%</span>
+            </div>
+
+            <!-- MONTHLY ROI -->
+            <div class="bg-slate-200 dark:bg-black/40 border border-slate-300 dark:border-neonBlue/20 px-3 py-1.5 rounded-xl flex items-center gap-2">
+                <span class="text-slate-600 dark:text-slate-400 font-bold">ROI:</span>
+                <span class="text-blue-700 dark:text-neonBlue font-bold">+540%</span>
+            </div>
+        </header>
+
+        <!-- মার্কেট আপডেট বোর্ড -->
+        <div class="mt-6 bg-slate-200 dark:bg-black/40 border-l-4 border-blue-500 dark:border-neonBlue p-4 rounded-r-xl">
+            <p class="text-slate-800 dark:text-slate-300">
+                <span class="font-bold text-slate-950 dark:text-white uppercase">Market Update:</span> 
+                Bitcoin is consolidation near $67.4k.
+            </p>
         </div>
     </div>
 
-    <!-- MAIN DASHBOARD CONTENT AREA -->
-    <div class="flex flex-col lg:flex-row flex-1">
-        
-        <!-- SIDEBAR (ডেস্কটপে বামে ফিক্সড, মোবাইলে উপরে খুবই চিকন টপ-বার হিসেবে থাকবে) -->
-        <aside id="mainSidebar" class="w-full h-14 lg:h-[calc(100vh-2.5rem)] lg:w-20 bg-black/20 dark:bg-black/20 border-b lg:border-b-0 lg:border-r border-slate-950 light:border-slate-300 flex lg:flex-col items-center justify-between px-4 lg:px-0 lg:py-6 sticky top-10 lg:top-10 z-40 transition-colors duration-300">
-            <!-- লোগো (NX) -->
-            <div class="text-neonBlue font-cyber text-xl lg:text-2xl font-black tracking-widest">N<span class="text-neonGreen">X</span></div>
-            
-            <!-- নেভিগেশন আইকন (লাইভ ও ভিআইপি বাটন) -->
-            <nav class="flex lg:flex-col gap-4 lg:gap-6 text-slate-400">
-                <button class="w-9 h-9 lg:w-12 lg:h-12 rounded-xl flex items-center justify-center text-neonBlue bg-neonBlue/10 border border-neonBlue/20 shadow-blueGlow"><i class="fa-solid fa-satellite-dish text-sm lg:text-lg"></i></button>
-                <button onclick="openAuthModal()" class="w-9 h-9 lg:w-12 lg:h-12 rounded-xl flex items-center justify-center hover:text-gold"><i class="fa-solid fa-crown text-sm lg:text-lg"></i></button>
-            </nav>
-            
-            <!-- থিম এবং প্রোফাইল বাটন -->
-            <div class="flex lg:flex-col items-center gap-3 lg:gap-4">
-                <button onclick="toggleTheme()" class="w-8 h-8 lg:w-10 lg:h-10 rounded-xl bg-slate-900/60 dark:bg-slate-900/60 border border-slate-800 light:border-slate-300 flex items-center justify-center text-gold text-xs lg:text-sm cursor-pointer">
-                    <i id="darkIcon" class="fa-solid fa-moon"></i>
-                    <i id="lightIcon" class="fa-solid fa-sun text-yellow-600 hidden"></i>
-                </button>
-                <div onclick="openAuthModal()" class="w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-neonGreen text-xs lg:text-sm cursor-pointer"><i class="fa-solid fa-user"></i></div>
-            </div>
-        </aside>
+    <!-- থিম টগল বাটন -->
+    <button onclick="toggleTheme()" class="m-6 p-3 bg-slate-300 dark:bg-slate-800 rounded-lg">Toggle Theme</button>
 
-        <!-- MAIN LAYOUT CONTENT -->
-        <main class="flex-1 p-4 lg:p-6 space-y-4 lg:space-y-6 overflow-y-auto flex flex-col justify-between">
-            <div>
-                <!-- Header (মোবাইলে টেক্সট ও প্যাডিং একদম কমপ্যাক্ট করা হয়েছে) -->
-                <header class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3 xl:gap-4 border-b border-slate-950 dark:border-slate-950 light:border-slate-200 pb-3 lg:pb-4">
-                    <div>
-                        <h1 id="mainHeading" class="text-lg lg:text-2xl font-cyber font-bold tracking-wider text-white dark:text-white">NEXUS AI // SIGNAL HUB</h1>
-                        <p class="text-slate-400 text-[10px] lg:text-xs mt-0.5">Copy premium algorithmic crypto signals instantly.</p>
-                    </div>
-                    
-                    <!-- WIN-RATE & ACCURACY TRACKER STATS -->
-                    <div class="flex flex-wrap items-center gap-2 xl:gap-3 w-full xl:w-auto">
-                        <div class="bg-black/40 border border-neonGreen/20 px-2.5 py-1 rounded-xl flex items-center gap-1.5 text-[10px] lg:text-xs font-cyber">
-                            <span class="text-slate-400">WIN RATE:</span>
-                            <span class="text-neonGreen font-bold shadow-neonGlow">89.4% 🔥</span>
-                        </div>
-                        <div class="bg-black/40 border border-neonBlue/20 px-2.5 py-1 rounded-xl flex items-center gap-1.5 text-[10px] lg:text-xs font-cyber">
-                            <span class="text-slate-400">MONTHLY ROI:</span>
-                            <span class="text-neonBlue font-bold shadow-blueGlow">+540%</span>
-                        </div>
-                        
-                        <div class="glass-panel px-3 py-1.5 lg:py-2 rounded-xl flex items-center gap-2.5 text-[10px] lg:text-xs justify-between border border-gold/20 flex-1 sm:flex-none">
-                            <div class="flex items-center gap-1.5 dark:text-white">
-                                <i class="fa-solid fa-crown text-gold animate-bounce"></i>
-                                <span>Status: <span id="accountStatusText" class="text-gold font-bold font-cyber">FREE PLAN</span></span>
-                            </div>
-                            <button id="upgradeBtnTop" onclick="openAuthModal()" class="bg-gradient-to-r from-gold to-yellow-500 text-black px-2.5 py-0.5 rounded-lg font-cyber font-bold text-[10px] lg:text-[11px] shadow-goldGlow hover:scale-105 transition-all">UPGRADE ($15)</button>
-                        </div>
-                    </div>
-                </header>
-
-                <!-- ADMIN FLASH NOTICE BOARD -->
-                <div id="flashNoticeBoard" class="bg-gradient-to-r from-neonBlue/10 to-transparent border-l-4 border-neonBlue p-3 rounded-r-xl flex items-center gap-3 text-xs text-slate-300 mt-4 lg:mt-6">
-                    <i class="fa-solid fa-bullhorn text-neonBlue text-sm animate-pulse"></i>
-                    <div><span class="font-bold text-white uppercase font-cyber mr-1">Market Update:</span> <span id="liveFlashNotice">Bitcoin is consolidation near $67.4k. Tighten your Stop-Losses on altcoin longs.</span></div>
-                </div>
-
-                <!-- SECRET ADMIN NOTIFICATION ALERT -->
-                <div id="adminPaymentAlert" class="bg-slate-950 border border-dashed border-amber-500 p-4 rounded-xl hidden flex justify-between items-center z-50 relative mt-4">
-                    <div class="text-xs space-y-1">
-                        <p class="text-amber-400 font-bold font-cyber"><i class="fa-solid fa-circle-exclamation mr-1"></i> ADMIN ALERT: NEW ACTION SUBMITTED</p>
-                        <p class="text-slate-300">User: <span id="admUserEmail" class="font-bold text-white">...</span></p>
-                        <p class="text-slate-300">Method/Details: <span id="admUserTxid" class="font-mono text-neonGreen bg-black px-1.5 py-0.5 rounded">...</span></p>
-                    </div>
-                    <button onclick="approveUserVip()" class="bg-neonGreen text-black font-cyber font-bold text-xs px-4 py-2 rounded-xl shadow-neonGlow hover:scale-105 transition-all">APPROVE VIP NOW</button>
-                </div>
-
-                <!-- LAYOUT GRID -->
-                <div class="grid grid-cols-1 xl:grid-cols-12 gap-4 lg:gap-6 mt-4 lg:mt-6">
-                    <!-- IMAGE CHART ANALYSIS PANEL (মোবাইলের জন্য হাইট ২৪0px এ ফিক্সড রাখা হয়েছে) -->
-                    <div class="xl:col-span-7 space-y-6">
-                        <div class="glass-panel rounded-2xl p-3 lg:p-4">
-                            <div class="flex justify-between items-center mb-2 lg:mb-3 px-1">
-                                <span id="chartPanelTitle" class="font-cyber text-[11px] lg:text-xs uppercase tracking-wider text-slate-400 dark:text-slate-400"><i class="fa-solid fa-chart-line text-neonGreen mr-2"></i> Technical Chart Analysis</span>
-                                <span class="text-[9px] font-cyber bg-purple-500/10 text-purple-400 border border-purple-500/20 px-1.5 py-0.5 rounded font-bold uppercase tracking-widest animate-pulse">HTF ANALYSIS</span>
-                            </div>
-                            
-                            <!-- মোবিলে কমপ্যাক্ট ২৪০ পিক্সেল, ডেক্সটপে স্ট্যান্ডার্ড ৩৮০ পিক্সেল -->
-                            <div class="w-full h-[240px] lg:h-[380px] rounded-xl overflow-hidden bg-black/40 border border-slate-950 dark:border-slate-950 light:border-slate-200 relative group cursor-zoom-in" onclick="zoomAnalysisImage()">
-                                <img id="liveAnalysisImage" src="https://images.unsplash.com/photo-1621416894569-0f39ed31d247?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500" alt="Market Analysis">
-                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
-                                    <span class="bg-black/80 text-white font-cyber text-xs px-4 py-2 rounded-xl border border-white/10"><i class="fa-solid fa-magnifying-glass-plus mr-2 text-neonGreen"></i>Click to Enlarge Chart</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Live Signals (Right 5 Cols) -->
-                    <div class="xl:col-span-5 space-y-4">
-                        <h2 id="feedTitle" class="font-cyber text-xs uppercase tracking-wider text-slate-400 px-1"><i class="fa-solid fa-satellite-dish text-neonBlue mr-2 animate-pulse"></i> Live Signal Feed</h2>
-
-                        <!-- FREE SIGNAL CARD -->
-                        <div class="glass-panel glow-box-open rounded-2xl p-5 relative">
-                            <div class="flex justify-between items-start mb-3">
-                                <span class="font-cyber font-bold text-lg">BTCUSDT <span class="text-[10px] font-cyber bg-neonGreen/10 text-neonGreen px-2 py-0.5 rounded ml-2 font-bold uppercase">LONG</span></span>
-                                <span class="text-[11px] font-mono text-slate-400 bg-black/20 px-2 py-0.5 rounded border border-slate-800"><i class="fa-regular fa-clock mr-1 text-neonBlue"></i><span id="freeTimer">01h 54m</span></span>
-                            </div>
-                            <div class="space-y-2 bg-black/30 dark:bg-black/30 light:bg-slate-200/60 p-3 rounded-xl text-xs font-mono">
-                                <div class="flex justify-between"><span>ENTRY:</span><span class="font-bold">64250.00</span></div>
-                                <div class="flex justify-between"><span>STOP LOSS:</span><span class="font-bold text-neonRed">63500.00</span></div>
-                                <div class="flex justify-between"><span>TAKE PROFIT:</span><span class="font-bold text-neonGreen">66000.00</span></div>
-                            </div>
-                        </div>
-
-                        <!-- PREMIUM SIGNAL CARD -->
-                        <div id="premiumSignalCard" class="glass-panel rounded-2xl p-5 relative overflow-hidden h-[180px]">
-                            <div id="lockOverlay" class="absolute inset-0 blur-lock z-10 flex flex-col items-center justify-center p-4 text-center">
-                                <div class="w-10 h-10 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center text-gold mb-2 shadow-goldGlow"><i class="fa-solid fa-lock text-sm"></i></div>
-                                <h4 class="font-cyber text-xs font-bold uppercase tracking-wider">Premium AI Signal Locked</h4>
-                                <button onclick="openAuthModal()" class="mt-3 bg-gradient-to-r from-gold to-yellow-500 text-black px-4 py-1.5 rounded-xl font-cyber font-bold text-xs shadow-goldGlow hover:scale-105 transition-all">UNLOCK INSTANTLY</button>
-                            </div>
-
-                            <div id="holdingOverlay" class="absolute inset-0 blur-lock z-10 hidden flex flex-col items-center justify-center p-4 text-center bg-black/95">
-                                <div class="w-10 h-10 rounded-full bg-neonBlue/10 border border-neonBlue/30 flex items-center justify-center text-neonBlue mb-2 animate-spin shadow-blueGlow"><i class="fa-solid fa-spinner text-sm"></i></div>
-                                <h4 class="font-cyber text-xs font-bold text-neonBlue uppercase tracking-wider">Verification Pending</h4>
-                                <p class="text-[11px] text-slate-400 mt-1 max-w-[240px]"> We are manually verifying your submission. Your VIP card will unlock here instantly.</p>
-                            </div>
-
-                            <div>
-                                <div class="flex justify-between items-start mb-3">
-                                    <span class="font-cyber font-bold text-lg text-gold">SOLUSDT <span class="text-[10px] bg-gold/20 text-gold px-2 py-0.5 rounded ml-2 font-bold">VIP SHORT</span></span>
-                                    <span class="text-[11px] font-mono text-gold bg-black/20 px-2 py-0.5 rounded border border-slate-800"><i class="fa-regular fa-clock mr-1"></i><span id="premTimer">03h 12m</span></span>
-                                </div>
-                                <div class="space-y-2 bg-black/40 p-3 rounded-xl text-xs font-mono">
-                                    <div class="flex justify-between"><span>ENTRY:</span><span class="font-bold">182.40</span></div>
-                                    <div class="flex justify-between"><span>STOP LOSS:</span><span class="font-bold text-neonRed">186.00</span></div>
-                                    <div class="flex justify-between"><span>TAKE PROFIT:</span><span class="font-bold text-neonGreen">174.00</span></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PAST PERFORMANCE HISTORY TABLE -->
-                <section class="glass-panel rounded-2xl p-5 mt-6 transition-colors duration-300">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 id="historyTitle" class="font-cyber text-xs uppercase tracking-wider text-slate-400"><i class="fa-solid fa-clock-history text-gold mr-2"></i> Recent Signal History</h3>
-                        <span class="text-[10px] font-cyber bg-neonGreen/10 text-neonGreen px-2 py-1 rounded font-bold">UPDATED REAL-TIME</span>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs font-mono border-collapse">
-                            <thead>
-                                <tr class="border-b border-slate-800 light:border-slate-200 text-slate-400 text-[11px]">
-                                    <th class="pb-3 font-cyber">COIN/PAIR</th>
-                                    <th class="pb-3 font-cyber">TYPE</th>
-                                    <th class="pb-3 font-cyber">ENTRY</th>
-                                    <th class="pb-3 font-cyber">TARGET</th>
-                                    <th class="pb-3 font-cyber">STATUS</th>
-                                </tr>
-                            </thead>
-                            <tbody id="historyTableBody" class="divide-y divide-slate-900/40 light:divide-slate-200/40">
-                                <tr class="hover:bg-black/10">
-                                    <td class="py-3 font-bold dark:text-white">ETHUSDT</td>
-                                    <td class="py-3 text-neonRed font-bold">SHORT</td>
-                                    <td class="py-3">$3,420.00</td>
-                                    <td class="py-3">$3,210.00</td>
-                                    <td class="py-3 text-neonGreen font-bold"><i class="fa-solid fa-circle-check mr-1"></i> Target Hit (+6.1%)</td>
-                                </tr>
-                                <tr class="hover:bg-black/10">
-                                    <td class="py-3 font-bold dark:text-white">SOLUSDT</td>
-                                    <td class="py-3 text-neonGreen font-bold">LONG</td>
-                                    <td class="py-3">$172.50</td>
-                                    <td class="py-3">$185.00</td>
-                                    <td class="py-3 text-neonGreen font-bold"><i class="fa-solid fa-circle-check mr-1"></i> Target Hit (+7.2%)</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-            </div>
-
-            <!-- FOOTER SECTION (Legal Links) -->
-            <footer class="mt-12 pt-6 border-t border-slate-950 dark:border-slate-950 light:border-slate-200 text-center space-y-3">
-                <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-[11px] font-cyber tracking-wider text-slate-400">
-                    <button onclick="openLegalModal('privacy')" class="hover:text-neonBlue transition-colors">PRIVACY POLICY</button>
-                    <span class="text-slate-700 hidden sm:inline">|</span>
-                    <button onclick="openLegalModal('terms')" class="hover:text-neonBlue transition-colors">TERMS OF SERVICE</button>
-                    <span class="text-slate-700 hidden sm:inline">|</span>
-                    <button onclick="openLegalModal('disclaimer')" class="hover:text-neonRed transition-colors">RISK DISCLAIMER</button>
-                </div>
-                <p class="text-[10px] font-mono text-slate-500">© 2026 NEXUS AI. All algorithmic data is strictly for educational purpose.</p>
-            </footer>
-        </main>
-    </div>
-
-    <!-- FULLSCREEN IMAGE LIGHTBOX MODAL -->
-    <div id="imageLightbox" class="fixed inset-0 bg-black/95 backdrop-blur-lg hidden items-center justify-center z-50 p-4" onclick="closeLightbox()">
-        <button class="absolute top-6 right-6 text-slate-400 hover:text-white text-2xl"><i class="fa-solid fa-xmark"></i></button>
-        <img id="lightboxImg" src="" class="max-w-full max-h-[92vh] rounded-xl object-contain shadow-2xl border border-white/5">
-    </div>
-
-    <!-- DYNAMIC LEGAL CONTENT POPUP MODAL -->
-    <div id="legalModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center z-50 p-4">
-        <div class="glass-panel max-w-xl w-full rounded-3xl p-6 relative border border-slate-800 shadow-blueGlow max-h-[80vh] flex flex-col">
-            <button onclick="closeLegalModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h3 id="legalModalTitle" class="font-cyber text-sm font-bold uppercase tracking-wider text-neonBlue mb-4 border-b border-slate-950 pb-2">...</h3>
-            
-            <!-- Scrolling Content Space -->
-            <div id="legalModalBody" class="text-xs text-slate-300 space-y-3 overflow-y-auto pr-2 font-sans leading-relaxed">
-                <!-- Content will load dynamically via JS -->
-            </div>
-            
-            <div class="mt-4 pt-3 border-t border-slate-950 flex justify-end">
-                <button onclick="closeLegalModal()" class="bg-slate-950 hover:bg-black border border-slate-800 text-white font-cyber text-[10px] font-bold px-4 py-2 rounded-xl uppercase">Close Window</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- AUTH MODAL -->
-    <div id="authModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center z-50 p-4">
-        <div class="glass-panel max-w-md w-full rounded-3xl p-6 relative border border-slate-800 shadow-blueGlow">
-            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-500 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h3 class="font-cyber text-lg font-bold text-center uppercase tracking-wider text-white">Create Your Account</h3>
-            <form onsubmit="handleAuthSubmit(event)" class="space-y-4 mt-4">
-                <input id="userEmailInput" type="email" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none" placeholder="Enter Email">
-                <input type="password" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none" placeholder="Enter Password">
-                <button type="submit" class="w-full bg-neonBlue text-darkBg font-cyber font-bold py-3 rounded-xl uppercase shadow-blueGlow">Continue to Dashboard</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- PAYMENT & REFERRAL MODAL -->
-    <div id="paymentModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center z-50 p-4">
-        <div class="glass-panel max-w-md w-full rounded-3xl p-5 relative border border-gold/20 shadow-goldGlow max-h-[90vh] overflow-y-auto">
-            <button onclick="closePaymentModal()" class="absolute top-4 right-4 text-slate-500 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            
-            <!-- SPECIAL REFERRAL OFFER BOX -->
-            <div class="bg-gradient-to-r from-purple-900/30 to-indigo-950/40 border border-indigo-500/30 p-3 rounded-2xl mb-4 text-center">
-                <span class="bg-indigo-500 text-white text-[9px] font-cyber font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">🔥 Special Promo</span>
-                <h4 class="font-cyber text-xs font-bold text-neonBlue mt-1">GET 1-MONTH VIP FREE</h4>
-                <p class="text-[10px] text-slate-400 mt-1">Create a new account using our link below, then submit your ID to get activated without paying!</p>
-                
-                <div class="grid grid-cols-2 gap-2 mt-2">
-                    <a href="https://accounts.binance.com/register?ref=YOUR_BINANCE_ID" target="_blank" class="bg-slate-900 hover:bg-black border border-amber-500/40 text-[11px] font-bold py-1.5 rounded-xl text-gold flex items-center justify-center gap-1">
-                        <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i> Binance Link
-                    </a>
-                    <a href="https://www.gate.io/signup/YOUR_GATE_ID" target="_blank" class="bg-slate-900 hover:bg-black border border-neonBlue/40 text-[11px] font-bold py-1.5 rounded-xl text-neonBlue flex items-center justify-center gap-1">
-                        <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i> Gate.io Link
-                    </a>
-                </div>
-
-                <form onsubmit="submitReferralUid(event)" class="mt-2.5 flex gap-1.5">
-                    <input id="userUidInput" type="text" required class="flex-1 bg-black/60 border border-slate-800 rounded-xl px-3 py-1.5 text-[11px] text-white focus:outline-none" placeholder="Enter Binance UID or Email">
-                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-cyber text-[10px] font-bold px-3 rounded-xl uppercase">Submit ID</button>
-                </form>
-            </div>
-
-            <div class="relative flex py-2 items-center">
-                <div class="flex-grow border-t border-slate-800"></div>
-                <span class="flex-shrink mx-4 text-[10px] text-slate-500 font-cyber font-bold uppercase">OR PAY DIRECTLY</span>
-                <div class="flex-grow border-t border-slate-800"></div>
-            </div>
-
-            <!-- Standard USDT Payment Methods -->
-            <div class="grid grid-cols-2 gap-2 p-1 bg-slate-950 rounded-xl border border-slate-900 mb-3">
-                <button id="btnBinance" onclick="switchTab('binance')" class="py-2 text-xs font-cyber font-bold rounded-lg bg-gold text-black">BINANCE PAY</button>
-                <button id="btnUsdt" onclick="switchTab('usdt')" class="py-2 text-xs font-cyber font-bold rounded-lg text-slate-400">USDT WALLET</button>
-            </div>
-            
-            <div id="contentBinance" class="text-center"><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=BinancePay" class="mx-auto rounded-xl p-2 bg-white w-28 h-28"></div>
-            <div id="contentUsdt" class="hidden space-y-2">
-                <select id="networkSelect" onchange="handleNetworkChange()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-white">
-                    <option value="trc20">USDT - TRON (TRC20)</option>
-                    <option value="bep20">USDT - BNB SMART CHAIN (BEP20)</option>
-                </select>
-                <div id="walletAddress" class="bg-slate-950 p-2.5 rounded-xl text-xs font-mono text-neonGreen truncate">TYG92hskf8Hksld9283Kshdf9283ksjdhf</div>
-            </div>
-            
-            <form onsubmit="submitTxid(event)" class="mt-3 space-y-2">
-                <input id="txidInput" type="text" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white focus:outline-none" placeholder="Paste Transaction ID (TxID) if paid manually">
-                <button type="submit" class="w-full bg-gradient-to-r from-gold to-yellow-500 text-black font-cyber font-bold py-2.5 rounded-xl uppercase text-xs shadow-goldGlow">VERIFY PAYMENT</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- CORE LOGIC ENGINE -->
     <script>
-        const addresses = { trc20: "TYG92hskf8Hksld9283Kshdf9283ksjdhf", bep20: "0x71C7656ec7ab88b098defB751B7401B5f6d59751" };
-        
-        // Firebase Setup
-        const firebaseConfig = { apiKey: "AIzaSyKey", authDomain: "proj.firebaseapp.com", databaseURL: "https://your-project.firebaseio.com/", projectId: "proj" };
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-        const database = firebase.database();
-
-        let currentLoggedUserEmail = "";
-
-        const legalContents = {
-            privacy: {
-                title: "🔒 PRIVACY POLICY // DATA PROTECTION",
-                body: `<p><strong>1. Information Collection:</strong> We collect only your email address and transaction hashes required to manage your VIP subscription. No passwords or personal bio-data are stored raw.</p>
-                       <p><strong>2. Third-Party Links:</strong> Our system provides affiliate registration links to trusted exchanges like Binance and Gate.io. We do not track your activity inside those external exchanges except verifying the Referral UID provided by you.</p>
-                       <p><strong>3. Data Security:</strong> All user connections are synchronised safely using Firebase SSL tokens. We never share or sell your email database to marketing parties.</p>`
-            },
-            terms: {
-                title: "📜 TERMS OF SERVICE // PLATFORM RULES",
-                body: `<p><strong>1. Subscription Rules:</strong> By joining our premium signal terminal, you pay for a 1-month access license. Re-distributing or sharing our live terminal signals into other Telegram groups is strictly prohibited.</p>
-                       <p><strong>2. Referral Promotions:</strong> The 1-Month Free Promo is only applicable for new active accounts registered via our official tracking links. Fake or duplicate UIDs will be automatically rejected by the engine.</p>
-                       <p><strong>3. System Abuse:</strong> Any attempt to inject false payment TxIDs or spam the admin verification alerts will result in immediate email address ban.</p>`
-            },
-            disclaimer: {
-                title: "⚠️ RISK DISCLAIMER // FINANCIAL WARNING",
-                body: `<p><strong>1. High-Risk Trading:</strong> Cryptocurrency trading involves extreme market volatility and carries a significant risk of capital loss. Future trading leverage exponentially scales this risk.</p>
-                       <p><strong>2. Not Financial Advice:</strong> All data, automated algorithm logs, chart patterns, and trading signals broadcasted via NEXUS AI are strictly for technical educational purposes. Past success metrics do not guarantee future exact profit outcomes.</p>
-                       <p><strong>3. Personal Liability:</strong> You are 100% responsible for managing your own stop-losses and position sizing. NEXUS AI will not accept liability for any direct or indirect financial damage caused to your trade balance.</p>`
-            }
-        };
-
-        function openLegalModal(type) {
-            const data = legalContents[type];
-            document.getElementById('legalModalTitle').innerHTML = data.title;
-            document.getElementById('legalModalBody').innerHTML = data.body;
-            document.getElementById('legalModal').style.display = 'flex';
-        }
-        function closeLegalModal() { document.getElementById('legalModal').style.display = 'none'; }
-
-        // রিয়েল-টাইম এনালাইসিস ইমেজ লিসেনার
-        database.ref('analysis_image').on('value', (snapshot) => {
-            const imageUrl = snapshot.val();
-            if (imageUrl) { document.getElementById('liveAnalysisImage').src = imageUrl; }
-        });
-
-        function zoomAnalysisImage() {
-            const currentSrc = document.getElementById('liveAnalysisImage').src;
-            document.getElementById('lightboxImg').src = currentSrc;
-            document.getElementById('imageLightbox').style.display = 'flex';
-        }
-        function closeLightbox() { document.getElementById('imageLightbox').style.display = 'none'; }
-
-        // রিয়েল-টাইম ইউজার স্ট্যাটাস ট্র্যাকিং
-        function listenToUserStatus(email) {
-            const userKey = btoa(email);
-            database.ref('users/' + userKey).on('value', (snapshot) => {
-                const userData = snapshot.val();
-                if(userData) {
-                    if(userData.status === 'pending') {
-                        document.getElementById('accountStatusText').innerText = "PENDING APPROVAL";
-                        document.getElementById('accountStatusText').className = "text-amber-400 font-bold font-cyber animate-pulse";
-                        document.getElementById('lockOverlay').style.display = 'none';
-                        document.getElementById('holdingOverlay').style.display = 'flex'; 
-                    } else if(userData.status === 'premium') {
-                        document.getElementById('accountStatusText').innerText = "VIP PREMIUM";
-                        document.getElementById('accountStatusText').className = "text-gold font-bold font-cyber";
-                        document.getElementById('lockOverlay').style.display = 'none';
-                        document.getElementById('holdingOverlay').style.display = 'none'; 
-                        document.getElementById('upgradeBtnTop').style.display = 'none';
-                    }
-                }
-            });
-        }
-
-        // অ্যাডমিন প্যানেল চেক লিসেনার
-        database.ref('pending_payments').on('value', (snapshot) => {
-            const data = snapshot.val();
-            if(data) {
-                const keys = Object.keys(data);
-                if(keys.length > 0) {
-                    const firstRequest = data[keys[0]];
-                    document.getElementById('admUserEmail').innerText = firstRequest.email;
-                    document.getElementById('admUserTxid').innerText = firstRequest.txid || firstRequest.method;
-                    document.getElementById('adminPaymentAlert').classList.remove('hidden');
-                }
-            } else {
-                document.getElementById('adminPaymentAlert').classList.add('hidden');
-            }
-        });
-
-        function handleAuthSubmit(e) {
-            e.preventDefault();
-            currentLoggedUserEmail = document.getElementById('userEmailInput').value;
-            closeAuthModal();
-            document.getElementById('paymentModal').style.display = 'flex';
-        }
-
-        function submitTxid(e) {
-            e.preventDefault();
-            const txidHash = document.getElementById('txidInput').value;
-            const userKey = btoa(currentLoggedUserEmail);
-
-            database.ref('users/' + userKey).set({ email: currentLoggedUserEmail, status: 'pending', txid: txidHash });
-            database.ref('pending_payments/' + userKey).set({ email: currentLoggedUserEmail, txid: txidHash });
-
-            closePaymentModal();
-            alert("🔒 Payment TxID sent for manual verification. Please wait!");
-            listenToUserStatus(currentLoggedUserEmail);
-        }
-
-        function submitReferralUid(e) {
-            e.preventDefault();
-            const uidDetails = document.getElementById('userUidInput').value;
-            const userKey = btoa(currentLoggedUserEmail);
-
-            database.ref('users/' + userKey).set({ email: currentLoggedUserEmail, status: 'pending', method: "Referral UID: " + uidDetails });
-            database.ref('pending_payments/' + userKey).set({ email: currentLoggedUserEmail, txid: "UID Signup Check: " + uidDetails });
-
-            closePaymentModal();
-            alert("✅ Your Referral UID has been submitted! Admin will check and unlock your 1-Month Free VIP instantly.");
-            listenToUserStatus(currentLoggedUserEmail);
-        }
-
-        function approveUserVip() {
-            const emailInAlert = document.getElementById('admUserEmail').innerText;
-            const userKey = btoa(emailInAlert);
-            database.ref('users/' + userKey).update({ status: 'premium' });
-            database.ref('pending_payments/' + userKey).remove().then(() => { alert("✅ VIP Plan Approved Live!"); });
-        }
-
         function toggleTheme() {
             const html = document.documentElement;
-            const body = document.body;
-            const sidebar = document.getElementById('mainSidebar');
-            const heading = document.getElementById('mainHeading');
-            const feedTitle = document.getElementById('feedTitle');
-            const historyTitle = document.getElementById('historyTitle');
-            const chartPanelTitle = document.getElementById('chartPanelTitle');
-            const darkIcon = document.getElementById('darkIcon');
-            const lightIcon = document.getElementById('lightIcon');
-
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark'); html.classList.add('light');
-                body.classList.remove('bg-darkBg', 'text-gray-100'); body.classList.add('bg-lightBg', 'text-slate-900');
-                sidebar.classList.remove('bg-black/20', 'border-slate-950'); sidebar.classList.add('bg-white', 'border-slate-300');
-                heading.classList.remove('text-white'); heading.classList.add('text-slate-900');
-                feedTitle.classList.remove('text-slate-400'); feedTitle.classList.add('text-slate-600');
-                historyTitle.classList.remove('text-slate-400'); historyTitle.classList.add('text-slate-600');
-                chartPanelTitle.classList.remove('text-slate-400'); chartPanelTitle.classList.add('text-slate-700');
-                darkIcon.classList.add('hidden'); lightIcon.classList.remove('hidden');
-            } else {
-                html.classList.remove('light'); html.classList.add('dark');
-                body.classList.remove('bg-lightBg', 'text-slate-900'); body.classList.add('bg-darkBg', 'text-gray-100');
-                sidebar.classList.remove('bg-white', 'border-slate-300'); sidebar.classList.add('bg-black/20', 'border-slate-950');
-                heading.classList.remove('text-slate-900'); heading.classList.add('text-white');
-                feedTitle.classList.remove('text-slate-600'); feedTitle.classList.add('text-slate-400');
-                historyTitle.classList.remove('text-slate-600'); historyTitle.classList.add('text-slate-400');
-                chartPanelTitle.classList.remove('text-slate-700'); chartPanelTitle.classList.add('text-slate-400');
-                lightIcon.classList.add('hidden'); darkIcon.classList.remove('hidden');
-            }
-        }
-
-        function openAuthModal() { document.getElementById('authModal').style.display = 'flex'; }
-        function closeAuthModal() { document.getElementById('authModal').style.display = 'none'; }
-        function closePaymentModal() { document.getElementById('paymentModal').style.display = 'none'; }
-        function switchTab(t) {
-            if(t === 'binance') {
-                document.getElementById('btnBinance').className = "py-2 text-xs font-cyber font-bold rounded-lg bg-gold text-black";
-                document.getElementById('btnUsdt').className = "py-2 text-xs font-cyber font-bold rounded-lg text-slate-400";
-                document.getElementById('contentBinance').classList.remove('hidden'); document.getElementById('contentUsdt').classList.add('hidden');
-            } else {
-                document.getElementById('btnUsdt').className = "py-2 text-xs font-cyber font-bold rounded-lg bg-gold text-black";
-                document.getElementById('btnBinance').className = "py-2 text-xs font-cyber font-bold rounded-lg text-slate-400";
-                document.getElementById('contentUsdt').classList.remove('hidden'); document.getElementById('contentBinance').classList.add('hidden');
-            }
-        }
-        function handleNetworkChange() {
-            const net = document.getElementById('networkSelect').value;
-            document.getElementById('walletAddress').innerText = addresses[net];
+            html.classList.toggle('dark');
+            html.classList.toggle('light');
         }
     </script>
 </body>
