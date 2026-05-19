@@ -1,1 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS // Crypto AI Signal Dashboard</title>
+    <!-- Tailwind CSS for Premium Styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Orbitron & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        cyber: ['Orbitron', 'sans-serif'],
+                    },
+                    colors: {
+                        darkBg: '#060814',
+                        cardBg: 'rgba(13, 17, 39, 0.6)',
+                        neonGreen: '#00ffa3',
+                        neonBlue: '#00e5ff',
+                        neonRed: '#ff0055',
+                    },
+                    boxShadow: {
+                        neonGlow: '0 0 15px rgba(0, 255, 163, 0.2)',
+                        blueGlow: '0 0 15px rgba(0, 229, 255, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Glassmorphism & Cyberpunk Utilities */
+        .glass-panel {
+            background: rgba(13, 17, 39, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .neon-border-blue {
+            border-image: linear-gradient(to right, #00e5ff, transparent) 1;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #060814;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00e5ff;
+        }
+    </style>
+</head>
+<body class="bg-darkBg text-gray-100 font-sans antialiased min-h-screen selection:bg-neonBlue selection:text-darkBg">
 
+    <!-- Top Real-Time Ticker Widget -->
+    <div class="w-full h-10 border-b border-slate-900 bg-black/40 backdrop-blur-md overflow-hidden z-50 sticky top-0">
+        <!-- TradingView Widget BEGIN -->
+        <div class="tradingview-widget-container">
+            <div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+            {
+            "symbols": [
+                {"proName": "BINANCE:BTCUSDT", "description": "BTC/USDT"},
+                {"proName": "BINANCE:ETHUSDT", "description": "ETH/USDT"},
+                {"proName": "BINANCE:SOLUSDT", "description": "SOL/USDT"},
+                {"proName": "BINANCE:LINKUSDT", "description": "LINK/USDT"}
+            ],
+            "showSymbolLogo": true,
+            "colorTheme": "dark",
+            "isTransparent": true,
+            "displayMode": "adaptive",
+            "locale": "en"
+            }
+            </script>
+        </div>
+    </div>
+
+    <!-- Main Application Grid Layout -->
+    <div class="flex flex-col lg:flex-row min-h-[calc(100vh-2.5rem)]">
+        
+        <!-- Left Navigation Sidebar -->
+        <aside class="w-full lg:w-20 bg-black/30 border-r border-slate-950 flex lg:flex-col items-center justify-between p-4 lg:py-8 z-40">
+            <div class="flex lg:flex-col items-center gap-8 w-full justify-between lg:justify-start">
+                <!-- Branding Logo -->
+                <div class="text-neonBlue font-cyber text-2xl font-black tracking-widest cursor-pointer group">
+                    N<span class="text-neonGreen group-hover:animate-pulse">X</span>
+                </div>
+                <!-- Navigation Items -->
+                <nav class="flex lg:flex-col gap-6 text-slate-400">
+                    <button class="w-12 h-12 rounded-xl flex items-center justify-center text-neonBlue bg-neonBlue/10 border border-neonBlue/20 shadow-blueGlow transition-all"><i class="fa-solid fa-chart-line text-lg"></i></button>
+                    <button class="w-12 h-12 rounded-xl flex items-center justify-center hover:text-neonGreen hover:bg-slate-900/50 transition-all"><i class="fa-solid fa-bolt text-lg"></i></button>
+                    <button class="w-12 h-12 rounded-xl flex items-center justify-center hover:text-neonBlue hover:bg-slate-900/50 transition-all"><i class="fa-solid fa-brain text-lg"></i></button>
+                    <button class="w-12 h-12 rounded-xl flex items-center justify-center hover:text-slate-200 hover:bg-slate-900/50 transition-all"><i class="fa-solid fa-wallet text-lg"></i></button>
+                </nav>
+            </div>
+            <!-- Profile Info (Hidden on small screens) -->
+            <div class="hidden lg:block">
+                <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center cursor-pointer text-neonGreen">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace Contents -->
+        <main class="flex-1 p-4 lg:p-6 space-y-6 overflow-y-auto">
+            
+            <!-- Dashboard Header Section -->
+            <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-900 pb-4">
+                <div>
+                    <h1 class="text-2xl lg:text-3xl font-cyber font-bold uppercase tracking-wider text-white">
+                        Signal Matrix <span class="text-xs font-sans tracking-widest text-neonGreen border border-neonGreen/30 px-2 py-0.5 rounded ml-2 uppercase animate-pulse">LIVE FEED</span>
+                    </h1>
+                    <p class="text-slate-400 text-xs lg:text-sm mt-1">AI-driven predictive algorithmic execution dashboard.</p>
+                </div>
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <!-- Global Stats Widget -->
+                    <div class="glass-panel px-4 py-2 rounded-xl flex items-center gap-4 text-xs w-full sm:w-auto justify-around">
+                        <div><span class="text-slate-500">AI Win Rate:</span> <span class="font-cyber text-neonGreen font-bold">84.2%</span></div>
+                        <div class="h-4 w-px bg-slate-800"></div>
+                        <div><span class="text-slate-500">Active Signals:</span> <span class="font-cyber text-neonBlue font-bold">14</span></div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Grid Grid Engine (Responsive Layout) -->
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                
+                <!-- Left Column & Center Column: Charts and AI Insight -->
+                <div class="xl:col-span-2 space-y-6">
+                    
+                    <!-- Chart Section Wrapper -->
+                    <div class="glass-panel rounded-2xl p-4 relative overflow-hidden group">
+                        <div class="absolute top-0 left-0 w-32 h-1 bg-gradient-to-right from-neonBlue to-transparent"></div>
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center gap-3">
+                                <span class="p-2 bg-slate-900 rounded-lg text-neonBlue text-sm font-cyber font-bold">BTCUSDT</span>
+                                <span class="text-xs text-slate-400"><i class="fa-solid fa-clock mr-1"></i> 15M Timeframe</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <span class="w-2 h-2 rounded-full bg-neonGreen inline-block my-auto animate-ping"></span>
+                                <span class="text-xs text-neonGreen font-cyber uppercase tracking-widest font-semibold">Feed Connected</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Embedded Live Chart Engine (TradingView HTML5 Frame) -->
+                        <div class="w-full h-[350px] lg:h-[480px] rounded-xl overflow-hidden bg-black/40 border border-slate-900">
+                            <div id="tradingview_chart" class="w-full h-full"></div>
+                            <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                            <script type="text/javascript">
+                            new TradingView.widget({
+                                "width": "100%",
+                                "height": "100%",
+                                "symbol": "BINANCE:BTCUSDT",
+                                "interval": "15",
+                                "timezone": "Etc/UTC",
+                                "theme": "dark",
+                                "style": "1",
+                                "locale": "en",
+                                "toolbar_bg": "#060814",
+                                "enable_publishing": false,
+                                "hide_side_toolbar": false,
+                                "allow_symbol_change": true,
+                                "container_id": "tradingview_chart",
+                                "studies": [
+                                    "RSI@tv-basicstudies",
+                                    "MASimple@tv-basicstudies"
+                                ]
+                            });
+                            </script>
+                        </div>
+                    </div>
+
+                    <!-- AI Analytics Engine Feed -->
+                    <div class="glass-panel rounded-2xl p-5 relative overflow-hidden">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-8 h-8 rounded-lg bg-neonBlue/10 flex items-center justify-center text-neonBlue">
+                                <i class="fa-solid fa-brain"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-cyber text-sm uppercase font-bold tracking-wider">Predictive AI Cluster Analytics</h3>
+                                <p class="text-xs text-slate-500">Neural Network Model Alpha-V4 output log</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Metric 1 -->
+                            <div class="bg-slate-950/40 p-4 rounded-xl border border-slate-900/60">
+                                <div class="text-xs text-slate-400 mb-1">Sentiment Divergence</div>
+                                <div class="text-xl font-cyber font-bold text-neonGreen">92.4% BULLISH</div>
+                                <div class="w-full bg-slate-900 h-1.5 rounded-full mt-2 overflow-hidden">
+                                    <div class="bg-neonGreen h-full rounded-full" style="width: 92%"></div>
+                                </div>
+                            </div>
+                            <!-- Metric 2 -->
+                            <div class="bg-slate-950/40 p-4 rounded-xl border border-slate-900/60">
+                                <div class="text-xs text-slate-400 mb-1">Volatility Compression</div>
+                                <div class="text-xl font-cyber font-bold text-neonBlue">SQUEEZE ALERT</div>
+                                <div class="w-full bg-slate-900 h-1.5 rounded-full mt-2 overflow-hidden">
+                                    <div class="bg-neonBlue h-full rounded-full" style="width: 78%"></div>
+                                </div>
+                            </div>
+                            <!-- Metric 3 -->
+                            <div class="bg-slate-950/40 p-4 rounded-xl border border-slate-900/60">
+                                <div class="text-xs text-slate-400 mb-1">Liquidations Pool Risk</div>
+                                <div class="text-xl font-cyber font-bold text-white">LOW RISK</div>
+                                <div class="w-full bg-slate-900 h-1.5 rounded-full mt-2 overflow-hidden">
+                                    <div class="bg-white/40 h-full rounded-full" style="width: 25%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Active Signal Streams & Cards -->
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center px-1">
+                        <h2 class="font-cyber text-sm uppercase font-bold tracking-wider text-slate-300">
+                            <i class="fa-solid fa-satellite-dish text-neonBlue mr-2"></i>Active Signal Feeds
+                        </h2>
+                        <span class="text-xs text-slate-500 cursor-pointer hover:text-neonBlue transition-all">Filter <i class="fa-solid fa-sliders ml-1"></i></span>
+                    </div>
+
+                    <!-- SIGNAL CARD 1: LONG NEON GREEN ACCENT -->
+                    <div class="glass-panel rounded-2xl p-5 border-l-4 border-l-neonGreen relative group hover:bg-slate-900/40 transition-all duration-300">
+                        <!-- Top Header info -->
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-cyber font-bold text-lg text-white tracking-wide">SOLUSDT</span>
+                                    <span class="text-xs font-cyber bg-neonGreen/10 text-neonGreen px-2 py-0.5 rounded border border-neonGreen/20 font-bold uppercase">LONG [5X]</span>
+                                </div>
+                                <p class="text-[11px] text-slate-500 mt-0.5">Discovered by AI Node-07 • 4m ago</p>
+                            </div>
+                            <span class="text-xs font-cyber font-bold text-neonGreen bg-neonGreen/5 px-2 py-1 rounded shadow-neonGlow">CONFIDENCE: 94%</span>
+                        </div>
+                        
+                        <!-- Matrix Target Stats -->
+                        <div class="grid grid-cols-3 gap-2 text-center bg-black/30 p-3 rounded-xl border border-slate-900 mb-4">
+                            <div>
+                                <span class="block text-[10px] text-slate-500 uppercase tracking-wider">Entry Target</span>
+                                <span class="font-cyber font-bold text-xs text-slate-200">142.50</span>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] text-slate-500 uppercase tracking-wider">Stop Loss</span>
+                                <span class="font-cyber font-bold text-xs text-neonRed">139.10</span>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] text-slate-500 uppercase tracking-wider">Take Profit</span>
+                                <span class="font-cyber font-bold text-xs text-neonGreen">154.00</span>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Action button -->
+                        <div class="flex justify-between items-center gap-3">
+                            <div class="text-[11px] text-slate-400">
+                                Est. PNL: <span class="text-neonGreen font-bold font-cyber">+24.5%</span>
+                            </div>
+                            <button class="bg-neonGreen text-darkBg text-xs font-cyber font-bold px-4 py-2 rounded-xl transition-all hover:bg-white hover:scale-105 shadow-neonGlow flex items-center gap-2">
+                                EXECUTE SIGNAL <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- SIGNAL CARD 2: SHORT NEON RED ACCENT -->
+                    <div class="glass-panel rounded-2xl p-5 border-l-4 border-l-neonRed relative group hover:bg-slate-900/40 transition-all duration-300">
+                        <!-- Top Header info -->
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-cyber font-bold text-lg text-white tracking-wide">ETHUSDT</span>
+                                    <span class="text-xs font-cyber bg-neonRed/10 text-neonRed px-2 py-0.5 rounded border border-neonRed/20 font-bold uppercase">SHORT [10X]</span>
+                                </div>
+                                <p class="text-[11px] text-slate-500 mt-0.5">Discovered by AI Node-02 • 18m ago</p>
+                            </div>
+                            <span class="text-xs font-cyber font-bold text-neonRed bg-neonRed/5 px-2 py-1 rounded">CONFIDENCE: 81%</span>
+                        </div>
+                        
+                        <!-- Matrix Target Stats -->
+                        <div class="grid grid-cols-3 gap-2 text-center bg-black/30 p-3 rounded-xl border border-slate-900 mb-4">
+                            <div>
+                                <span class="block text-[10px] text-slate-500 uppercase tracking-wider">Entry Target</span>
+                                <span class="font-cyber font-bold text-xs text-slate-200">3,450.00</span>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] text-slate-500 uppercase tracking-wider">Stop Loss</span>
+                                <span class="font-cyber font-bold text-xs text-neonRed">3,510.00</span>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] text-slate-500 uppercase tracking-wider">Take Profit</span>
+                                <span class="font-cyber font-bold text-xs text-neonGreen">3,200.00</span>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Action button -->
+                        <div class="flex justify-between items-center gap-3">
+                            <div class="text-[11px] text-slate-400">
+                                Est. PNL: <span class="text-neonGreen font-bold font-cyber">+72.1%</span>
+                            </div>
+                            <button class="bg-slate-900 text-neonRed border border-neonRed/30 text-xs font-cyber font-bold px-4 py-2 rounded-xl transition-all hover:bg-neonRed hover:text-white hover:scale-105 flex items-center gap-2">
+                                EXECUTE SIGNAL <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- SIGNAL CARD 3: LONG NEON BLUE ACCENT -->
+                    <div class="glass-panel rounded-2xl p-5 border-l-4 border-l-neonBlue relative group hover:bg-slate-900/40 transition-all duration-300">
+                        <!-- Top Header info -->
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-cyber font-bold text-lg text-white tracking-wide">LINKUSDT</span>
+                                    <span class="text-xs font-cyber bg-neonBlue/10 text-neonBlue px-2 py-0.5 rounded border border-neonBlue/20 font-bold uppercase">LONG [3X]</span>
+                                </div>
+                                <p class="text-[11px] text-slate-500 mt-0.5">Discovered by AI Node-11 • 42m ago</p>
+                            </div>
+                            <span class="text-xs font-cyber font-bold text-neonBlue bg-neonBlue/5 px-2 py-1 rounded shadow-blueGlow">CONFIDENCE: 89%</span>
+                        </div>
+                        
+                        <!-- Matrix Target Stats -->
+                        <div class="grid grid-cols-3 gap-2 text-center bg-black/30 p-3 rounded-xl border border-slate-900 mb-4">
+                            <div>
+                                <span class="block text-[10px] text-slate-500 uppercase tracking-wider">Entry Target</span>
+                                <span class="font-cyber font-bold text-xs text-slate-200">16.25</span>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] text-slate-500 uppercase tracking-wider">Stop Loss</span>
+                                <span class="font-cyber font-bold text-xs text-neonRed">15.80</span>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] text-slate-500 uppercase tracking-wider">Take Profit</span>
+                                <span class="font-cyber font-bold text-xs text-neonGreen">18.50</span>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Action button -->
+                        <div class="flex justify-between items-center gap-3">
+                            <div class="text-[11px] text-slate-400">
+                                Est. PNL: <span class="text-neonGreen font-bold font-cyber">+41.5%</span>
+                            </div>
+                            <button class="bg-neonBlue text-darkBg text-xs font-cyber font-bold px-4 py-2 rounded-xl transition-all hover:bg-white hover:scale-105 shadow-blueGlow flex items-center gap-2">
+                                EXECUTE SIGNAL <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+</body>
+</html>
