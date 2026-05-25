@@ -1,0 +1,137 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>Admin Login</title>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial,sans-serif;
+    }
+
+    body{
+      background:#0f172a;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+    }
+
+    .login-box{
+      width:350px;
+      background:#1e293b;
+      padding:40px;
+      border-radius:20px;
+      text-align:center;
+      box-shadow:0 0 20px rgba(0,0,0,0.4);
+    }
+
+    .login-box h2{
+      color:#38bdf8;
+      margin-bottom:25px;
+    }
+
+    .login-box input{
+      width:100%;
+      padding:14px;
+      border:none;
+      border-radius:12px;
+      margin-bottom:20px;
+      outline:none;
+      font-size:16px;
+    }
+
+    .login-box button{
+      width:100%;
+      padding:14px;
+      border:none;
+      border-radius:12px;
+      background:#38bdf8;
+      color:white;
+      font-size:16px;
+      cursor:pointer;
+    }
+
+    .login-box button:hover{
+      background:#0ea5e9;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="login-box">
+
+    <h2>Admin Login</h2>
+
+    <input
+      type="password"
+      id="password"
+      placeholder="Enter Password"
+      onkeypress="handleEnter(event)"
+    >
+
+    <button onclick="login()">
+      Login
+    </button>
+
+  </div>
+
+
+
+  <script>
+
+    function login(){
+
+      let password =
+      document.getElementById("password").value;
+
+      if(password === "Signal1984#"){
+
+        localStorage.setItem(
+          "adminLoggedIn",
+          "true"
+        );
+
+        window.location.href =
+        "dashboard.html";
+
+      }else{
+
+        alert("Wrong Password");
+
+      }
+
+    }
+
+
+
+    function handleEnter(event){
+
+      if(event.key === "Enter"){
+
+        login();
+
+      }
+
+    }
+
+  </script>
+
+</body>
+</html>
+```
+
