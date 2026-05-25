@@ -1,20 +1,31 @@
-<h2>Signals</h2>
+<!DOCTYPE html>
+<html lang="en">
 
-<div id="data"></div>
+<head>
 
-<script>
-fetch("http://localhost:5000/api/signals")
-.then(r=>r.json())
-.then(data=>{
-  data.forEach(s=>{
-    document.getElementById("data").innerHTML += `
-      <div style="border:1px solid #ccc;padding:10px;margin:10px">
-        <h3>${s.pair}</h3>
-        <p>${s.type}</p>
-        <p>Entry: ${s.entry}</p>
-        <a href="details.html?id=${s.id}">View</a>
-      </div>
-    `;
-  });
-});
-</script>
+<link rel="stylesheet" href="style.css">
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Signals</title>
+
+</head>
+
+<body>
+
+<h1>Trading Signals</h1>
+
+<a href="index.html">Home</a>
+
+<a href="dashboard.html">Dashboard</a>
+
+<div id="signals"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<script src="index.js"></script>
+
+</body>
+</html>
