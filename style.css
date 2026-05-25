@@ -1,36 +1,32 @@
-body {
-  margin: 0;
-  font-family: Arial;
-  background: #f4f6f9;
+body{
+    margin:0;
+    padding:0;
+    background:#0f172a;
+    color:white;
+    font-family:Arial;
 }
 
-.sidebar {
-  width: 260px;
-  background: #0f172a;
-  color: white;
-  height: 100vh;
-  position: fixed;
-  padding: 20px;
+nav{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px 30px;
+    background:#111827;
 }
 
-.sidebar a {
-  display: block;
-  color: #cbd5e1;
-  padding: 10px;
-  text-decoration: none;
+nav h1{
+    color:#00ff99;
 }
 
-.sidebar a:hover {
-  background: #1e293b;
+nav a{
+    color:white;
+    text-decoration:none;
+    margin-left:15px;
 }
 
-.main {
-  margin-left: 260px;
-  padding: 20px;
-}
-
-.card {
-  background: white;
-  padding: 15px;
-  border-radius: 10px;
+.card{
+    background:#1e293b;
+    padding:20px;
+    border-radius:15px;
+    margin:20px;
 }
