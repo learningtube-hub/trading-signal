@@ -1,7 +1,118 @@
-<nav>
-  <a href="index.html">Home</a>
-  <a href="profile.html">Profile</a>
-  <a href="settings.html">Settings</a>
-</nav>
+<!DOCTYPE html>
+<html lang="en">
 
-<h2>Dashboard</h2>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trading Admin Panel</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+  <!-- LOGIN PROTECTION -->
+  <script>
+    const isLoggedIn = localStorage.getItem("adminLoggedIn");
+
+    if(!isLoggedIn || isLoggedIn !== "true"){
+      window.location.replace("admin.html");
+    }
+  </script>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>Trading Admin</h2>
+    <ul>
+      <li>Dashboard</li>
+      <li>Signals</li>
+      <li>Users</li>
+      <li>Payments</li>
+      <li>Settings</li>
+    </ul>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <h1>Admin Dashboard</h1>
+
+      <div style="margin-left:auto; display:flex; gap:10px;">
+        <input type="text" placeholder="Search...">
+
+        <button onclick="logout()" style="padding:8px 12px; cursor:pointer;">
+          Logout
+        </button>
+      </div>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="cards">
+      <div class="card">
+        <h3>Total Signals</h3>
+        <p>120</p>
+      </div>
+
+      <div class="card">
+        <h3>Premium Users</h3>
+        <p>45</p>
+      </div>
+
+      <div class="card">
+        <h3>Win Rate</h3>
+        <p>78%</p>
+      </div>
+    </div>
+
+    <!-- SIGNAL FORM -->
+    <div class="signal-form">
+      <h2>Add New Signal</h2>
+
+      <input id="pair" placeholder="Pair">
+
+      <select id="type">
+        <option>BUY</option>
+        <option>SELL</option>
+      </select>
+
+      <input id="entry" placeholder="Entry Price">
+      <input id="strength" placeholder="Strength">
+      <input id="target" placeholder="Take Profit">
+      <input id="stoploss" placeholder="Stop Loss">
+
+      <button onclick="createSignal()">Add Signal</button>
+    </div>
+
+    <!-- SIGNAL TABLE -->
+    <div class="signal-table">
+      <h2>Live Signals</h2>
+      <div class="dashboard-content"></div>
+    </div>
+
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="index.js"></script>
+
+  <!-- ✅ ONLY FIXED PART (IMPORTANT) -->
+  <script>
+    function logout(){
+
+      console.log("logout clicked");
+
+      // clear login state
+      localStorage.removeItem("adminLoggedIn");
+
+      // force redirect (clean + no back issue)
+       window.location.href = "admin.html";
+
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<script src="supabase.js"></script>
+
+</body>
+</html>
