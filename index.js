@@ -236,7 +236,6 @@ function realtimeSignals() {
     .subscribe();
 }
 
-
 // =========================
 // INIT
 // =========================
@@ -245,7 +244,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   loadSignals();
 
-  // latest signal load on refresh
+  // latest LIVE signal
   const { data } = await supabaseClient
     .from("signals")
     .select("*")
@@ -253,14 +252,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     .limit(1);
 
   if (data && data.length > 0) {
+
+    // LIVE CARD
     updateLiveCard(data[0]);
+
+    // PREVIOUS SIGNALS HISTORY
+    const { data: historySignals } = await supabaseClient
+      .from("signals")
+      .select("*")
+      .order("id", { ascending: false })
+      .range(1, 10);
+
+    if (historySignals) {
+
+      historySignals.forEach(signal => {
+        renderLatestSignal(signal);
+      });
+
+    }
+
   }
 
   realtimeSignals();
 
 });
-
-
 // =========================
 // LOGOUT
 // =========================
