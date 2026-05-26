@@ -233,8 +233,8 @@
 
 </div>
 
-                <!-- PAST PERFORMANCE HISTORY TABLE -->
-                <section class="glass-panel rounded-2xl p-5 mt-6 transition-colors duration-300">
+    <!-- RECENT SIGNAL HISTORY -->
+              <section class="glass-panel rounded-2xl p-5 mt-6 transition-colors duration-300 w-full max-w-6xl mx-auto xl:col-span-12">                 
                     <div class="flex justify-between items-center mb-4">
                         <h3 id="historyTitle" class="font-cyber text-xs uppercase tracking-wider text-slate-400 dark:text-slate-400 light:text-slate-600"><i class="fa-solid fa-clock-history text-gold light:text-yellow-600 mr-2"></i> Recent Signal History</h3>
                         <span class="text-[10px] font-cyber bg-neonGreen/10 text-neonGreen light:text-green-700 px-2 py-1 rounded font-bold">UPDATED REAL-TIME</span>
@@ -242,36 +242,16 @@
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs font-mono border-collapse text-slate-800 dark:text-slate-200">
                             <thead>
-                                <tr class="border-b border-slate-800 dark:border-slate-800 light:border-slate-200 text-slate-400 light:text-slate-500 text-[11px]">
-                                    <th class="pb-3 font-cyber">COIN/PAIR</th>
-                                    <th class="pb-3 font-cyber">TYPE</th>
-                                    <th class="pb-3 font-cyber">ENTRY</th>
-                                    <th class="pb-3 font-cyber">TARGET</th>
-                                    <th class="pb-3 font-cyber">STATUS</th>
-                                </tr>
-                            </thead>
-                            <tbody id="historyTableBody" class="divide-y divide-slate-900/40 dark:divide-slate-900/40 light:divide-slate-200/40">
-                                <tr class="hover:bg-black/10 dark:hover:bg-black/10 light:hover:bg-slate-100">
-                                    <td class="py-3 font-bold text-slate-900 dark:text-white">ETHUSDT</td>
-                                    <td class="py-3 text-neonRed light:text-red-600 font-bold">SHORT</td>
-                                    <td class="py-3">$3,420.00</td>
-                                    <td class="py-3">$3,210.00</td>
-                                    <td class="py-3 text-neonGreen light:text-green-600 font-bold"><i class="fa-solid fa-circle-check mr-1"></i> Target Hit (+6.1%)</td>
-                                </tr>
-                                <tr class="hover:bg-black/10 dark:hover:bg-black/10 light:hover:bg-slate-100">
-                                    <td class="py-3 font-bold text-slate-900 dark:text-white">SOLUSDT</td>
-                                    <td class="py-3 text-neonGreen light:text-green-600 font-bold">LONG</td>
-                                    <td class="py-3">$172.50</td>
-                                    <td class="py-3">$185.00</td>
-                                    <td class="py-3 text-neonGreen light:text-green-600 font-bold"><i class="fa-solid fa-circle-check mr-1"></i> Target Hit (+7.2%)</td>
-                                </tr>
-                            </tbody>
+                                <tbody id="historyTableBody"
+                    class="divide-y divide-slate-900/40 dark:divide-slate-900/40 light:divide-slate-200/40">
+
+                   </tbody>
                         </table>
                     </div>
                 </section>
-            </div>
+           <!-- </div> -->
 
-            <!-- FOOTER SECTION (Legal Links) -->
+           <!-- FOOTER SECTION (Legal Links) -->
             <footer class="mt-12 pt-6 border-t border-slate-950 dark:border-slate-950 light:border-slate-200 text-center space-y-3">
                 <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-[11px] font-cyber tracking-wider text-slate-400 light:text-slate-500">
                     <button onclick="openLegalModal('privacy')" class="hover:text-neonBlue dark:hover:text-neonBlue light:hover:text-blue-600 transition-colors">PRIVACY POLICY</button>
