@@ -8,11 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
     
-    <!-- Firebase SDK (Real-time Sync) -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-
-    <script>
+     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
@@ -156,81 +152,86 @@
                     </div>
 
                     <!-- Live Signals (Right 5 Cols) -->
-                    <div class="xl:col-span-5 space-y-4">
-                        <h2 id="feedTitle" class="font-cyber text-xs uppercase tracking-wider text-slate-400 dark:text-slate-400 light:text-slate-600 px-1"><i class="fa-solid fa-satellite-dish text-neonBlue light:text-blue-600 mr-2 animate-pulse"></i> Live Signal Feed</h2>
+<div class="xl:col-span-5 space-y-4">
 
-                        <!-- LIVE SIGNAL CARD -->
-                     <div id="liveFeedCard" class="glass-panel glow-box-open rounded-2xl p-5 relative">
+    <h2 id="feedTitle"
+        class="font-cyber text-xs uppercase tracking-wider text-slate-400 dark:text-slate-400 light:text-slate-600 px-1">
+        
+        <i class="fa-solid fa-satellite-dish text-neonBlue light:text-blue-600 mr-2 animate-pulse"></i>
+        Live Signal Feed
 
-                         <div class="flex justify-between items-start mb-3">
+    </h2>
 
-                           <span class="font-cyber font-bold text-lg text-slate-900 dark:text-white">
+    <!-- AUTO LIVE SIGNAL -->
+    <div id="liveFeedCard"></div>
 
-                                         WAITING SIGNAL...
+    <!-- PREMIUM SIGNAL CARD -->
+    <div id="premiumSignalCard"
+        class="glass-panel rounded-2xl p-5 relative overflow-hidden h-[180px]">
 
-                                  <span class="text-[10px] font-cyber bg-yellow-500/10 text-yellow-500 px-2 py-0.5 rounded ml-2 font-bold uppercase">
-                                                     LIVE
-                                             </span>
+        <div id="lockOverlay"
+            class="absolute inset-0 blur-lock z-10 flex flex-col items-center justify-center p-4 text-center">
 
-                                       </span>
+            <div class="w-10 h-10 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center text-gold light:text-yellow-600 mb-2 shadow-goldGlow">
+                <i class="fa-solid fa-lock text-sm"></i>
+            </div>
 
-                      <span class="text-[11px] font-mono text-slate-400 dark:text-slate-400 light:text-slate-600 bg-black/20 dark:bg-black/20 light:bg-slate-100 px-2 py-0.5 rounded border border-slate-800 dark:border-slate-800 light:border-slate-300">
+            <h4 class="font-cyber text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+                Premium AI Signal Locked
+            </h4>
 
-             <i class="fa-regular fa-clock mr-1 text-neonBlue light:text-blue-600"></i>
+            <button onclick="openAuthModal()"
+                class="mt-3 bg-gradient-to-r from-gold to-yellow-500 text-black px-4 py-1.5 rounded-xl font-cyber font-bold text-xs shadow-goldGlow hover:scale-105 transition-all">
 
-                        REALTIME </span>
+                UNLOCK INSTANTLY
 
-                   </div>
+            </button>
+        </div>
 
-                    <div class="space-y-2 bg-black/30 dark:bg-black/30 light:bg-slate-100 p-3 rounded-xl text-xs font-mono text-slate-800 dark:text-slate-200">
+        <div>
+            <div class="flex justify-between items-start mb-3">
 
-                         <div class="flex justify-between border-b border-slate-900/10 dark:border-white/5 pb-1">
-            <span>ENTRY:</span>
-            <span class="font-bold">---</span>
-                    </div>
+                <span class="font-cyber font-bold text-lg text-gold light:text-yellow-600">
+                    SOLUSDT
 
-                       <div class="flex justify-between border-b border-slate-900/10 dark:border-white/5 pb-1">
-                        <span>STOP LOSS:</span>
-                          <span class="font-bold text-neonRed light:text-red-600">---</span>
-                       </div>
+                    <span class="text-[10px] bg-gold/20 text-gold light:bg-yellow-600/10 light:text-yellow-700 px-2 py-0.5 rounded ml-2 font-bold">
+                        VIP SHORT
+                    </span>
+                </span>
 
-                   <div class="flex justify-between">
-                       <span>TAKE PROFIT:</span>
-                    <span class="font-bold text-neonGreen light:text-green-600">---</span>
-                          </div>
+                <span
+                    class="text-[11px] font-mono text-gold light:text-yellow-600 bg-black/20 dark:bg-black/20 light:bg-slate-100 px-2 py-0.5 rounded border border-slate-800 dark:border-slate-800 light:border-slate-300">
 
-                      </div>
+                    <i class="fa-regular fa-clock mr-1"></i>
+                    03h 12m
 
-                   </div>
+                </span>
+            </div>
 
-                        <!-- PREMIUM SIGNAL CARD -->
-                        <div id="premiumSignalCard" class="glass-panel rounded-2xl p-5 relative overflow-hidden h-[180px]">
-                            <div id="lockOverlay" class="absolute inset-0 blur-lock z-10 flex flex-col items-center justify-center p-4 text-center">
-                                <div class="w-10 h-10 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center text-gold light:text-yellow-600 mb-2 shadow-goldGlow"><i class="fa-solid fa-lock text-sm"></i></div>
-                                <h4 class="font-cyber text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">Premium AI Signal Locked</h4>
-                                <button onclick="openAuthModal()" class="mt-3 bg-gradient-to-r from-gold to-yellow-500 text-black px-4 py-1.5 rounded-xl font-cyber font-bold text-xs shadow-goldGlow hover:scale-105 transition-all">UNLOCK INSTANTLY</button>
-                            </div>
+            <div
+                class="space-y-2 bg-black/40 dark:bg-black/40 light:bg-slate-100 p-3 rounded-xl text-xs font-mono text-slate-800 dark:text-slate-200">
 
-                            <div id="holdingOverlay" class="absolute inset-0 blur-lock z-10 hidden flex flex-col items-center justify-center p-4 text-center bg-black/95 dark:bg-black/95 light:bg-white/95">
-                                <div class="w-10 h-10 rounded-full bg-neonBlue/10 border border-neonBlue/30 flex items-center justify-center text-neonBlue mb-2 animate-spin shadow-blueGlow"><i class="fa-solid fa-spinner text-sm"></i></div>
-                                <h4 class="font-cyber text-xs font-bold text-neonBlue light:text-blue-600 uppercase tracking-wider">Verification Pending</h4>
-                                <p class="text-[11px] text-slate-400 light:text-slate-600 mt-1 max-w-[240px]"> We are manually verifying your submission. Your VIP card will unlock here instantly.</p>
-                            </div>
-
-                            <div>
-                                <div class="flex justify-between items-start mb-3">
-                                    <span class="font-cyber font-bold text-lg text-gold light:text-yellow-600">SOLUSDT <span class="text-[10px] bg-gold/20 text-gold light:bg-yellow-600/10 light:text-yellow-700 px-2 py-0.5 rounded ml-2 font-bold">VIP SHORT</span></span>
-                                    <span class="text-[11px] font-mono text-gold light:text-yellow-600 bg-black/20 dark:bg-black/20 light:bg-slate-100 px-2 py-0.5 rounded border border-slate-800 dark:border-slate-800 light:border-slate-300"><i class="fa-regular fa-clock mr-1"></i><span id="premTimer">03h 12m</span></span>
-                                </div>
-                                <div class="space-y-2 bg-black/40 dark:bg-black/40 light:bg-slate-100 p-3 rounded-xl text-xs font-mono text-slate-800 dark:text-slate-200">
-                                    <div class="flex justify-between border-b border-slate-900/10 dark:border-white/5 pb-1"><span>ENTRY:</span><span class="font-bold">182.40</span></div>
-                                    <div class="flex justify-between border-b border-slate-900/10 dark:border-white/5 pb-1"><span>STOP LOSS:</span><span class="font-bold text-neonRed light:text-red-600">186.00</span></div>
-                                    <div class="flex justify-between"><span>TAKE PROFIT:</span><span class="font-bold text-neonGreen light:text-green-600">174.00</span></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="flex justify-between border-b border-slate-900/10 dark:border-white/5 pb-1">
+                    <span>ENTRY:</span>
+                    <span class="font-bold">182.40</span>
                 </div>
+
+                <div class="flex justify-between border-b border-slate-900/10 dark:border-white/5 pb-1">
+                    <span>STOP LOSS:</span>
+                    <span class="font-bold text-neonRed light:text-red-600">186.00</span>
+                </div>
+
+                <div class="flex justify-between">
+                    <span>TAKE PROFIT:</span>
+                    <span class="font-bold text-neonGreen light:text-green-600">174.00</span>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
 
                 <!-- PAST PERFORMANCE HISTORY TABLE -->
                 <section class="glass-panel rounded-2xl p-5 mt-6 transition-colors duration-300">
@@ -378,11 +379,6 @@
     <script>
         const addresses = { trc20: "TYG92hskf8Hksld9283Kshdf9283ksjdhf", bep20: "0x71C7656ec7ab88b098defB751B7401B5f6d59751" };
         
-        // Firebase Setup
-        const firebaseConfig = { apiKey: "AIzaSyKey", authDomain: "proj.firebaseapp.com", databaseURL: "https://your-project.firebaseio.com/", projectId: "proj" };
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-        const database = firebase.database();
-
         let currentLoggedUserEmail = "";
 
         const legalContents = {
@@ -414,40 +410,83 @@
         }
         function closeLegalModal() { document.getElementById('legalModal').style.display = 'none'; }
 
-        // রিয়েল-টাইম এনালাইসিস ইমেজ লিসেনার
-        database.ref('analysis_image').on('value', (snapshot) => {
-            const imageUrl = snapshot.val();
-            if (imageUrl) { document.getElementById('liveAnalysisImage').src = imageUrl; }
-        });
+        // =========================
+// ANALYSIS IMAGE FUNCTIONS
+// =========================
 
-        function zoomAnalysisImage() {
-            const currentSrc = document.getElementById('liveAnalysisImage').src;
-            document.getElementById('lightboxImg').src = currentSrc;
-            document.getElementById('imageLightbox').style.display = 'flex';
-        }
-        function closeLightbox() { document.getElementById('imageLightbox').style.display = 'none'; }
+function zoomAnalysisImage() {
+    const currentSrc =
+    document.getElementById('liveAnalysisImage').src;
 
-        // রিয়েল-টাইম ইউজার স্ট্যাটাস ট্র্যাকিং
-        function listenToUserStatus(email) {
-            const userKey = btoa(email);
-            database.ref('users/' + userKey).on('value', (snapshot) => {
-                const userData = snapshot.val();
-                if(userData) {
-                    if(userData.status === 'pending') {
-                        document.getElementById('accountStatusText').innerText = "PENDING APPROVAL";
-                        document.getElementById('accountStatusText').className = "text-amber-500 font-bold font-cyber animate-pulse";
-                        document.getElementById('lockOverlay').style.display = 'none';
-                        document.getElementById('holdingOverlay').style.display = 'flex'; 
-                    } else if(userData.status === 'premium') {
-                        document.getElementById('accountStatusText').innerText = "VIP PREMIUM";
-                        document.getElementById('accountStatusText').className = "text-gold light:text-yellow-600 font-bold font-cyber";
-                        document.getElementById('lockOverlay').style.display = 'none';
-                        document.getElementById('holdingOverlay').style.display = 'none'; 
-                        document.getElementById('upgradeBtnTop').style.display = 'none';
-                    }
-                }
-            });
+    document.getElementById('lightboxImg').src =
+    currentSrc;
+
+    document.getElementById('imageLightbox').style.display =
+    'flex';
+}
+
+function closeLightbox() {
+    document.getElementById('imageLightbox').style.display =
+    'none';
+}
+
+
+// =========================
+// FIREBASE USER STATUS
+// TEMP DISABLED
+// =========================
+
+/*
+
+function listenToUserStatus(email) {
+
+    const userKey = btoa(email);
+
+    database.ref('users/' + userKey).on('value', (snapshot) => {
+
+        const userData = snapshot.val();
+
+        if(userData) {
+
+            if(userData.status === 'pending') {
+
+                document.getElementById('accountStatusText').innerText =
+                "PENDING APPROVAL";
+
+                document.getElementById('accountStatusText').className =
+                "text-amber-500 font-bold font-cyber animate-pulse";
+
+                document.getElementById('lockOverlay').style.display =
+                'none';
+
+                document.getElementById('holdingOverlay').style.display =
+                'flex';
+
+            }
+
+            else if(userData.status === 'premium') {
+
+                document.getElementById('accountStatusText').innerText =
+                "VIP PREMIUM";
+
+                document.getElementById('accountStatusText').className =
+                "text-gold light:text-yellow-600 font-bold font-cyber";
+
+                document.getElementById('lockOverlay').style.display =
+                'none';
+
+                document.getElementById('holdingOverlay').style.display =
+                'none';
+
+                document.getElementById('upgradeBtnTop').style.display =
+                'none';
+
+            }
         }
+    });
+}
+
+*/
 
         // অ্যাডমিন প্যানেল চেক লিসেনার
         database.ref('pending_payments').on('value', (snapshot) => {
@@ -558,5 +597,10 @@
             document.getElementById('walletAddress').innerText = addresses[net];
         }
     </script>
+ 
+
+ <!-- SUPABASE CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="index.js"></script>
 </body>
 </html>
