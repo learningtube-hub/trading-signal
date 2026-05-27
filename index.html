@@ -39,22 +39,21 @@
         .light .blur-lock { backdrop-filter: blur(8px) saturate(50%); background: rgba(241, 245, 249, 0.9); }
         .glow-box-open { border: 1px solid rgba(0, 255, 163, 0.3); }
     </style>
-</head>
-<body class="bg-darkBg text-gray-100 dark:bg-darkBg dark:text-gray-100 light:bg-lightBg light:text-slate-900 font-sans antialiased min-h-screen transition-colors duration-300 flex flex-col">
+       </head>
+         
+        <body class="bg-darkBg text-gray-100 dark:bg-darkBg dark:text-gray-100 light:bg-lightBg light:text-slate-900 font-sans antialiased min-h-screen transition-colors duration-300 flex flex-col">
 
-    <!-- HORIZONTAL ONE-LINE TICKER -->
-    <div class="ticker-wrap h-10 flex items-center sticky top-0 z-50">
-        <div class="ticker-items font-cyber text-white">
-            <div class="ticker-item"><span class="text-neonBlue">BTC/USDT</span> <span>$67,420.50</span> <span class="text-neonGreen">(+2.45%)</span></div>
-            <div class="ticker-item"><span class="text-neonBlue">ETH/USDT</span> <span>$3,512.20</span> <span class="text-neonGreen">(+1.88%)</span></div>
-            <div class="ticker-item"><span class="text-neonBlue">SOL/USDT</span> <span>$178.45</span> <span class="text-neonRed">(-0.65%)</span></div>
-            <div class="ticker-item"><span class="text-neonBlue">BNB/USDT</span> <span>$585.10</span> <span class="text-neonGreen">(+3.12%)</span></div>
-            <div class="ticker-item"><span class="text-neonBlue">BTC/USDT</span> <span>$67,420.50</span> <span class="text-neonGreen">(+2.45%)</span></div>
-        </div>
-    </div>
+             <!-- LIVE MARKET TICKER -->
+              <div class="ticker-wrap sticky top-0 z-50 overflow-hidden border-b border-slate-800 bg-black/40 backdrop-blur-md">
 
-    <!-- MAIN DASHBOARD CONTENT AREA -->
-    <div class="flex flex-col lg:flex-row flex-1">
+            <div id="liveTicker"
+                class="flex items-center gap-6 whitespace-nowrap py-2 px-4 animate-marquee font-cyber text-white">
+             </div>
+            </div>
+
+
+        <!-- MAIN DASHBOARD CONTENT AREA -->
+          <div class="flex flex-col lg:flex-row flex-1">
         
         <!-- SIDEBAR (ডেস্কটপে বামে ফিক্সড, মোবাইলে উপরে খুবই চিকন টপ-বার হিসেবে থাকবে) -->
         <aside id="mainSidebar" class="w-full h-14 lg:h-[calc(100vh-2.5rem)] lg:w-20 bg-black/20 dark:bg-black/20 light:bg-white border-b lg:border-b-0 lg:border-r border-slate-950 dark:border-slate-950 light:border-slate-200 flex lg:flex-col items-center justify-between px-4 lg:px-0 lg:py-6 sticky top-10 lg:top-10 z-40 transition-colors duration-300">
