@@ -274,11 +274,117 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   realtimeSignals();
+  startLiveTicker();
 
 });
+
 // =========================
 // LOGOUT
 // =========================
+
+// =========================
+// BINANCE LIVE MARKET
+// =========================
+
+function startLiveTicker() {
+
+  const ticker =
+    document.getElementById("liveTicker");
+
+  if (!ticker) return;
+
+  const ws = new WebSocket(
+    "wss://stream.binance.com:9443/ws/!ticker@arr"
+  );
+
+  const topCoins = [
+
+    "BTCUSDT",
+    "ETHUSDT",
+    "BNBUSDT",
+    "SOLUSDT",
+    "XRPUSDT",
+    "ADAUSDT",
+    "DOGEUSDT",
+    "TRXUSDT",
+    "AVAXUSDT",
+    "DOTUSDT",
+
+    "LINKUSDT",
+    "MATICUSDT",
+    "LTCUSDT",
+    "BCHUSDT",
+    "ATOMUSDT",
+    "ETCUSDT",
+    "XLMUSDT",
+    "FILUSDT",
+    "APTUSDT",
+    "ARBUSDT"
+
+  ];
+
+  // CONNECTION SUCCESS
+  ws.onopen = () => {
+
+    console.log("BINANCE LIVE TICKER CONNECTED");
+
+  };
+
+  // LIVE DATA
+  ws.onmessage = (event) => {
+
+    const data = JSON.parse(event.data);
+
+    const markets =
+      data.filter(item =>
+        topCoins.includes(item.s)
+      );
+
+    ticker.innerHTML = markets.map(item => {
+
+      const price =
+        parseFloat(item.c).toFixed(2);
+
+      const change =
+        parseFloat(item.P).toFixed(2);
+
+      const color =
+        change >= 0
+          ? "text-green-400"
+          : "text-red-400";
+
+      return `
+
+        <div class="ticker-item flex items-center gap-2 px-4">
+
+          <span class="text-neonBlue font-bold">
+            ${item.s.replace("USDT","")}
+          </span>
+
+          <span class="${color}">
+            $${price}
+          </span>
+
+          <span class="${color}">
+            (${change}%)
+          </span>
+
+        </div>
+
+      `;
+
+    }).join("");
+
+  };
+
+  // ERROR
+  ws.onerror = (error) => {
+
+    console.log("BINANCE TICKER ERROR:", error);
+
+  };
+
+}
 
 function logout() {
   localStorage.removeItem("adminLoggedIn");
