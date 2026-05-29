@@ -42,16 +42,53 @@
        </head>
          
         <body class="bg-darkBg text-gray-100 dark:bg-darkBg dark:text-gray-100 light:bg-lightBg light:text-slate-900 font-sans antialiased min-h-screen transition-colors duration-300 flex flex-col">
+                  
+<!-- LIVE MARKET TICKER -->
 
-             <!-- LIVE MARKET TICKER -->
-              <div class="ticker-wrap sticky top-0 z-50 overflow-hidden border-b border-slate-800 bg-black/40 backdrop-blur-md">
+<div class="w-full overflow-hidden border-b border-slate-800 bg-black mobile-ticker">
 
-            <div id="liveTicker"
-                class="flex items-center gap-6 whitespace-nowrap py-2 px-4 animate-marquee font-cyber text-white">
-             </div>
-            </div>
+<script
+type="text/javascript"
+src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js"
+async>
+{
+  "symbols": [
+
+    { "proName": "BINANCE:BTCUSDT", "title": "BTC" },
+      { "proName": "BINANCE:ETHUSDT", "title": "ETH" },
+      { "proName": "BINANCE:BNBUSDT", "title": "BNB" },
+      { "proName": "BINANCE:SOLUSDT", "title": "SOL" },
+      { "proName": "BINANCE:XRPUSDT", "title": "XRP" },
+      { "proName": "BINANCE:ADAUSDT", "title": "ADA" },
+      { "proName": "BINANCE:LTCUSDT", "title": "LTC" },
+      { "proName": "BINANCE:SUIUSDT", "title": "SUI" },
+      { "proName": "BINANCE:PEPEUSDT", "title": "PEPE" },
+      { "proName": "BINANCE:PAXGUSDT", "title": "PAXG" },
+      { "proName": "BINANCE:JASMYUSDT", "title": "JASMY" },
+      { "proName": "BINANCE:GALAUSDT", "title": "GALA" },
+      { "proName": "BINANCE:TRXUSDT", "title": "TRX" },
+      { "proName": "BINANCE:BCHUSDT", "title": "BCH" },
+      { "proName": "BINANCE:ZECUSDT", "title": "ZEC" },
+      { "proName": "BINANCE:XLMUSDT", "title": "XLM" },
+      { "proName": "BINANCE:TONUSDT", "title": "TON" },
+      { "proName": "BINANCE:DOGEUSDT", "title": "DOGE" },
+      { "proName": "BINANCE:NEARUSDT", "title": "NEAR" }
+     
+  ],
+
+  "showSymbolLogo": true,
+  "isTransparent": true,
+  "displayMode": "adaptive",
+  "colorTheme": "dark",
+  "locale": "en"
+
+}
+</script>
+
+</div>
 
 
+            
         <!-- MAIN DASHBOARD CONTENT AREA -->
           <div class="flex flex-col lg:flex-row flex-1">
         
@@ -467,24 +504,6 @@ function listenToUserStatus(email) {
 
 */
 
-        // অ্যাডমিন প্যানেল চেক লিসেনার
-        database.ref('pending_payments').on('value', (snapshot) => {
-            const data = snapshot.val();
-            if(data) {
-                const keys = Object.keys(data);
-                if(keys.length > 0) {
-                    const firstRequest = data[keys[0]];
-                    document.getElementById('admUserEmail').innerText = firstRequest.email;
-                    document.getElementById('admUserTxid').innerText = firstRequest.txid || firstRequest.method;
-                    document.getElementById('adminPaymentAlert').classList.remove('hidden');
-                    document.getElementById('adminPaymentAlert').classList.add('flex');
-                }
-            } else {
-                document.getElementById('adminPaymentAlert').classList.add('hidden');
-                document.getElementById('adminPaymentAlert').classList.remove('flex');
-            }
-        });
-
         function handleAuthSubmit(e) {
             e.preventDefault();
             currentLoggedUserEmail = document.getElementById('userEmailInput').value;
@@ -492,20 +511,47 @@ function listenToUserStatus(email) {
             document.getElementById('paymentModal').style.display = 'flex';
         }
 
-        function submitTxid(e) {
-            e.preventDefault();
-            const txidHash = document.getElementById('txidInput').value;
-            const userKey = btoa(currentLoggedUserEmail);
+       // =========================
+// SUBMIT PAYMENT TXID
+// =========================
 
-            database.ref('users/' + userKey).set({ email: currentLoggedUserEmail, status: 'pending', txid: txidHash });
-            database.ref('pending_payments/' + userKey).set({ email: currentLoggedUserEmail, txid: txidHash });
+async function submitTxid(e) {
 
-            closePaymentModal();
-            alert("🔒 Payment TxID sent for manual verification. Please wait!");
-            listenToUserStatus(currentLoggedUserEmail);
+    e.preventDefault();
+
+    const txidHash =
+    document.getElementById('txidInput').value;
+
+    const userKey =
+    btoa(currentLoggedUserEmail);
+
+    const { error } =
+    await supabaseClient
+    .from('pending_payments')
+    .insert([
+        {
+            user_key: userKey,
+            email: currentLoggedUserEmail,
+            txid: txidHash,
+            status: 'pending'
         }
+    ]);
 
-        function submitReferralUid(e) {
+    if(error) {
+
+        console.log(error);
+
+        alert("Payment submit failed");
+
+        return;
+    }
+
+    closePaymentModal();
+
+    alert("🔒 Payment TxID submitted successfully!");
+
+   }
+           function submitReferralUid(e) {
             e.preventDefault();
             const uidDetails = document.getElementById('userUidInput').value;
             const userKey = btoa(currentLoggedUserEmail);
@@ -517,13 +563,55 @@ function listenToUserStatus(email) {
             alert("✅ Your Referral UID has been submitted! Admin will check and unlock your 1-Month Free VIP instantly.");
             listenToUserStatus(currentLoggedUserEmail);
         }
+        // =========================
+// APPROVE USER VIP
+// =========================
 
-        function approveUserVip() {
-            const emailInAlert = document.getElementById('admUserEmail').innerText;
-            const userKey = btoa(emailInAlert);
-            database.ref('users/' + userKey).update({ status: 'premium' });
-            database.ref('pending_payments/' + userKey).remove().then(() => { alert("✅ VIP Plan Approved Live!"); });
+async function approveUserVip() {
+
+    const emailInAlert =
+    document.getElementById('admUserEmail').innerText;
+
+    const userKey =
+    btoa(emailInAlert);
+
+    // UPDATE USER STATUS
+    const { error: userError } =
+    await supabaseClient
+    .from('users')
+    .upsert([
+        {
+            user_key: userKey,
+            email: emailInAlert,
+            status: 'premium'
         }
+    ]);
+
+    if(userError) {
+
+        console.log(userError);
+
+        alert("VIP approve failed");
+
+        return;
+    }
+
+    // REMOVE PENDING PAYMENT
+    const { error: deleteError } =
+    await supabaseClient
+    .from('pending_payments')
+    .delete()
+    .eq('user_key', userKey);
+
+    if(deleteError) {
+
+        console.log(deleteError);
+
+    }
+
+    alert("✅ VIP Plan Approved Live!");
+    
+ }
 
         function toggleTheme() {
             const html = document.documentElement;
