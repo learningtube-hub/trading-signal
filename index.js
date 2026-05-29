@@ -132,7 +132,6 @@ function renderLatestSignal(signal) {
   container.insertAdjacentHTML("afterbegin", row);
 }
 
-
 // =========================
 // OPTIONAL: LIVE CARD UPDATE
 // =========================
@@ -140,70 +139,92 @@ function renderLatestSignal(signal) {
 function updateLiveCard(signal) {
 
   const box =
-    document.getElementById("liveFeedCard");
+  document.getElementById("liveFeedCard");
 
   if (!box) return;
 
-  let badgeColor =
-    signal.type === "BUY"
-      ? "bg-neonGreen/10 text-neonGreen"
-      : "bg-neonRed/10 text-neonRed";
+  const badgeColor =
+  signal.type === "BUY"
+  ? "background:#00ff99;color:black;"
+  : "background:#ff4d6d;color:white;";
 
   box.innerHTML = `
 
-    <div class="glass-panel glow-box-open rounded-2xl p-5 relative">
+  <div class="glass-panel glow-box-open rounded-2xl p-5 relative">
 
-      <div class="flex justify-between items-start mb-3">
+    <div class="flex justify-between items-start mb-3">
 
-        <span class="font-cyber font-bold text-lg text-slate-900 dark:text-white">
+      <span class="font-cyber font-bold text-lg text-white">
 
-          ${signal.pair}
+        ${signal.pair}
 
-          <span class="text-[10px] ${badgeColor}
-          px-2 py-0.5 rounded ml-2 font-bold uppercase">
+        <span
+        style="${badgeColor}"
+        class="text-[10px] px-2 py-0.5 rounded ml-2 font-bold uppercase">
 
-            ${signal.type}
-
-          </span>
+          ${signal.type}
 
         </span>
 
-        <span class="text-[11px] font-mono text-slate-400
-        bg-black/20 px-2 py-0.5 rounded border border-slate-800">
+      </span>
 
-          <i class="fa-regular fa-clock mr-1 text-neonBlue"></i>
+      <span
+      class="text-[11px] font-mono text-slate-400
+      bg-black/20 px-2 py-0.5 rounded border border-slate-800">
 
-          LIVE
+        <i class="fa-regular fa-clock mr-1"></i>
+
+        LIVE
+
+      </span>
+
+    </div>
+
+    <div
+    class="space-y-2 bg-black/30 p-3 rounded-xl
+    text-xs font-mono text-slate-200">
+
+      <div class="flex justify-between border-b border-white/5 pb-1">
+
+        <span>ENTRY:</span>
+
+        <span class="font-bold">
+          ${signal.entry}
+        </span>
+
+      </div>
+
+      <div class="flex justify-between border-b border-white/5 pb-1">
+
+        <span>STOP LOSS:</span>
+
+        <span
+        style="color:#ff4d6d"
+        class="font-bold">
+
+          ${signal.stoploss}
 
         </span>
 
       </div>
 
-      <div class="space-y-2 bg-black/30 p-3 rounded-xl
-      text-xs font-mono text-slate-200">
+      <div class="flex justify-between">
 
-        <div class="flex justify-between border-b border-white/5 pb-1">
-          <span>ENTRY:</span>
-          <span class="font-bold">${signal.entry}</span>
-        </div>
+        <span>TAKE PROFIT:</span>
 
-        <div class="flex justify-between border-b border-white/5 pb-1">
-          <span>STOP LOSS:</span>
-          <span class="font-bold text-neonRed">
-            ${signal.stoploss}
-          </span>
-        </div>
+        <span
+        style="color:#00ff99"
+        class="font-bold">
 
-        <div class="flex justify-between">
-          <span>TAKE PROFIT:</span>
-          <span class="font-bold text-neonGreen">
-            ${signal.target}
-          </span>
-        </div>
+          ${signal.target}
+
+        </span>
 
       </div>
 
     </div>
+
+  </div>
 
   `;
 }
@@ -216,177 +237,335 @@ function updateLiveCard(signal) {
 function realtimeSignals() {
 
   supabaseClient
-    .channel('signals-live')
-    .on('postgres_changes', {
-      event: '*',
-      schema: 'public',
-      table: 'signals'
-    }, payload => {
+  .channel("signals-live")
 
-      console.log("LIVE UPDATE:", payload);
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "signals"
+    },
 
-      if (payload.eventType === "INSERT") {
-        renderLatestSignal(payload.new);
-        updateLiveCard(payload.new);
-      } else {
-        loadSignals();
+    (payload) => {
+
+      console.log(
+      "LIVE UPDATE:",
+      payload
+      );
+
+      if (
+        payload.eventType === "INSERT"
+      ) {
+
+        renderLatestSignal(
+        payload.new
+        );
+
+        updateLiveCard(
+        payload.new
+        );
+
       }
 
-    })
-    .subscribe();
+      else if (
+        payload.eventType === "UPDATE"
+      ) {
+
+        loadSignals();
+
+      }
+
+      else if (
+        payload.eventType === "DELETE"
+      ) {
+
+        loadSignals();
+
+      }
+
+    }
+
+  )
+
+  .subscribe((status) => {
+
+    console.log(
+    "SUPABASE STATUS:",
+    status
+    );
+
+  });
+
 }
+
 
 // =========================
 // INIT
 // =========================
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener(
+"DOMContentLoaded",
 
-  loadSignals();
+async () => {
 
-  // latest LIVE signal
-  const { data } = await supabaseClient
+  console.log(
+  "DOM LOADED"
+  );
+
+  // LOAD SIGNAL LIST
+  await loadSignals();
+
+  // GET LATEST SIGNAL
+  const { data, error } =
+  await supabaseClient
+  .from("signals")
+  .select("*")
+  .order("id", {
+    ascending: false
+  })
+  .limit(1);
+
+  if (error) {
+
+    console.log(
+    "LATEST SIGNAL ERROR:",
+    error
+    );
+
+  }
+
+  // LIVE CARD
+  if (
+    data &&
+    data.length > 0
+  ) {
+
+    updateLiveCard(
+    data[0]
+    );
+
+    // HISTORY
+    const {
+      data: historySignals
+    } =
+    await supabaseClient
     .from("signals")
     .select("*")
-    .order("id", { ascending: false })
-    .limit(1);
+    .order("id", {
+      ascending: false
+    })
+    .range(1, 10);
 
-  if (data && data.length > 0) {
+    if (
+      historySignals &&
+      historySignals.length > 0
+    ) {
 
-    // LIVE CARD
-    updateLiveCard(data[0]);
+      historySignals.forEach(
+      signal => {
 
-    // PREVIOUS SIGNALS HISTORY
-    const { data: historySignals } = await supabaseClient
-      .from("signals")
-      .select("*")
-      .order("id", { ascending: false })
-      .range(1, 10);
+        renderLatestSignal(
+        signal
+        );
 
-    if (historySignals) {
-
-      historySignals.forEach(signal => {
-        renderLatestSignal(signal);
       });
 
     }
 
   }
 
+  // REALTIME
   realtimeSignals();
-  startLiveTicker();
 
 });
 
 // =========================
+// HANDLE AUTH SUBMIT
+// =========================
+function handleAuthSubmit(event) {
+    event.preventDefault();
+
+    const email = document.getElementById("userEmailInput").value.trim();
+
+    if (!email) {
+        alert("Enter email first");
+        return;
+    }
+
+    currentLoggedUserEmail = email;
+
+    // close auth modal properly
+    document.getElementById("authModal").classList.add("hidden");
+    document.getElementById("authModal").classList.remove("flex");
+
+    // open payment modal properly
+    const payModal = document.getElementById("paymentModal");
+    payModal.classList.remove("hidden");
+    payModal.classList.add("flex");
+}
+
+// =========================
+// SUBMIT PAYMENT TXID
+// =========================
+
+async function submitTxid(e) {
+
+    e.preventDefault();
+
+    try {
+
+        const txidHash =
+        document.getElementById("txidInput").value.trim();
+
+        const email =
+        document.getElementById("userEmailInput").value.trim();
+
+        let method = "BINANCE PAY";
+
+        // USDT NETWORK CHECK
+        if (
+            document.getElementById("contentUsdt") &&
+            !document.getElementById("contentUsdt").classList.contains("hidden")
+        ) {
+
+            method =
+            document.getElementById("networkSelect").value;
+        }
+
+        // EMPTY CHECK
+        if (!email || !txidHash) {
+
+            alert("Please complete payment form");
+
+            return;
+        }
+
+        // SAVE TO SUPABASE
+        const { error } =
+        await supabaseClient
+        .from("vip_payments")
+        .insert([
+            {
+                email: email,
+                method: method,
+                txid: txidHash,
+                status: "pending"
+            }
+        ]);
+
+        // ERROR CHECK
+        if (error) {
+
+            console.log(
+            "PAYMENT ERROR:",
+            error
+            );
+
+            alert(
+            "Payment submit failed: " + error.message
+            );
+
+            return;
+        }
+
+        // SUCCESS
+        alert(
+        "Payment submitted successfully"
+        );
+
+        // CLEAR INPUT
+        document.getElementById("txidInput").value = "";
+
+        // CLOSE MODAL
+        closePaymentModal();
+
+    }
+
+    catch(err) {
+
+        console.log(
+        "VIP PAYMENT SYSTEM ERROR:",
+        err
+        );
+
+        alert(
+        "Unexpected error occurred"
+        );
+    }
+}
+
+// =========================
+// SUBMIT REFERRAL UID
+// =========================
+
+async function submitReferralUid(e) {
+    e.preventDefault();
+
+    const uidDetails = document.getElementById("userUidInput").value.trim();
+    const email = currentLoggedUserEmail;
+
+    if (!uidDetails || !email) {
+        alert("Please enter UID");
+        return;
+    }
+
+    try {
+        const { error } = await supabaseClient
+        .from("vip_payments")
+        .insert([{
+            email: email,
+            method: "REFERRAL UID",
+            txid: uidDetails,
+            status: "pending"
+        }]);
+
+        if (error) {
+            alert("Submit failed: " + error.message);
+            return;
+        }
+
+        // ✅ STEP 1: POPUP CONFIRMATION
+        const ok = confirm("✅ Submitted successfully!\nPress OK to continue.");
+
+        if (ok) {
+
+            // ❌ hide form immediately
+            document.querySelector("#paymentModal form").style.display = "none";
+
+            // 🔄 show loading state first (smooth feel)
+            const waitingBox = document.getElementById("waitingApproval");
+            waitingBox.innerHTML = "⏳ Loading...";
+            waitingBox.classList.remove("hidden");
+
+            // 🎬 small delay for smooth UX
+            setTimeout(() => {
+
+                waitingBox.innerHTML = `
+                    ⏳ Waiting For Approval...
+                `;
+
+                waitingBox.classList.add("animate-pulse");
+
+            }, 800);
+
+            // clear input
+            document.getElementById("userUidInput").value = "";
+        }
+
+    } catch (err) {
+        console.log(err);
+        alert("Unexpected error");
+    }
+}
+// =========================
 // LOGOUT
 // =========================
 
-// =========================
-// BINANCE LIVE MARKET
-// =========================
-
-function startLiveTicker() {
-
-  const ticker =
-    document.getElementById("liveTicker");
-
-  if (!ticker) return;
-
-  const ws = new WebSocket(
-    "wss://stream.binance.com:9443/ws/!ticker@arr"
-  );
-
-  const topCoins = [
-
-    "BTCUSDT",
-    "ETHUSDT",
-    "BNBUSDT",
-    "SOLUSDT",
-    "XRPUSDT",
-    "ADAUSDT",
-    "DOGEUSDT",
-    "TRXUSDT",
-    "AVAXUSDT",
-    "DOTUSDT",
-
-    "LINKUSDT",
-    "MATICUSDT",
-    "LTCUSDT",
-    "BCHUSDT",
-    "ATOMUSDT",
-    "ETCUSDT",
-    "XLMUSDT",
-    "FILUSDT",
-    "APTUSDT",
-    "ARBUSDT"
-
-  ];
-
-  // CONNECTION SUCCESS
-  ws.onopen = () => {
-
-    console.log("BINANCE LIVE TICKER CONNECTED");
-
-  };
-
-  // LIVE DATA
-  ws.onmessage = (event) => {
-
-    const data = JSON.parse(event.data);
-
-    const markets =
-      data.filter(item =>
-        topCoins.includes(item.s)
-      );
-
-    ticker.innerHTML = markets.map(item => {
-
-      const price =
-        parseFloat(item.c).toFixed(2);
-
-      const change =
-        parseFloat(item.P).toFixed(2);
-
-      const color =
-        change >= 0
-          ? "text-green-400"
-          : "text-red-400";
-
-      return `
-
-        <div class="ticker-item flex items-center gap-2 px-4">
-
-          <span class="text-neonBlue font-bold">
-            ${item.s.replace("USDT","")}
-          </span>
-
-          <span class="${color}">
-            $${price}
-          </span>
-
-          <span class="${color}">
-            (${change}%)
-          </span>
-
-        </div>
-
-      `;
-
-    }).join("");
-
-  };
-
-  // ERROR
-  ws.onerror = (error) => {
-
-    console.log("BINANCE TICKER ERROR:", error);
-
-  };
-
-}
-
 function logout() {
+
   localStorage.removeItem("adminLoggedIn");
+
   window.location.href = "admin.html";
+
 }
