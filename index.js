@@ -423,7 +423,6 @@ async function submitTxid(e) {
 
         let method = "BINANCE PAY";
 
-        // USDT NETWORK CHECK
         if (
             document.getElementById("contentUsdt") &&
             !document.getElementById("contentUsdt").classList.contains("hidden")
@@ -433,7 +432,6 @@ async function submitTxid(e) {
             document.getElementById("networkSelect").value;
         }
 
-        // EMPTY CHECK
         if (!email || !txidHash) {
 
             alert("Please complete payment form");
@@ -441,7 +439,6 @@ async function submitTxid(e) {
             return;
         }
 
-        // SAVE TO SUPABASE
         const { error } =
         await supabaseClient
         .from("vip_payments")
@@ -454,45 +451,122 @@ async function submitTxid(e) {
             }
         ]);
 
-        // ERROR CHECK
         if (error) {
 
-            console.log(
-            "PAYMENT ERROR:",
-            error
-            );
+            console.log("PAYMENT ERROR:", error);
 
             alert(
-            "Payment submit failed: " + error.message
+            "Payment submit failed: " +
+            error.message
             );
 
             return;
         }
 
-        // SUCCESS
-        alert(
-        "Payment submitted successfully"
-        );
+// =========================
+// WAITING APPROVAL UI
+// =========================
 
-        // CLEAR INPUT
-        document.getElementById("txidInput").value = "";
+const statusText =
+document.getElementById("accountStatusText");
 
-        // CLOSE MODAL
-        closePaymentModal();
+if(statusText){
 
-    }
+    statusText.innerText =
+    "VERIFYING MATRIX CORE ⏳";
 
-    catch(err) {
+    statusText.className =
+    "text-amber-400 font-bold font-cyber animate-pulse text-sm";
+}
 
-        console.log(
-        "VIP PAYMENT SYSTEM ERROR:",
-        err
-        );
+const lockIconContainer =
+document.getElementById("lockIconContainer");
 
-        alert(
-        "Unexpected error occurred"
-        );
-    }
+if(lockIconContainer){
+
+    lockIconContainer.className =
+    "w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-2";
+}
+
+const lockIcon =
+document.getElementById("lockIcon");
+
+if(lockIcon){
+
+    lockIcon.className =
+    "fa-solid fa-hourglass-half animate-spin";
+}
+
+const lockTitle =
+document.getElementById("lockTitle");
+
+if(lockTitle){
+
+    lockTitle.innerText =
+    "Waiting Admin Approval";
+}
+
+const lockActionBtn =
+document.getElementById("lockActionBtn");
+
+if(lockActionBtn){
+
+    lockActionBtn.innerText =
+    "VERIFYING DATA CORE...";
+
+    lockActionBtn.disabled = true;
+}
+
+const upgradeBtn =
+document.getElementById("upgradeBtnTop");
+
+if(upgradeBtn){
+
+    upgradeBtn.innerText =
+    "WAITING APPROVAL";
+
+    upgradeBtn.disabled = true;
+}
+
+alert(
+"Payment submitted successfully"
+);
+
+document.getElementById("txidInput").value = "";
+
+// PREMIUM CARD UPDATE
+
+const lockOverlay =
+document.getElementById("lockOverlay");
+
+if(lockOverlay){
+
+    lockOverlay.style.display = "none";
+}
+
+const pendingOverlay =
+document.getElementById("pendingOverlay");
+
+if(pendingOverlay){
+
+    pendingOverlay.style.display = "flex";
+}
+
+closePaymentModal();
+
+}
+catch(err) {
+
+    console.log(
+    "VIP PAYMENT SYSTEM ERROR:",
+    err
+    );
+
+    alert(
+    "Unexpected error occurred"
+    );
+}
+
 }
 
 // =========================
@@ -557,7 +631,7 @@ async function submitReferralUid(e) {
         console.log(err);
         alert("Unexpected error");
     }
-}
+}     
 // =========================
 // LOGOUT
 // =========================
